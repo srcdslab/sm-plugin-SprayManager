@@ -419,7 +419,7 @@ public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 			}
 		}
 
-		PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Trace did not hit any sprays.");
+		CPrintToChat(iParam1, "{green}[SprayManager]{default} Trace did not hit any sprays.");
 
 		if (g_hTopMenu != null)
 			DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
@@ -516,7 +516,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
 					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
@@ -578,7 +578,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_bInvokedThroughTopMenu[iParam1] = false;
 
@@ -593,14 +593,14 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 				{
 					case 1:
 					{
-						PrintToChat(target, "\x01\x04[SprayManager]\x01 Your spray is not allowed, change it.");
+						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
 						Menu_Trace(iParam1, target);
 					}
 
 					case 2:
 					{
 						SlapPlayer(target, 0);
-						PrintToChat(target, "\x01\x04[SprayManager]\x01 Your spray is not allowed, change it.");
+						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
 						Menu_Trace(iParam1, target);
 					}
 
@@ -633,7 +633,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 					{
 						if (BanClientSpray(iParam1, target))
 						{
-							ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Banned \x04%N\x01's spray", target);
+							CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Banned {green}%N{default}'s spray", target);
 							LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray", iParam1, target);
 						}
 					}
@@ -699,7 +699,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_iSprayBanTarget[iParam1] = 0;
 				g_bInvokedThroughTopMenu[iParam1] = false;
@@ -713,7 +713,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 			{
 				if (SprayBanClient(iParam1, target, StringToInt(sOption), "Inappropriate Spray"))
 				{
-					ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray banned \x04%N", target);
+					CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray banned {green}%N", target);
 					LogAction(iParam1, target, "\"%L\" spray banned \"%L\" (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 
@@ -761,7 +761,7 @@ int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int i
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_iBanTarget[iParam1] = 0;
 				g_bInvokedThroughTopMenu[iParam1] = false;
@@ -852,7 +852,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
 					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
@@ -864,7 +864,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 				g_iAllowSpray = target;
 				ForceSpray(iParam1, target);
 
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Sprayed \x04%N\x01's spray(s).", target);
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Sprayed {green}%N{default}'s spray(s).", target);
 
 				Menu_Spray(iParam1);
 			}
@@ -930,7 +930,7 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
 					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
@@ -981,7 +981,7 @@ int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1,
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_iSprayBanTarget[iParam1] = 0;
 
@@ -991,7 +991,7 @@ int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1,
 			{
 				if (SprayBanClient(iParam1, target, StringToInt(sOption), "Inappropriate Spray"))
 				{
-					ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray banned \x04%N", target);
+					CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray banned {green}%N", target);
 					LogAction(iParam1, target, "\"%L\" spray banned \"%L\" (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 
@@ -1059,7 +1059,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				Menu_BanSpray(iParam1);
 			}
@@ -1067,7 +1067,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 			{
 				if (BanClientSpray(iParam1, target))
 				{
-					ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Banned \x04%N\x01's spray", target);
+					CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Banned {green}%N{default}'s spray", target);
 					LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray", iParam1, target);
 				}
 			}
@@ -1133,7 +1133,7 @@ int MenuHandler_Menu_UnbanSpray(Menu hMenu, MenuAction action, int iParam1, int 
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				Menu_Unban(iParam1);
 			}
@@ -1241,7 +1241,7 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 				Menu_ListBans(iParam1);
 			}
 			else
@@ -1307,7 +1307,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_iSprayUnbanTarget[iParam1] = 0;
 
@@ -1322,7 +1322,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (UnbanClientSpray(iParam1, target))
 					{
-						ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Unbanned \x04%N\x01's spray", target);
+						CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Unbanned {green}%N{default}'s spray", target);
 						LogAction(iParam1, target, "\"%L\" unbanned \"%L\"'s spray", iParam1, target);
 					}
 				}
@@ -1330,7 +1330,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (SprayUnbanClient(target, iParam1))
 					{
-						ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray unbanned \x04%N", target);
+						CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray unbanned {green}%N", target);
 						LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 					}
 				}
@@ -1338,7 +1338,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (SprayUnbanClient(target, iParam1) && UnbanClientSpray(iParam1, target))
 					{
-						ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray unbanned \x04%N", target);
+						CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray unbanned {green}%N", target);
 						LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 					}
 				}
@@ -1378,7 +1378,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 
 			if (!IsValidClient(target))
 			{
-				PrintToChat(iParam1, "\x01\x04[SprayManager]\x01 Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				g_iSprayUnbanTarget[iParam1] = 0;
 
@@ -1395,7 +1395,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (SprayUnbanClient(target, iParam1) && UnbanClientSpray(iParam1, target))
 						{
-							ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray unbanned \x04%N", target);
+							CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray unbanned {green}%N", target);
 							LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 						}
 					}
@@ -1403,7 +1403,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (SprayUnbanClient(target, iParam1))
 						{
-							ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Spray unbanned \x04%N", target);
+							CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Spray unbanned {green}%N", target);
 							LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 						}
 					}
@@ -1411,7 +1411,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (UnbanClientSpray(iParam1, target))
 						{
-							ShowActivity2(iParam1, "\x01\x04[SprayManager] ", "\x01Unbanned \x04%N\x01's spray", target);
+							CShowActivity2(iParam1, "{green}[SprayManager] ", "{default}Unbanned {green}%N{default}'s spray", target);
 							LogAction(iParam1, target, "\"%L\" unbanned \"%L\"'s spray", iParam1, target);
 						}
 					}
@@ -1444,13 +1444,13 @@ public Action Command_MarkNSFW(int client, int argc)
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "\x01\x04[SprayManager]\x01 Unable to update status, please wait a few seconds and try again.");
+		ReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
 	if (g_bMarkedNSFWByAdmin[client] || g_bHasNSFWSpray[client])
 	{
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is already marked as NSFW.");
+		CPrintToChat(client, "{green}[SprayManager]{default} Your spray is already marked as NSFW.");
 		return Plugin_Handled;
 	}
 
@@ -1487,7 +1487,7 @@ public Action Command_MarkNSFW(int client, int argc)
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is now marked as NSFW.");
+	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as NSFW.");
 
 	return Plugin_Continue;
 }
@@ -1508,19 +1508,19 @@ public Action Command_MarkSFW(int client, int argc)
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "\x01\x04[SprayManager]\x01 Unable to update status, please wait a few seconds and try again.");
+		ReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
 	if (g_bMarkedNSFWByAdmin[client])
 	{
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray has been marked as NSFW by an admin, you cannot change this.");
+		CPrintToChat(client, "{green}[SprayManager]{default} Your spray has been marked as NSFW by an admin, you cannot change this.");
 		return Plugin_Handled;
 	}
 
 	if (!g_bHasNSFWSpray[client])
 	{
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is already marked as SFW.");
+		CPrintToChat(client, "{green}[SprayManager]{default} Your spray is already marked as SFW.");
 		return Plugin_Handled;
 	}
 
@@ -1549,7 +1549,7 @@ public Action Command_MarkSFW(int client, int argc)
 		g_bSkipDecalHook = false;
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is now marked as SFW.");
+	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as SFW.");
 
 	return Plugin_Continue;
 }
@@ -1564,7 +1564,7 @@ public Action Command_NSFW(int client, int argc)
 
 	if (!AreClientCookiesCached(client))
 	{
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Could not update status, please wait a few seconds and try again.");
+		CPrintToChat(client, "{green}[SprayManager]{default} Could not update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
@@ -1572,7 +1572,7 @@ public Action Command_NSFW(int client, int argc)
 
 	SetClientCookie(client, g_hWantsToSeeNSFWCookie, g_bWantsToSeeNSFWSprays[client] ? "1" : "0");
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 You can %s", g_bWantsToSeeNSFWSprays[client] ? "now see \x07BF49FFNSFW\x01 sprays." : "no longer see \x07BF49FFNSFW\x01 sprays.");
+	CPrintToChat(client, "{green}[SprayManager]{default} You can %s", g_bWantsToSeeNSFWSprays[client] ? "now see {purple}NSFW{default} sprays." : "no longer see {purple}NSFW{default} sprays.");
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -1614,7 +1614,7 @@ public Action Command_HideSpray(int client, int argc)
 			return Plugin_Handled;
 
 		g_bHasSprayHidden[client][iTarget] = true;
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 You have hidden \x04%N\x01's spray.", iTarget);
+		CPrintToChat(client, "{green}[SprayManager]{default} You have hidden {green}%N{default}'s spray.", iTarget);
 
 		PaintWorldDecalToOne(g_iHiddenDecalIndex, g_vecSprayOrigin[iTarget], client);
 		g_bSkipDecalHook = true;
@@ -1634,7 +1634,7 @@ public Action Command_HideSpray(int client, int argc)
 				continue;
 
 			g_bHasSprayHidden[client][i] = true;
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 You have hidden \x04%N\x01's spray.", i);
+			CPrintToChat(client, "{green}[SprayManager]{default} You have hidden {green}%N{default}'s spray.", i);
 
 			PaintWorldDecalToOne(g_iHiddenDecalIndex, g_vecSprayOrigin[i], client);
 			g_bSkipDecalHook = true;
@@ -1645,7 +1645,7 @@ public Action Command_HideSpray(int client, int argc)
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -1669,7 +1669,7 @@ public Action Command_UnhideSpray(int client, int argc)
 			return Plugin_Handled;
 
 		g_bHasSprayHidden[client][iTarget] = false;
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 You have unhidden \x04%N\x01's spray.", iTarget);
+		CPrintToChat(client, "{green}[SprayManager]{default} You have unhidden {green}%N{default}'s spray.", iTarget);
 
 		PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[iTarget], client);
 
@@ -1697,7 +1697,7 @@ public Action Command_UnhideSpray(int client, int argc)
 				continue;
 
 			g_bHasSprayHidden[client][i] = false;
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 You have unhidden \x04%N\x01's spray.", i);
+			CPrintToChat(client, "{green}[SprayManager]{default} You have unhidden {green}%N{default}'s spray.", i);
 
 			PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[i], client);
 
@@ -1716,7 +1716,7 @@ public Action Command_UnhideSpray(int client, int argc)
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -1751,7 +1751,7 @@ public Action Command_AdminSpray(int client, int argc)
 			ForceSpray(client, iTargets[i], false);
 		}
 
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Sprayed \x04%s\x01's spray(s).", sTargetName);
+		CPrintToChat(client, "{green}[SprayManager]{default} Sprayed {green}%s{default}'s spray(s).", sTargetName);
 
 		return Plugin_Handled;
 	}
@@ -1759,7 +1759,7 @@ public Action Command_AdminSpray(int client, int argc)
 	g_iAllowSpray = client;
 	ForceSpray(client, client, false);
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 Sprayed your own spray.");
+	CPrintToChat(client, "{green}[SprayManager]{default} Sprayed your own spray.");
 
 	return Plugin_Handled;
 }
@@ -1789,7 +1789,7 @@ public Action Command_SprayBan(int client, int argc)
 	if (!SprayBanClient(client, iTarget, StringToInt(sLength), sReason))
 		return Plugin_Handled;
 
-	ShowActivity2(client, "\x01\x04[SprayManager] ", "\x01Spray banned \x04%N", iTarget);
+	CShowActivity2(client, "{green}[SprayManager] ", "{default}Spray banned {green}%N", iTarget);
 	LogAction(client, iTarget, "\"%L\" spray banned \"%L\" (Hash: \"%s\")", client, iTarget, g_sSprayHash[iTarget]);
 
 	return Plugin_Handled;
@@ -1814,7 +1814,7 @@ public Action Command_SprayUnban(int client, int argc)
 	if (!SprayUnbanClient(iTarget, client))
 		return Plugin_Handled;
 
-	ShowActivity2(client, "\x01\x04[SprayManager] ", "\x01Spray unbanned \x04%N", iTarget);
+	CShowActivity2(client, "{green}[SprayManager] ", "{default}Spray unbanned {green}%N", iTarget);
 	LogAction(client, iTarget, "\"%L\" spray unbanned \"%L\"", client, iTarget);
 
 	return Plugin_Handled;
@@ -1835,7 +1835,7 @@ public Action Command_BanSpray(int client, int argc)
 		if (!BanClientSpray(client, iTarget))
 			return Plugin_Handled;
 
-		ShowActivity2(client, "\x01\x04[SprayManager] ", "\x01Banned \x04%N\x01's spray", iTarget);
+		CShowActivity2(client, "{green}[SprayManager] ", "{default}Banned {green}%N{default}'s spray", iTarget);
 		LogAction(client, iTarget, "\"%L\" banned \"%L\"'s spray", client, iTarget);
 
 		return Plugin_Handled;
@@ -1853,14 +1853,14 @@ public Action Command_BanSpray(int client, int argc)
 			if (!BanClientSpray(client, i))
 				return Plugin_Handled;
 
-			ShowActivity2(client, "\x01\x04[SprayManager] ", "\x01Banned \x04%N\x01's spray", i);
+			CShowActivity2(client, "{green}[SprayManager] ", "{default}Banned {green}%N{default}'s spray", i);
 			LogAction(client, i, "\"%L\" banned \"%L\"'s spray", client, i);
 
 			return Plugin_Handled;
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -1884,7 +1884,7 @@ public Action Command_UnbanSpray(int client, int argc)
 	if (!UnbanClientSpray(client, iTarget))
 		return Plugin_Handled;
 
-	ShowActivity2(client, "\x01\x04[SprayManager] ", "\x01Unbanned \x04%N\x01's spray", iTarget);
+	CShowActivity2(client, "{green}[SprayManager] ", "{default}Unbanned {green}%N{default}'s spray", iTarget);
 	LogAction(client, iTarget, "\"%L\" unbanned \"%L\"'s spray", client, iTarget);
 
 	return Plugin_Handled;
@@ -1913,7 +1913,7 @@ public Action Command_TraceSpray(int client, int argc)
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 Trace did not hit any sprays.");
+	CPrintToChat(client, "{green}[SprayManager]{default} Trace did not hit any sprays.");
 
 	return Plugin_Handled;
 }
@@ -1948,7 +1948,7 @@ public Action Command_RemoveSpray(int client, int argc)
 			SprayClientDecalToAll(iTargets[i], 0, ACTUAL_NULL_VECTOR);
 		}
 
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Removed \x04%s\x01's spray(s).", sTargetName);
+		CPrintToChat(client, "{green}[SprayManager]{default} Removed {green}%s{default}'s spray(s).", sTargetName);
 
 		return Plugin_Handled;
 	}
@@ -1965,13 +1965,13 @@ public Action Command_RemoveSpray(int client, int argc)
 			g_iAllowSpray = i;
 			SprayClientDecalToAll(i, 0, ACTUAL_NULL_VECTOR);
 
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 Removed \x04%N\x01's spray.", i);
+			CPrintToChat(client, "{green}[SprayManager]{default} Removed {green}%N{default}'s spray.", i);
 
 			return Plugin_Handled;
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -1995,7 +1995,7 @@ public Action Command_ForceNSFW(int client, int argc)
 			return Plugin_Handled;
 
 		AdminForceSprayNSFW(iTarget);
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Marked \x04%N\x01's spray as NSFW.", iTarget);
+		CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", iTarget);
 
 		return Plugin_Handled;
 	}
@@ -2010,13 +2010,13 @@ public Action Command_ForceNSFW(int client, int argc)
 				continue;
 
 			AdminForceSprayNSFW(i);
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 Marked \x04%N\x01's spray as NSFW.", i);
+			CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", i);
 
 			return Plugin_Handled;
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -2040,7 +2040,7 @@ public Action Command_ForceSFW(int client, int argc)
 			return Plugin_Handled;
 
 		AdminForceSpraySFW(iTarget);
-		PrintToChat(client, "\x01\x04[SprayManager]\x01 Marked \x04%N\x01's spray as SFW.", iTarget);
+		CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as SFW.", iTarget);
 
 		return Plugin_Handled;
 	}
@@ -2055,13 +2055,13 @@ public Action Command_ForceSFW(int client, int argc)
 				continue;
 
 			AdminForceSpraySFW(i);
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 Marked \x04%N\x01's spray as SFW.", i);
+			CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as SFW.", i);
 
 			return Plugin_Handled;
 		}
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 No spray could be found.");
+	CPrintToChat(client, "{green}[SprayManager]{default} No spray could be found.");
 
 	return Plugin_Handled;
 }
@@ -2113,7 +2113,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 	{
 		if (g_bSprayHashBanned[client])
 		{
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is blacklisted, change it.");
+			CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
 			return Plugin_Handled;
 		}
 
@@ -2129,7 +2129,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 
 			FormatRemainingTime(g_iSprayUnbanTimestamp[client], sRemainingTime, sizeof(sRemainingTime));
 
-			PrintToChat(client, "\x01\x04[SprayManager]\x01 You are currently spray banned. (\x04%s\x01)", sRemainingTime);
+			CPrintToChat(client, "{green}[SprayManager]{default} You are currently spray banned. ({green}%s{default})", sRemainingTime);
 
 			return Plugin_Handled;
 		}
@@ -2154,7 +2154,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 
 					if (CheckCommandAccess(i, "", ADMFLAG_CUSTOM1, true) || CheckCommandAccess(i, "sm_sprayban", ADMFLAG_GENERIC))
 					{
-						PrintToChat(client, "\x01\x04[SprayManager]\x01 Your spray is too close to \x04%N\x01's spray.", i);
+						CPrintToChat(client, "{green}[SprayManager]{default} Your spray is too close to {green}%N{default}'s spray.", i);
 
 						return Plugin_Handled;
 					}
@@ -3024,7 +3024,7 @@ stock bool ForceSpray(int client, int target, bool bPlaySound=true)
 		return true;
 	}
 
-	PrintToChat(client, "\x01\x04[SprayManager]\x01 Could not spray here, try somewhere else.");
+	CPrintToChat(client, "{green}[SprayManager]{default} Could not spray here, try somewhere else.");
 
 	return false;
 }
