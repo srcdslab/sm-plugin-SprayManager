@@ -114,14 +114,14 @@ public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 
-	AddFileToDownloadsTable("materials/nide/spraymanager/1.vtf");
-	AddFileToDownloadsTable("materials/nide/spraymanager/1.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/1.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/1.vmt");
 
-	AddFileToDownloadsTable("materials/nide/spraymanager/2.vtf");
-	AddFileToDownloadsTable("materials/nide/spraymanager/2.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/2.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/2.vmt");
 
-	AddFileToDownloadsTable("materials/nide/spraymanager/3.vtf");
-	AddFileToDownloadsTable("materials/nide/spraymanager/3.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/3.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/3.vmt");
 
 	RegConsoleCmd("sm_marknsfw", Command_MarkNSFW, "Marks your spray as NSFW");
 	RegConsoleCmd("sm_marksfw", Command_MarkSFW, "Marks your spray as SFW");
@@ -212,9 +212,9 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
-	g_iNSFWDecalIndex = PrecacheDecal("nide/spraymanager/1.vtf", true);
-	g_iHiddenDecalIndex = PrecacheDecal("nide/spraymanager/2.vtf", true);
-	g_iTransparentDecalIndex = PrecacheDecal("nide/spraymanager/3.vtf", true);
+	g_iNSFWDecalIndex = PrecacheDecal("spraymanager/1.vtf", true);
+	g_iHiddenDecalIndex = PrecacheDecal("spraymanager/2.vtf", true);
+	g_iTransparentDecalIndex = PrecacheDecal("spraymanager/3.vtf", true);
 }
 
 public void OnMapEnd()
