@@ -599,8 +599,16 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 					case 2:
 					{
-						SlapPlayer(target, 0);
-						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
+						if(CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_CONVARS, false))
+						{
+							SlapPlayer(target, 0);
+							CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
+							LogAction(iParam1, target, "\"%L\" warned \"%L\" for his spray.", iParam1, target);
+						}
+						else
+						{
+							CPrintToChat(iParam1, "{green}[SprayManager]{default} You don't have access to the command.");
+						}
 						Menu_Trace(iParam1, target);
 					}
 
@@ -608,6 +616,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 					{
 						g_bInvokedThroughTopMenu[iParam1] = false;
 						KickClient(target, "Your spray is not allowed, change it");
+						LogAction(iParam1, target, "\"%L\" kicked \"%L\" for his spray.", iParam1, target);
 					}
 
 					case 4:
