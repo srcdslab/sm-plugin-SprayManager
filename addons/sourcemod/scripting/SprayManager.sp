@@ -530,6 +530,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_Trace(int client, int target)
@@ -671,6 +672,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 			}
 		}
 	}
+	return 0;
 }
 
 int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iParam2)
@@ -733,6 +735,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 			}
 		}
 	}
+	return 0;
 }
 
 int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int iParam2)
@@ -790,6 +793,7 @@ int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int i
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_Spray(int client)
@@ -881,6 +885,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_SprayBan(int client)
@@ -968,6 +973,7 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 			}
 		}
 	}
+	return 0;
 }
 
 int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1, int iParam2)
@@ -1010,6 +1016,7 @@ int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1,
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_BanSpray(int client)
@@ -1084,6 +1091,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_Unban(int client)
@@ -1155,6 +1163,7 @@ int MenuHandler_Menu_UnbanSpray(Menu hMenu, MenuAction action, int iParam1, int 
 			}
 		}
 	}
+	return 0;
 }
 
 void Menu_ListBans_Target(int client, int target)
@@ -1271,7 +1280,7 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 
 					MenuUnbanMode.Display(iParam1, MENU_TIME_FOREVER);
 
-					return;
+					return 0;
 				}
 
 				Menu MenuConfirmUnban = new Menu(MenuHandler_Menu_ConfirmUnban);
@@ -1287,6 +1296,7 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 			}
 		}
 	}
+	return 0;
 }
 
 int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int iParam2)
@@ -1358,6 +1368,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 			}
 		}
 	}
+	return 0;
 }
 
 int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, int iParam2)
@@ -1437,6 +1448,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 			}
 		}
 	}
+	return 0;
 }
 
 public Action Command_MarkNSFW(int client, int argc)
@@ -2099,6 +2111,7 @@ public Action Command_SprayManager_UpdateInfo(int client, int argc)
 	}
 
 	ReplyToCommand(client, "[SprayManager] Refreshed database.");
+	return Plugin_Handled;
 }
 
 public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClients, float fSendDelay)
@@ -2348,6 +2361,7 @@ public Action Timer_ProcessPersistentSprays(Handle hThis)
 	}
 
 	g_hRoundEndTimer = null;
+	return Plugin_Continue;
 }
 
 public Action Timer_ResetOldSprays(Handle hThis)
@@ -2386,6 +2400,7 @@ public Action Timer_ResetOldSprays(Handle hThis)
 	}
 
 	g_hRoundEndTimer = null;
+	return Plugin_Continue;
 }
 
 void InitializeSQL()
@@ -2473,6 +2488,7 @@ public Action RetryMainTableCreation(Handle hTimer)
 	else
 		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
 	SQL_UnlockDatabase(g_hDatabase);
+	return Plugin_Continue;
 }
 
 public void OnSQLSprayBlacklistCreated(Handle hParent, Handle hChild, const char[] err, any data)
@@ -2506,6 +2522,7 @@ public Action RetryBlacklistTableCreation(Handle hTimer)
 	else
 		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
 	SQL_UnlockDatabase(g_hDatabase);
+	return Plugin_Continue;
 }
 
 public void OnSQLNSFWListCreated(Handle hParent, Handle hChild, const char[] err, any data)
@@ -2539,6 +2556,7 @@ public Action RetryNSFWlistTableCreation(Handle hTimer)
 	else
 		SQL_TQuery(g_hDatabase,	OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci");
 	SQL_UnlockDatabase(g_hDatabase);
+	return Plugin_Continue;
 }
 
 public Action RetryUpdatingPlayerInfo(Handle hTimer)
@@ -2550,6 +2568,7 @@ public Action RetryUpdatingPlayerInfo(Handle hTimer)
 
 		OnClientPostAdminCheck(i);
 	}
+	return Plugin_Continue;
 }
 
 public void RemoveAllSprays()
@@ -3000,16 +3019,19 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 public Action RetryPlayerInfoUpdate(Handle hTimer, any client)
 {
 	UpdatePlayerInfo(client);
+	return Plugin_Continue;
 }
 
 public Action RetrySprayHashUpdate(Handle hTimer, any client)
 {
 	UpdateSprayHashInfo(client);
+	return Plugin_Continue;
 }
 
 public Action RetryNSFWSprayLookup(Handle hTimer, any client)
 {
 	UpdateNSFWInfo(client);
+	return Plugin_Continue;
 }
 
 stock bool ForceSpray(int client, int target, bool bPlaySound=true)
