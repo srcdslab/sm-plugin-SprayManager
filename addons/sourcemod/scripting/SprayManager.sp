@@ -99,7 +99,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.0",
+	version		= "2.2.1",
 	url			= ""
 }
 
@@ -545,7 +545,7 @@ void Menu_Trace(int client, int target)
 		TraceMenu.ExitBackButton = true;
 
 	TraceMenu.AddItem("1", "Warn Client");
-	TraceMenu.AddItem("2", "Slap and Warn Client");
+	TraceMenu.AddItem("2", "Slap and Warn Client", (CheckCommandAccess(client, "", ADMFLAG_CHEATS, true))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("3", "Kick Client");
 	TraceMenu.AddItem("4", "Spray Ban Client");
 	TraceMenu.AddItem("5", "Ban Clients Spray");
@@ -602,16 +602,11 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 					case 2:
 					{
-						if(CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_CONVARS, false))
-						{
-							SlapPlayer(target, 0);
-							CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
-							LogAction(target, iParam1, "[SprayManager] \"%L\" has been warned and slapped for his spray by \"%L\"", target, iParam1);
-							NotifyAdmins(iParam1, target, "{default}has been {green}warned and slapped {default}for his spray");
-							Menu_Trace(iParam1, target);
-						}
-						else
-							CPrintToChat(iParam1, "{green}[SprayManager]{default} You don't have access to the command.");
+						SlapPlayer(target, 0);
+						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
+						LogAction(target, iParam1, "[SprayManager] \"%L\" has been warned and slapped for his spray by \"%L\"", target, iParam1);
+						NotifyAdmins(iParam1, target, "{default}has been {green}warned and slapped {default}for his spray");
+						Menu_Trace(iParam1, target);
 					}
 
 					case 3:
