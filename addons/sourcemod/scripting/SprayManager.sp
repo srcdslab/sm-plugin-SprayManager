@@ -99,7 +99,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.1",
+	version		= "2.2.2",
 	url			= ""
 }
 
@@ -1478,7 +1478,14 @@ public Action Command_MarkNSFW(int client, int argc)
 	char sClientSteamID[32];
 
 	GetClientAuthId(client, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
-	Format(sQuery, sizeof(sQuery), "INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d');", g_sSprayHash[client], sClientSteamID, 0);
+	FormatEx(
+		sQuery,
+		sizeof(sQuery),
+		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
+		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
+		g_sSprayHash[client], sClientSteamID, 0,
+		g_sSprayHash[client], sClientSteamID, 0
+	);
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -2657,7 +2664,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	char sTargetSteamID[32];
 	char sAdminSteamID[32];
 
-	Format(sAdminName, sizeof(sAdminName), "%N", client);
+	GetClientName(client, sAdminName, sizeof(sAdminName));
 	GetClientName(target, sTargetName, sizeof(sTargetName));
 
 	if (client)
@@ -2674,8 +2681,14 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	SQL_EscapeString(g_hDatabase, sTargetName, sSafeTargetName, 2 * strlen(sTargetName) + 1);
 	SQL_EscapeString(g_hDatabase, sReason, sSafeReason, 2 * strlen(sReason) + 1);
 
-	Format(sQuery, sizeof(sQuery), "INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s');",
-		sTargetSteamID, sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none");
+	FormatEx(
+		sQuery,
+		sizeof(sQuery),
+		"INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s') \
+		ON DUPLICATE KEY UPDATE `steamid` = '%s', `name` = '%s', `unbantime` = '%d', `issuersteamid` = '%s', `issuername` = '%s', `issuedtime` = '%d', `issuedreason` = '%s';",
+		sTargetSteamID, sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none",
+		sTargetSteamID, sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none"
+	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -2770,8 +2783,14 @@ bool BanClientSpray(int client, int target)
 	char[] sSafeTargetName = new char[2 * strlen(sTargetName) + 1];
 	SQL_EscapeString(g_hDatabase, sTargetName, sSafeTargetName, 2 * strlen(sTargetName) + 1);
 
-	Format(sQuery, sizeof(sQuery), "INSERT INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s');",
-		g_sSprayHash[target], sSafeTargetName, sTargetSteamID);
+	FormatEx(
+		sQuery,
+		sizeof(sQuery),
+		"INSERT INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s') \
+		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayer` = '%s', `sprayersteamid` = '%s';",
+		g_sSprayHash[target], sSafeTargetName, sTargetSteamID,
+		g_sSprayHash[target], sSafeTargetName, sTargetSteamID
+	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -2819,7 +2838,14 @@ void AdminForceSprayNSFW(int client)
 	char sClientSteamID[32];
 
 	GetClientAuthId(client, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
-	Format(sQuery, sizeof(sQuery), "INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d');", g_sSprayHash[client], sClientSteamID, 1);
+	FormatEx(
+		sQuery,
+		sizeof(sQuery),
+		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
+		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
+		g_sSprayHash[client], sClientSteamID, 1,
+		g_sSprayHash[client], sClientSteamID, 1
+	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
