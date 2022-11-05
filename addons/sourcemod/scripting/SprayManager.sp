@@ -1,15 +1,13 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <adminmenu>
 #include <sdktools>
 #include <clientprefs>
 #include <cstrike>
+
 #include <multicolors>
 #include <LagReducer>
-
-#undef REQUIRE_PLUGIN
-#include <adminmenu>
-#define REQUIRE_PLUGIN
 
 #pragma newdecls required
 
