@@ -1,13 +1,15 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <adminmenu>
 #include <sdktools>
 #include <clientprefs>
 #include <cstrike>
-
 #include <multicolors>
 #include <LagReducer>
+
+#undef REQUIRE_PLUGIN
+#include <adminmenu>
+#define REQUIRE_PLUGIN
 
 #pragma newdecls required
 
@@ -50,6 +52,7 @@ bool g_bGotNSFWList;
 bool g_bFullyConnected;
 bool g_bSkipDecalHook;
 
+char sAuthID[MAXPLAYERS + 1][64];
 char g_sBanIssuer[MAXPLAYERS + 1][64];
 char g_sBanIssuerSID[MAXPLAYERS + 1][32];
 char g_sBanReason[MAXPLAYERS + 1][32];
@@ -97,7 +100,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.2",
+	version		= "2.2.3",
 	url			= ""
 }
 
@@ -533,11 +536,8 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 
 void Menu_Trace(int client, int target)
 {
-	char sSteamID[32];
-	GetClientAuthId(target, AuthId_Steam2, sSteamID, sizeof(sSteamID));
-
 	Menu TraceMenu = new Menu(MenuHandler_Menu_Trace);
-	TraceMenu.SetTitle("Sprayed by: %N (%s)", target, sSteamID);
+	TraceMenu.SetTitle("Sprayed by: %N (%s)", target, sAuthID[target]);
 
 	if (g_bInvokedThroughTopMenu[client])
 		TraceMenu.ExitBackButton = true;
@@ -1473,16 +1473,13 @@ public Action Command_MarkNSFW(int client, int argc)
 	g_bHasNSFWSpray[client] = true;
 
 	char sQuery[256];
-	char sClientSteamID[32];
-
-	GetClientAuthId(client, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
 	FormatEx(
 		sQuery,
 		sizeof(sQuery),
 		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[client], sClientSteamID, 0,
-		g_sSprayHash[client], sClientSteamID, 0
+		g_sSprayHash[client], sAuthID[client], 0,
+		g_sSprayHash[client], sAuthID[client], 0
 	);
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -1762,7 +1759,7 @@ public Action Command_AdminSpray(int client, int argc)
 
 		GetCmdArg(1, sArgs, sizeof(sArgs));
 
-		if ((iTargetCount = ProcessTargetString(sArgs, client, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, sTargetName, sizeof(sTargetName), bIsML)) <= 0)
+		if ((iTargetCount = ProcessTargetString(sArgs, client, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_BOTS | COMMAND_FILTER_NO_IMMUNITY, sTargetName, sizeof(sTargetName), bIsML)) <= 0)
 		{
 			ReplyToTargetError(client, iTargetCount);
 			return Plugin_Handled;
@@ -1959,7 +1956,7 @@ public Action Command_RemoveSpray(int client, int argc)
 
 		GetCmdArg(1, sArgs, sizeof(sArgs));
 
-		if ((iTargetCount = ProcessTargetString(sArgs, client, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, sTargetName, sizeof(sTargetName), bIsML)) <= 0)
+		if ((iTargetCount = ProcessTargetString(sArgs, client, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_BOTS | COMMAND_FILTER_NO_IMMUNITY, sTargetName, sizeof(sTargetName), bIsML)) <= 0)
 		{
 			ReplyToTargetError(client, iTargetCount);
 			return Plugin_Handled;
@@ -2187,7 +2184,6 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 					if (CheckCommandAccess(i, "", ADMFLAG_CUSTOM1, true) || CheckCommandAccess(i, "sm_sprayban", ADMFLAG_GENERIC))
 					{
 						CPrintToChat(client, "{green}[SprayManager]{default} Your spray is too close to {green}%N{default}'s spray.", i);
-
 						return Plugin_Handled;
 					}
 				}
@@ -2300,10 +2296,7 @@ public void PerformPlayerTraces(int client)
 
 		if (IsPointInsideAABB(vecPos, g_SprayAABB[i]))
 		{
-			char sSteamID[32];
-			GetClientAuthId(i, AuthId_Steam2, sSteamID, sizeof(sSteamID));
-
-			PrintHintText(client, "Sprayed by: %N (%s) [%s]", i, sSteamID, g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
+			PrintHintText(client, "Sprayed by: %N (%s) [%s]", i, sAuthID[i], g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
 			StopSound(client, SNDCHAN_STATIC, "UI/hint.wav");
 
 			g_bSprayNotified[client] = true;
@@ -2659,18 +2652,15 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	char sQuery[512];
 	char sAdminName[64];
 	char sTargetName[64];
-	char sTargetSteamID[32];
 	char sAdminSteamID[32];
 
 	GetClientName(client, sAdminName, sizeof(sAdminName));
 	GetClientName(target, sTargetName, sizeof(sTargetName));
 
 	if (client)
-		GetClientAuthId(client, AuthId_Steam2, sAdminSteamID, sizeof(sAdminSteamID));
+		Format(sAdminSteamID, sizeof(sAdminSteamID), "%s", sAuthID[client]);
 	else
-		strcopy(sAdminSteamID, sizeof(sAdminSteamID), "STEAM_ID_SERVER");
-
-	GetClientAuthId(target, AuthId_Steam2, sTargetSteamID, sizeof(sTargetSteamID));
+		Format(sAdminSteamID, sizeof(sAdminSteamID), "STEAM_ID_SERVER");
 
 	char[] sSafeAdminName = new char[2 * strlen(sAdminName) + 1];
 	char[] sSafeTargetName = new char[2 * strlen(sTargetName) + 1];
@@ -2684,8 +2674,8 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 		sizeof(sQuery),
 		"INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s') \
 		ON DUPLICATE KEY UPDATE `steamid` = '%s', `name` = '%s', `unbantime` = '%d', `issuersteamid` = '%s', `issuername` = '%s', `issuedtime` = '%d', `issuedreason` = '%s';",
-		sTargetSteamID, sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none",
-		sTargetSteamID, sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none"
+		sAuthID[target], sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none",
+		sAuthID[target], sSafeTargetName, iBanLength ? (GetTime() + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, GetTime(), strlen(sSafeReason) > 1 ? sSafeReason : "none"
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
@@ -2731,10 +2721,7 @@ bool SprayUnbanClient(int target, int client=-1)
 	}
 
 	char sQuery[128];
-	char sClientSteamID[32];
-
-	GetClientAuthId(target, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
-	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraymanager` WHERE steamid = '%s';", sClientSteamID);
+	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraymanager` WHERE steamid = '%s';", sAuthID[target]);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -2773,10 +2760,8 @@ bool BanClientSpray(int client, int target)
 
 	char sQuery[256];
 	char sTargetName[64];
-	char sTargetSteamID[32];
 
 	GetClientName(target, sTargetName, sizeof(sTargetName));
-	GetClientAuthId(target, AuthId_Steam2, sTargetSteamID, sizeof(sTargetSteamID));
 
 	char[] sSafeTargetName = new char[2 * strlen(sTargetName) + 1];
 	SQL_EscapeString(g_hDatabase, sTargetName, sSafeTargetName, 2 * strlen(sTargetName) + 1);
@@ -2786,8 +2771,8 @@ bool BanClientSpray(int client, int target)
 		sizeof(sQuery),
 		"INSERT INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayer` = '%s', `sprayersteamid` = '%s';",
-		g_sSprayHash[target], sSafeTargetName, sTargetSteamID,
-		g_sSprayHash[target], sSafeTargetName, sTargetSteamID
+		g_sSprayHash[target], sSafeTargetName, sAuthID[target],
+		g_sSprayHash[target], sSafeTargetName, sAuthID[target]
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
@@ -2833,16 +2818,13 @@ bool UnbanClientSpray(int client, int target)
 void AdminForceSprayNSFW(int client)
 {
 	char sQuery[256];
-	char sClientSteamID[32];
-
-	GetClientAuthId(client, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
 	FormatEx(
 		sQuery,
 		sizeof(sQuery),
 		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[client], sClientSteamID, 1,
-		g_sSprayHash[client], sClientSteamID, 1
+		g_sSprayHash[client], sAuthID[client], 1,
+		g_sSprayHash[client], sAuthID[client], 1
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
@@ -2877,9 +2859,6 @@ void AdminForceSprayNSFW(int client)
 void AdminForceSpraySFW(int client)
 {
 	char sQuery[256];
-	char sClientSteamID[32];
-
-	GetClientAuthId(client, AuthId_Steam2, sClientSteamID, sizeof(sClientSteamID));
 	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
@@ -2917,11 +2896,12 @@ void UpdatePlayerInfo(int client)
 	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
-	char sSteamID[32];
-	char sQuery[128];
-
+	char sSteamID[64];
 	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID));
-	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sSteamID);
+	FormatEx(sAuthID[client], sizeof(sAuthID[]), "%s", sSteamID);
+
+	char sQuery[128];
+	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
 }
@@ -2935,8 +2915,8 @@ void UpdateSprayHashInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `sprayblacklist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+
 	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_High);
 }
 
@@ -2949,8 +2929,8 @@ void UpdateNSFWInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+
 	SQL_TQuery(g_hDatabase, OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
 }
 
@@ -3230,6 +3210,7 @@ stock void ClearPlayerInfo(int client)
 	strcopy(g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]), "");
 	strcopy(g_sBanReason[client], sizeof(g_sBanReason[]), "");
 	strcopy(g_sSprayHash[client], sizeof(g_sSprayHash[]), "");
+	strcopy(sAuthID[client], sizeof(sAuthID[]), "");
 	g_bSprayBanned[client] = false;
 	g_bSprayHashBanned[client] = false;
 	g_iClientSprayLifetime[client] = 2;
