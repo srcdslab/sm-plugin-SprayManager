@@ -1860,6 +1860,12 @@ public Action Command_SprayUnban(int client, int argc)
 
 public Action Command_BanSpray(int client, int argc)
 {
+	if (argc < 1)
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{default} Usage: sm_banspray <target>");
+		return Plugin_Handled;
+	}
+
 	if (argc > 0)
 	{
 		int iTarget;
