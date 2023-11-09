@@ -100,7 +100,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.3",
+	version		= "2.2.4",
 	url			= ""
 }
 
@@ -446,7 +446,7 @@ public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject 
 public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Ban a Client's Spray", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Ban a Client's Hash Spray", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_BanSpray(iParam1);
 }
@@ -543,12 +543,12 @@ void Menu_Trace(int client, int target)
 		TraceMenu.ExitBackButton = true;
 
 	TraceMenu.AddItem("1", "Warn Client");
-	TraceMenu.AddItem("2", "Slap and Warn Client", (CheckCommandAccess(client, "", ADMFLAG_CHEATS, true))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-	TraceMenu.AddItem("3", "Kick Client");
-	TraceMenu.AddItem("4", "Spray Ban Client");
-	TraceMenu.AddItem("5", "Ban Clients Spray");
+	TraceMenu.AddItem("2", "Slap and Warn Client", (CheckCommandAccess(client, "sm_slap", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	TraceMenu.AddItem("3", "Kick Client", (CheckCommandAccess(client, "sm_kick", ADMFLAG_KICK))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	TraceMenu.AddItem("4", "Spray Ban Client", (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	TraceMenu.AddItem("5", "Ban Clients Spray Hash");
 	TraceMenu.AddItem("", "", ITEMDRAW_SPACER);
-	TraceMenu.AddItem("6", "Ban Client");
+	TraceMenu.AddItem("6", "Ban Client", (CheckCommandAccess(client, "sm_ban", ADMFLAG_BAN))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 
 	g_iSprayTraceTarget[client] = target;
 
@@ -624,8 +624,14 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 						TraceSpraySprayBan.AddItem("10", "10 Minutes");
 						TraceSpraySprayBan.AddItem("30", "30 Minutes");
 						TraceSpraySprayBan.AddItem("60", "1 Hour");
+						TraceSpraySprayBan.AddItem("240", "4 Hours");
+						TraceSpraySprayBan.AddItem("480", "8 Hours");
+						TraceSpraySprayBan.AddItem("720", "12 Hours");
 						TraceSpraySprayBan.AddItem("1440", "1 Day");
+						TraceSpraySprayBan.AddItem("2880", "2 Days");
+						TraceSpraySprayBan.AddItem("4320", "3 Days");
 						TraceSpraySprayBan.AddItem("10080", "1 Week");
+						TraceSpraySprayBan.AddItem("20160", "2 Weeks");
 						TraceSpraySprayBan.AddItem("40320", "1 Month");
 						TraceSpraySprayBan.AddItem("0", "Permanent");
 
@@ -652,8 +658,14 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 						TraceSprayBan.AddItem("10", "10 Minutes");
 						TraceSprayBan.AddItem("30", "30 Minutes");
 						TraceSprayBan.AddItem("60", "1 Hour");
+						TraceSprayBan.AddItem("240", "4 Hours");
+						TraceSprayBan.AddItem("480", "8 Hours");
+						TraceSprayBan.AddItem("720", "12 Hours");
 						TraceSprayBan.AddItem("1440", "1 Day");
+						TraceSprayBan.AddItem("2880", "2 Days");
+						TraceSprayBan.AddItem("4320", "3 Days");
 						TraceSprayBan.AddItem("10080", "1 Week");
+						TraceSprayBan.AddItem("20160", "2 Weeks");
 						TraceSprayBan.AddItem("40320", "1 Month");
 						TraceSprayBan.AddItem("0", "Permanent");
 
@@ -955,8 +967,14 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 				SprayBanLengthMenu.AddItem("10", "10 Minutes");
 				SprayBanLengthMenu.AddItem("30", "30 Minutes");
 				SprayBanLengthMenu.AddItem("60", "1 Hour");
+				SprayBanLengthMenu.AddItem("240", "4 Hours");
+				SprayBanLengthMenu.AddItem("480", "8 Hours");
+				SprayBanLengthMenu.AddItem("720", "12 Hours");
 				SprayBanLengthMenu.AddItem("1440", "1 Day");
+				SprayBanLengthMenu.AddItem("2880", "2 Days");
+				SprayBanLengthMenu.AddItem("4320", "3 Days");
 				SprayBanLengthMenu.AddItem("10080", "1 Week");
+				SprayBanLengthMenu.AddItem("20160", "2 Weeks");
 				SprayBanLengthMenu.AddItem("40320", "1 Month");
 				SprayBanLengthMenu.AddItem("0", "Permanent");
 
@@ -1460,7 +1478,7 @@ public Action Command_MarkNSFW(int client, int argc)
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
@@ -1528,7 +1546,7 @@ public Action Command_MarkSFW(int client, int argc)
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
@@ -1788,7 +1806,7 @@ public Action Command_SprayBan(int client, int argc)
 {
 	if (argc < 2)
 	{
-		ReplyToCommand(client, "[SprayManager] Usage: sm_sprayban <target> <time> <reason:optional>");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Usage: sm_sprayban <target> <time> <reason:optional>");
 		return Plugin_Handled;
 	}
 
@@ -1889,7 +1907,7 @@ public Action Command_UnbanSpray(int client, int argc)
 {
 	if (argc < 1)
 	{
-		ReplyToCommand(client, "[SprayManager] Usage: sm_unbanspray <target>");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Usage: sm_unbanspray <target>");
 		return Plugin_Handled;
 	}
 
@@ -2107,7 +2125,7 @@ public Action Command_SprayManager_UpdateInfo(int client, int argc)
 		UpdateNSFWInfo(i);
 	}
 
-	ReplyToCommand(client, "[SprayManager] Refreshed database.");
+	CReplyToCommand(client, "{green}[SprayManager]{default} Refreshed database.");
 	return Plugin_Handled;
 }
 
@@ -2639,13 +2657,13 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "[SprayManager] Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
 		return false;
 	}
 
 	if (g_bSprayBanned[target])
 	{
-		ReplyToCommand(client, "[SprayManager] %N is already spray banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is already spray banned.", target);
 		return false;
 	}
 
@@ -2707,7 +2725,7 @@ bool SprayUnbanClient(int target, int client=-1)
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		if (client != -1)
-			ReplyToCommand(client, "[SprayManager] Database is not connected.");
+			CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
 
 		return false;
 	}
@@ -2715,7 +2733,7 @@ bool SprayUnbanClient(int target, int client=-1)
 	if (!g_bSprayBanned[target])
 	{
 		if (client != -1)
-			ReplyToCommand(client, "[SprayManager] %N is not spray banned.", target);
+			CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
 
 		return false;
 	}
@@ -2742,19 +2760,25 @@ bool BanClientSpray(int client, int target)
 {
 	if (!IsValidClient(target))
 	{
-		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "[SprayManager] Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		return false;
+	}
+
+	if (!g_sSprayHash[target][0])
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}does not have a valid spray hash.", target);
 		return false;
 	}
 
 	if (g_bSprayHashBanned[target])
 	{
-		ReplyToCommand(client, "[SprayManager] %N is already hash banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is already hash banned.", target);
 		return false;
 	}
 
@@ -2789,19 +2813,19 @@ bool UnbanClientSpray(int client, int target)
 {
 	if (!IsValidClient(target))
 	{
-		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		ReplyToCommand(client, "[SprayManager] Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
 		return false;
 	}
 
 	if (!g_bSprayHashBanned[target])
 	{
-		ReplyToCommand(client, "[SprayManager] %N is not hash banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not hash banned.", target);
 		return false;
 	}
 
@@ -2897,7 +2921,7 @@ void UpdatePlayerInfo(int client)
 		return;
 
 	char sSteamID[64];
-	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID));
+	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID), false);
 	FormatEx(sAuthID[client], sizeof(sAuthID[]), "%s", sSteamID);
 
 	char sQuery[128];
