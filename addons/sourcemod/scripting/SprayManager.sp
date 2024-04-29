@@ -58,6 +58,11 @@ char g_sBanIssuerSID[MAXPLAYERS + 1][32];
 char g_sBanReason[MAXPLAYERS + 1][32];
 char g_sSprayHash[MAXPLAYERS + 1][16];
 
+// Add hash from others game later
+char g_sDefaultGameHash[][] = { 
+	"882ab71a" // Counter-Strike: Source
+};
+
 int g_iClientToClientSprayLifetime[MAXPLAYERS + 1][MAXPLAYERS + 1];
 int g_iClientSprayLifetime[MAXPLAYERS + 1] = { 2, ... };
 int g_iSprayLifetime[MAXPLAYERS + 1];
@@ -100,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.4",
+	version		= "2.2.5",
 	url			= ""
 }
 
@@ -645,7 +650,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 						if (BanClientSpray(iParam1, target))
 						{
 							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Banned {green}%N{default}'s spray.", target);
-							LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray.", iParam1, target);
+							LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 						}
 					}
 
@@ -1097,7 +1102,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 				if (BanClientSpray(iParam1, target))
 				{
 					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Banned {olive}%N{default}'s spray", target);
-					LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray", iParam1, target);
+					LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 			}
 		}
@@ -1880,7 +1885,7 @@ public Action Command_BanSpray(int client, int argc)
 			return Plugin_Handled;
 
 		CShowActivity2(client, "{green}[SprayManager] ", "{default}Banned {green}%N{default}'s spray", iTarget);
-		LogAction(client, iTarget, "\"%L\" banned \"%L\"'s spray", client, iTarget);
+		LogAction(client, iTarget, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", client, iTarget, g_sSprayHash[iTarget]);
 
 		return Plugin_Handled;
 	}
@@ -1899,6 +1904,7 @@ public Action Command_BanSpray(int client, int argc)
 
 			CShowActivity2(client, "{green}[SprayManager]{olive} ", "{default}Banned {olive}%N{default}'s spray", i);
 			LogAction(client, i, "\"%L\" banned \"%L\"'s spray", client, i);
+			LogAction(client, i, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", client, i, g_sSprayHash[i]);
 
 			return Plugin_Handled;
 		}
@@ -2788,6 +2794,12 @@ bool BanClientSpray(int client, int target)
 		return false;
 	}
 
+	if (IsDefaultGameSprayHash(g_sSprayHash[target]))
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}has a default game spray.", target);
+		return false;
+	}
+
 	char sQuery[256];
 	char sTargetName[64];
 
@@ -3365,4 +3377,15 @@ stock bool IsValidClient(int client)
 		return false;
 
 	return IsClientAuthorized(client);
+}
+
+public bool IsDefaultGameSprayHash(const char[] string)
+{
+	for (int i = 0; i < sizeof(g_sDefaultGameHash); i++)
+	{
+		if(StrContains(string, g_sDefaultGameHash[i], false) != -1)
+			return true;
+	}
+
+	return false;
 }
