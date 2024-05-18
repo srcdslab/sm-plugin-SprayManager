@@ -105,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.5",
+	version		= "2.2.6",
 	url			= ""
 }
 
@@ -193,6 +193,7 @@ public void OnPluginStart()
 
 			OnClientPutInServer(i);
 			OnClientCookiesCached(i);
+			OnClientPostAdminCheck(i);
 		}
 	}
 
@@ -271,7 +272,7 @@ public void OnClientPostAdminCheck(int client)
 	{
 		for (int i = 1; i <= MaxClients; i++)
 		{
-			if (!IsValidClient(i) || IsFakeClient(i))
+			if (!IsValidClient(i))
 				continue;
 
 			if (IsVectorZero(g_vecSprayOrigin[i]))
@@ -477,7 +478,7 @@ void Menu_ListBans(int client)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (g_bSprayBanned[i] || g_bSprayHashBanned[i])
@@ -817,7 +818,7 @@ void Menu_Spray(int client)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		char sUserID[16];
@@ -911,7 +912,7 @@ void Menu_SprayBan(int client)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (g_bSprayBanned[i])
@@ -1048,7 +1049,7 @@ void Menu_BanSpray(int client)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (g_bSprayHashBanned[i])
@@ -1123,7 +1124,7 @@ void Menu_Unban(int client)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (!g_bSprayHashBanned[i] && !g_bSprayBanned[i])
@@ -1527,6 +1528,7 @@ public Action Command_MarkNSFW(int client, int argc)
 			SprayClientDecalToOne(x, i, g_bHasNSFWSpray[x] ? 0 : g_iDecalEntity[x], g_bHasNSFWSpray[x] ? ACTUAL_NULL_VECTOR : g_vecSprayOrigin[x]);
 			g_iClientToClientSprayLifetime[i][x] = g_bHasNSFWSpray[x] ? g_iClientToClientSprayLifetime[i][x] : 0;
 			g_bSkipDecalHook = false;
+			break;
 		}
 	}
 
@@ -2128,7 +2130,7 @@ public Action Command_SprayManager_UpdateInfo(int client, int argc)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		ClearPlayerInfo(i);
@@ -2313,7 +2315,7 @@ public void PerformPlayerTraces(int client)
 
 	float vecPos[3];
 
-	if (!IsValidClient(client) || IsFakeClient(client))
+	if (!IsValidClient(client))
 		return;
 
 	if (!TracePlayerAngles(client, vecPos))
@@ -2348,12 +2350,12 @@ public Action Timer_ProcessPersistentSprays(Handle hThis)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		for (int x = 1; x <= MaxClients; x++)
 		{
-			if (!IsValidClient(x) || IsFakeClient(x))
+			if (!IsValidClient(x))
 				continue;
 
 			if (!IsVectorZero(g_vecSprayOrigin[x]))
@@ -2380,6 +2382,8 @@ public Action Timer_ProcessPersistentSprays(Handle hThis)
 				g_iClientToClientSprayLifetime[i][x] = 0;
 				g_bSkipDecalHook = false;
 			}
+
+			break;
 		}
 	}
 
@@ -2391,7 +2395,7 @@ public Action Timer_ResetOldSprays(Handle hThis)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (!IsVectorZero(g_vecSprayOrigin[i]))
@@ -2407,7 +2411,7 @@ public Action Timer_ResetOldSprays(Handle hThis)
 		{
 			for (int x = 1; x <= MaxClients; x++)
 			{
-				if (!IsValidClient(x) || IsFakeClient(x))
+				if (!IsValidClient(x))
 					continue;
 
 				if (g_bHasSprayHidden[x][i])
@@ -2598,7 +2602,7 @@ public void RemoveAllSprays()
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsValidClient(i) || IsFakeClient(i))
+		if (!IsValidClient(i))
 			continue;
 
 		if (IsVectorZero(g_vecSprayOrigin[i]))
@@ -2894,6 +2898,7 @@ void AdminForceSprayNSFW(int client)
 			g_bSkipDecalHook = true;
 			SprayClientDecalToOne(x, i, 0, ACTUAL_NULL_VECTOR);
 			g_bSkipDecalHook = false;
+			break;
 		}
 	}
 }
@@ -2926,6 +2931,7 @@ void AdminForceSpraySFW(int client)
 			SprayClientDecalToOne(x, i, g_iDecalEntity[x], g_vecSprayOrigin[x]);
 			g_iClientToClientSprayLifetime[i][x] = 0;
 			g_bSkipDecalHook = false;
+			break;
 		}
 	}
 }
@@ -3373,7 +3379,7 @@ stock bool TraceEntityFilter_FilterPlayers(int entity, int contentsMask)
 
 stock bool IsValidClient(int client)
 {
-	if (client <= 0 || client > MaxClients || !IsClientInGame(client))
+	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || IsFakeClient(client))
 		return false;
 
 	return IsClientAuthorized(client);
