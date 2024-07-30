@@ -85,6 +85,7 @@ bool g_bInvokedThroughTopMenu[MAXPLAYERS + 1];
 bool g_bInvokedThroughListMenu[MAXPLAYERS + 1];
 bool g_bHasSprayHidden[MAXPLAYERS + 1][MAXPLAYERS + 1];
 bool g_bSprayNotified[MAXPLAYERS + 1] = { false, ... };
+bool g_bFakeClient[MAXPLAYERS + 1] = { false, ... };
 
 float ACTUAL_NULL_VECTOR[3] = { 16384.0, ... }; //durr
 float g_fNextSprayTime[MAXPLAYERS + 1];
@@ -105,7 +106,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.6",
+	version		= "2.2.7",
 	url			= ""
 }
 
@@ -188,9 +189,10 @@ public void OnPluginStart()
 	{
 		for (int i = 1; i <= MaxClients; i++)
 		{
-			if (!IsClientInGame(i) || IsFakeClient(i))
+			if (!IsClientInGame(i))
 				continue;
 
+			OnClientConnected(i);
 			OnClientPutInServer(i);
 			OnClientCookiesCached(i);
 			OnClientPostAdminCheck(i);
@@ -230,14 +232,26 @@ public void OnMapEnd()
 		delete g_hRoundEndTimer;
 }
 
+public void OnClientConnected(int client)
+{
+	if (IsFakeClient(client))
+		g_bFakeClient[client] = true;
+}
+
 public void OnClientPutInServer(int client)
 {
+	if (g_bFakeClient[client])
+		return;
+
 	if (QueryClientConVar(client, "r_spray_lifetime", CvarQueryFinished_SprayLifeTime) == QUERYCOOKIE_FAILED)
 		g_iClientSprayLifetime[client] = 2;
 }
 
 public void OnClientCookiesCached(int client)
 {
+	if (g_bFakeClient[client])
+		return;
+
 	char sWantsToSeeNSFW[8];
 	GetClientCookie(client, g_hWantsToSeeNSFWCookie, sWantsToSeeNSFW, sizeof(sWantsToSeeNSFW));
 
@@ -259,6 +273,9 @@ public void CvarQueryFinished_SprayLifeTime(QueryCookie cookie, int client, ConV
 
 public void OnClientPostAdminCheck(int client)
 {
+	if (g_bFakeClient[client])
+		return;
+
 	if (g_hDatabase != null)
 	{
 		ClearPlayerInfo(client);
@@ -331,6 +348,12 @@ public Action CS_OnTerminateRound(float &fDelay, CSRoundEndReason &reason)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse)
 {
+	if (!g_bEnableSprays)
+	{
+		CPrintToChat(client, "{green}[SprayManager] {white}Sorry, all sprays are currently disabled on the server.");
+		return Plugin_Handled;
+	}
+
 	if (!impulse || impulse != 201)
 		return Plugin_Continue;
 
@@ -349,12 +372,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse)
 
 			return Plugin_Changed;
 		}
-	}
-
-	if (!g_bEnableSprays)
-	{
-		CPrintToChat(client, "{green}[SprayManager] {white}Sorry, all sprays are currently disabled on the server.");
-		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
@@ -2046,11 +2063,7 @@ public Action Command_ForceNSFW(int client, int argc)
 		if ((iTarget = FindTarget(client, sTarget)) <= 0)
 			return Plugin_Handled;
 
-		AdminForceSprayNSFW(iTarget);
-		CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", iTarget);
-		LogAction(client, iTarget, "[SprayManager] %L Marked %L spray as NSFW.", client, iTarget);
-		NotifyAdmins(client, iTarget, "{default}spray was marked as {green}NSFW");
-
+		AdminForceSprayNSFW(client, iTarget);
 		return Plugin_Handled;
 	}
 
@@ -2063,11 +2076,7 @@ public Action Command_ForceNSFW(int client, int argc)
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
 
-			AdminForceSprayNSFW(i);
-			CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", i);
-			LogAction(client, i, "[SprayManager] %L Marked %L spray as NSFW.", client, i);
-			NotifyAdmins(client, i, "{default}spray was marked as {green}NSFW");
-
+			AdminForceSprayNSFW(client, i);
 			return Plugin_Handled;
 		}
 	}
@@ -2861,8 +2870,20 @@ bool UnbanClientSpray(int client, int target)
 	return true;
 }
 
-void AdminForceSprayNSFW(int client)
+void AdminForceSprayNSFW(int client, int target)
 {
+	if (!IsValidClient(target))
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
+		return;
+	}
+
+	if (IsDefaultGameSprayHash(g_sSprayHash[target]))
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}has a default game spray.", target);
+		return;
+	}
+
 	char sQuery[256];
 	FormatEx(
 		sQuery,
@@ -2901,6 +2922,10 @@ void AdminForceSprayNSFW(int client)
 			break;
 		}
 	}
+
+	CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", target);
+	LogAction(client, target, "[SprayManager] %L Marked %L spray as NSFW.", client, target);
+	NotifyAdmins(client, target, "{default}spray was marked as {green}NSFW");
 }
 
 void AdminForceSpraySFW(int client)
@@ -2986,7 +3011,7 @@ void NotifyAdmins(int iParam1, int target, const char[] sReason)
 {
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(IsClientInGame(i) && !IsFakeClient(i) && CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
+		if(IsClientInGame(i) && !g_bFakeClient[i] && CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
 			CPrintToChat(i, "{green}[SM]{olive} %N %s {default}by {olive}%N{default}.", target, sReason, iParam1);
 	}
 }
@@ -3265,6 +3290,7 @@ stock void ClearPlayerInfo(int client)
 	g_iSprayLifetime[client] = 0;
 	ResetClientToClientSprayLifeTime(client);
 	ResetHiddenSprayArray(client);
+	g_iDecalEntity[client] = 0;
 	g_iSprayBanTimestamp[client] = 0;
 	g_iSprayUnbanTimestamp[client] = -1;
 	g_fNextSprayTime[client] = 0.0;
@@ -3272,6 +3298,8 @@ stock void ClearPlayerInfo(int client)
 	g_SprayAABB[client] = view_as<float>({ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }); //???
 	g_bHasNSFWSpray[client] = false;
 	g_bMarkedNSFWByAdmin[client] = false;
+	g_bWantsToSeeNSFWSprays[client] = false;
+	g_bFakeClient[client] = false;
 }
 
 stock void UpdateClientToClientSprayLifeTime(int client, int iLifeTime)
@@ -3379,7 +3407,7 @@ stock bool TraceEntityFilter_FilterPlayers(int entity, int contentsMask)
 
 stock bool IsValidClient(int client)
 {
-	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || IsFakeClient(client))
+	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || g_bFakeClient[client])
 		return false;
 
 	return IsClientAuthorized(client);
