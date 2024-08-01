@@ -85,7 +85,6 @@ bool g_bInvokedThroughTopMenu[MAXPLAYERS + 1];
 bool g_bInvokedThroughListMenu[MAXPLAYERS + 1];
 bool g_bHasSprayHidden[MAXPLAYERS + 1][MAXPLAYERS + 1];
 bool g_bSprayNotified[MAXPLAYERS + 1] = { false, ... };
-bool g_bFakeClient[MAXPLAYERS + 1] = { false, ... };
 
 float ACTUAL_NULL_VECTOR[3] = { 16384.0, ... }; //durr
 float g_fNextSprayTime[MAXPLAYERS + 1];
@@ -106,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.7",
+	version		= "2.2.8",
 	url			= ""
 }
 
@@ -192,7 +191,6 @@ public void OnPluginStart()
 			if (!IsClientInGame(i))
 				continue;
 
-			OnClientConnected(i);
 			OnClientPutInServer(i);
 			OnClientCookiesCached(i);
 			OnClientPostAdminCheck(i);
@@ -232,15 +230,9 @@ public void OnMapEnd()
 		delete g_hRoundEndTimer;
 }
 
-public void OnClientConnected(int client)
-{
-	if (IsFakeClient(client))
-		g_bFakeClient[client] = true;
-}
-
 public void OnClientPutInServer(int client)
 {
-	if (g_bFakeClient[client])
+	if (IsFakeClient(client))
 		return;
 
 	if (QueryClientConVar(client, "r_spray_lifetime", CvarQueryFinished_SprayLifeTime) == QUERYCOOKIE_FAILED)
@@ -249,7 +241,7 @@ public void OnClientPutInServer(int client)
 
 public void OnClientCookiesCached(int client)
 {
-	if (g_bFakeClient[client])
+	if (IsFakeClient(client))
 		return;
 
 	char sWantsToSeeNSFW[8];
@@ -273,7 +265,7 @@ public void CvarQueryFinished_SprayLifeTime(QueryCookie cookie, int client, ConV
 
 public void OnClientPostAdminCheck(int client)
 {
-	if (g_bFakeClient[client])
+	if (IsFakeClient(client))
 		return;
 
 	if (g_hDatabase != null)
@@ -3011,7 +3003,7 @@ void NotifyAdmins(int iParam1, int target, const char[] sReason)
 {
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(IsClientInGame(i) && !g_bFakeClient[i] && CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
+		if(IsClientInGame(i) && !IsFakeClient(i) && CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
 			CPrintToChat(i, "{green}[SM]{olive} %N %s {default}by {olive}%N{default}.", target, sReason, iParam1);
 	}
 }
@@ -3299,7 +3291,6 @@ stock void ClearPlayerInfo(int client)
 	g_bHasNSFWSpray[client] = false;
 	g_bMarkedNSFWByAdmin[client] = false;
 	g_bWantsToSeeNSFWSprays[client] = false;
-	g_bFakeClient[client] = false;
 }
 
 stock void UpdateClientToClientSprayLifeTime(int client, int iLifeTime)
@@ -3407,7 +3398,7 @@ stock bool TraceEntityFilter_FilterPlayers(int entity, int contentsMask)
 
 stock bool IsValidClient(int client)
 {
-	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || g_bFakeClient[client])
+	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || IsFakeClient(client))
 		return false;
 
 	return IsClientAuthorized(client);
