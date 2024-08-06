@@ -105,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.8",
+	version		= "2.2.9",
 	url			= ""
 }
 
@@ -2882,14 +2882,14 @@ void AdminForceSprayNSFW(int client, int target)
 		sizeof(sQuery),
 		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[client], sAuthID[client], 1,
+		g_sSprayHash[target], sAuthID[target], 1,
 		g_sSprayHash[client], sAuthID[client], 1
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
-	g_bHasNSFWSpray[client] = true;
-	g_bMarkedNSFWByAdmin[client] = true;
+	g_bHasNSFWSpray[target] = true;
+	g_bMarkedNSFWByAdmin[target] = true;
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
