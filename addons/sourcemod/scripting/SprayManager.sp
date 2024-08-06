@@ -188,11 +188,10 @@ public void OnPluginStart()
 	{
 		for (int i = 1; i <= MaxClients; i++)
 		{
-			if (!IsClientInGame(i))
+			if (!IsClientInGame(i) || IsFakeClient(i))
 				continue;
 
 			OnClientPutInServer(i);
-			OnClientCookiesCached(i);
 			OnClientPostAdminCheck(i);
 		}
 	}
@@ -272,6 +271,8 @@ public void OnClientPostAdminCheck(int client)
 	{
 		ClearPlayerInfo(client);
 		GetPlayerDecalFile(client, g_sSprayHash[client], sizeof(g_sSprayHash[]));
+		if (AreClientCookiesCached(client))
+			OnClientCookiesCached(client);
 		UpdatePlayerInfo(client);
 		UpdateSprayHashInfo(client);
 		UpdateNSFWInfo(client);
@@ -1485,15 +1486,15 @@ public Action Command_MarkNSFW(int client, int argc)
 		return Plugin_Handled;
 	}
 
-	if (!IsValidClient(client))
-	{
-		ReplyToCommand(client, "[SprayManager] Unable to update status, please wait a few seconds and try again.");
-		return Plugin_Handled;
-	}
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
+		return Plugin_Handled;
+	}
+
+	if (!IsValidClient(client))
+	{
+		ReplyToCommand(client, "[SprayManager] Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
@@ -1554,15 +1555,15 @@ public Action Command_MarkSFW(int client, int argc)
 		return Plugin_Handled;
 	}
 
-	if (!IsValidClient(client))
-	{
-		ReplyToCommand(client, "[SprayManager] Unable to update status, please wait a few seconds and try again.");
-		return Plugin_Handled;
-	}
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Unable to update status, please wait a few seconds and try again.");
+		return Plugin_Handled;
+	}
+
+	if (!IsValidClient(client))
+	{
+		ReplyToCommand(client, "[SprayManager] Unable to update status, please wait a few seconds and try again.");
 		return Plugin_Handled;
 	}
 
@@ -2666,15 +2667,15 @@ public void ConVarChanged_DecalFrequency(ConVar cvar, const char[] sOldValue, co
 
 bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason)
 {
-	if (!IsValidClient(target))
-	{
-		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
-		return false;
-	}
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		return false;
+	}
+
+	if (!IsValidClient(target))
+	{
+		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
 		return false;
 	}
 
@@ -2731,27 +2732,22 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 
 bool SprayUnbanClient(int target, int client=-1)
 {
-	if (!IsValidClient(target))
-	{
-		if (client != -1)
-			ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
-
-		return false;
-	}
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		if (client != -1)
-			CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		return false;
+	}
 
+	if (!IsValidClient(target))
+	{
+		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
 		return false;
 	}
 
 	if (!g_bSprayBanned[target])
 	{
-		if (client != -1)
-			CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
-
+		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
 		return false;
 	}
 
@@ -2775,15 +2771,15 @@ bool SprayUnbanClient(int target, int client=-1)
 
 bool BanClientSpray(int client, int target)
 {
-	if (!IsValidClient(target))
-	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
-		return false;
-	}
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		return false;
+	}
+
+	if (!IsValidClient(target))
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
@@ -2834,15 +2830,15 @@ bool BanClientSpray(int client, int target)
 
 bool UnbanClientSpray(int client, int target)
 {
-	if (!IsValidClient(target))
-	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
-		return false;
-	}
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		return false;
+	}
+
+	if (!IsValidClient(target))
+	{
+		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
@@ -2955,10 +2951,10 @@ void AdminForceSpraySFW(int client)
 
 void UpdatePlayerInfo(int client)
 {
-	if (!IsValidClient(client))
+	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
-	if (g_hDatabase == null || !g_bFullyConnected)
+	if (!IsValidClient(client))
 		return;
 
 	char sSteamID[64];
