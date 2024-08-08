@@ -2735,24 +2735,24 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 
 bool SprayUnbanClient(int target, int client=-1)
 {
-	if (!client)
-		return false;
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		if (client)
+			CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
-		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
+		if (client)
+			CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
 	if (!g_bSprayBanned[target])
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
+		if (client)
+			CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
 		return false;
 	}
 
