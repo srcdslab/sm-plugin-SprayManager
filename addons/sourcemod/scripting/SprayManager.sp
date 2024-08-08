@@ -2696,7 +2696,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	GetClientName(client, sAdminName, sizeof(sAdminName));
 	GetClientName(target, sTargetName, sizeof(sTargetName));
 
-	if (client)
+	if (client != -1)
 		Format(sAdminSteamID, sizeof(sAdminSteamID), "%s", sAuthID[client]);
 	else
 		Format(sAdminSteamID, sizeof(sAdminSteamID), "STEAM_ID_SERVER");
@@ -2737,21 +2737,21 @@ bool SprayUnbanClient(int target, int client=-1)
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		if (client)
+		if (client != -1)
 			CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
-		if (client)
+		if (client != -1)
 			CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
 		return false;
 	}
 
 	if (!g_bSprayBanned[target])
 	{
-		if (client)
+		if (client != -1)
 			CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
 		return false;
 	}
