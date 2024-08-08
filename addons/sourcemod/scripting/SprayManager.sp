@@ -2667,6 +2667,9 @@ public void ConVarChanged_DecalFrequency(ConVar cvar, const char[] sOldValue, co
 
 bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason)
 {
+	if (!client)
+		return false;
+
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
@@ -2732,6 +2735,8 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 
 bool SprayUnbanClient(int target, int client=-1)
 {
+	if (!client)
+		return false;
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
@@ -2771,6 +2776,9 @@ bool SprayUnbanClient(int target, int client=-1)
 
 bool BanClientSpray(int client, int target)
 {
+	if (!client)
+		return false;
+
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
@@ -2830,6 +2838,9 @@ bool BanClientSpray(int client, int target)
 
 bool UnbanClientSpray(int client, int target)
 {
+	if (!client)
+		return false;
+
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
@@ -2969,10 +2980,10 @@ void UpdatePlayerInfo(int client)
 
 void UpdateSprayHashInfo(int client)
 {
-	if (!IsValidClient(client))
+	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
-	if (g_hDatabase == null || !g_bFullyConnected)
+	if (!IsValidClient(client))
 		return;
 
 	char sSprayQuery[128];
@@ -2983,10 +2994,10 @@ void UpdateSprayHashInfo(int client)
 
 void UpdateNSFWInfo(int client)
 {
-	if (!IsValidClient(client))
+	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
-	if (g_hDatabase == null || !g_bFullyConnected)
+	if (!IsValidClient(client))
 		return;
 
 	char sSprayQuery[128];
