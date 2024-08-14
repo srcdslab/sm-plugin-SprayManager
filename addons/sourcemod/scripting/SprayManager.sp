@@ -2667,9 +2667,6 @@ public void ConVarChanged_DecalFrequency(ConVar cvar, const char[] sOldValue, co
 
 bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason)
 {
-	if (!client)
-		return false;
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
@@ -2696,7 +2693,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	GetClientName(client, sAdminName, sizeof(sAdminName));
 	GetClientName(target, sTargetName, sizeof(sTargetName));
 
-	if (client != -1)
+	if (client != 0)
 		Format(sAdminSteamID, sizeof(sAdminSteamID), "%s", sAuthID[client]);
 	else
 		Format(sAdminSteamID, sizeof(sAdminSteamID), "STEAM_ID_SERVER");
@@ -2776,9 +2773,6 @@ bool SprayUnbanClient(int target, int client=-1)
 
 bool BanClientSpray(int client, int target)
 {
-	if (!client)
-		return false;
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
@@ -2838,9 +2832,6 @@ bool BanClientSpray(int client, int target)
 
 bool UnbanClientSpray(int client, int target)
 {
-	if (!client)
-		return false;
-
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
