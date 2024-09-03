@@ -105,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.9",
+	version		= "2.2.10",
 	url			= ""
 }
 
@@ -398,22 +398,32 @@ public void OnLibraryRemoved(const char[] sLibraryName)
 
 public void TopMenu_Main_Handler(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "SprayManager Commands", iParam1);
 	else if (hAction == TopMenuAction_DisplayTitle)
 		Format(sBuffer, iBufflen, "%s", "SprayManager Commands:", iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_SprayBanList(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "List Spray Banned Clients", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_ListBans(iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_tracespray", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 	{
 		Format(sBuffer, iBufflen, "%s", "Trace a Spray", iParam1);
@@ -441,38 +451,56 @@ public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 		if (g_hTopMenu != null)
 			DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
 	}
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_Spray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_spray", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "Spray a Client's Spray", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Spray(iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_sprayban", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "Spray Ban a Client", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_SprayBan(iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_banspray", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "Ban a Client's Hash Spray", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_BanSpray(iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 public void Handler_UnbanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
+	bool bHasAcces = CheckCommandAccess(iParam1, "sm_unbanspray", ADMFLAG_GENERIC);
+
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "Unban a Client", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Unban(iParam1);
+	else if (hAction == TopMenuAction_DrawOption)
+		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 }
 
 void Menu_ListBans(int client)
@@ -2437,6 +2465,8 @@ void InitializeSQL()
 	if (g_hDatabase != null)
 		delete g_hDatabase;
 
+	g_bFullyConnected = false;
+
 	if (SQL_CheckConfig("spraymanager"))
 		SQL_TConnect(OnSQLConnected, "spraymanager");
 	else
@@ -2449,6 +2479,7 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 	{
 		LogError("Failed to connect to database, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, ReconnectSQL);
+		g_bFullyConnected = false;
 
 		return;
 	}
