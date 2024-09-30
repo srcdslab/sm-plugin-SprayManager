@@ -105,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.10",
+	version		= "2.2.11",
 	url			= ""
 }
 
@@ -382,7 +382,7 @@ public void OnAdminMenuReady(Handle hAdminMenu)
 	if (hMenuObj == INVALID_TOPMENUOBJECT)
 		return;
 
-	AddToTopMenu(g_hTopMenu, "SprayManager_Spraybanlist", TopMenuObject_Item, Handler_SprayBanList, hMenuObj, "", ADMFLAG_GENERIC);
+	AddToTopMenu(g_hTopMenu, "SprayManager_Spraybanlist", TopMenuObject_Item, Handler_SprayBanList, hMenuObj, "sm_banspray", ADMFLAG_GENERIC);
 	AddToTopMenu(g_hTopMenu, "SprayManager_Tracespray", TopMenuObject_Item, Handler_TraceSpray, hMenuObj, "sm_tracespray", ADMFLAG_GENERIC);
 	AddToTopMenu(g_hTopMenu, "SprayManager_Spray", TopMenuObject_Item, Handler_Spray, hMenuObj, "sm_spray", ADMFLAG_GENERIC);
 	AddToTopMenu(g_hTopMenu, "SprayManager_Sprayban", TopMenuObject_Item, Handler_SprayBan, hMenuObj, "sm_sprayban", ADMFLAG_GENERIC);
@@ -398,14 +398,10 @@ public void OnLibraryRemoved(const char[] sLibraryName)
 
 public void TopMenu_Main_Handler(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
-	bool bHasAcces = CheckCommandAccess(iParam1, "", ADMFLAG_GENERIC);
-
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "SprayManager Commands", iParam1);
+		Format(sBuffer, iBufflen, "%s", "SprayManager Commands");
 	else if (hAction == TopMenuAction_DisplayTitle)
-		Format(sBuffer, iBufflen, "%s", "SprayManager Commands:", iParam1);
-	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		Format(sBuffer, iBufflen, "%s", "SprayManager Commands:");
 }
 
 public void Handler_SprayBanList(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -413,11 +409,11 @@ public void Handler_SprayBanList(Handle hMenu, TopMenuAction hAction, TopMenuObj
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "List Spray Banned Clients", iParam1);
+		Format(sBuffer, iBufflen, "%s", "List Spray Banned Clients");
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_ListBans(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -426,7 +422,7 @@ public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 
 	if (hAction == TopMenuAction_DisplayOption)
 	{
-		Format(sBuffer, iBufflen, "%s", "Trace a Spray", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Trace a Spray");
 	}
 	else if (hAction == TopMenuAction_SelectOption)
 	{
@@ -452,7 +448,7 @@ public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 			DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
 	}
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 public void Handler_Spray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -460,11 +456,11 @@ public void Handler_Spray(Handle hMenu, TopMenuAction hAction, TopMenuObject hOb
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_spray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Spray a Client's Spray", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Spray a Client's Spray");
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Spray(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -472,11 +468,11 @@ public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject 
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_sprayban", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Spray Ban a Client", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Spray Ban a Client");
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_SprayBan(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -484,11 +480,11 @@ public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject 
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_banspray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Ban a Client's Hash Spray", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Ban a Client's Hash Spray");
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_BanSpray(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 public void Handler_UnbanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -496,11 +492,11 @@ public void Handler_UnbanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_unbanspray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Unban a Client", iParam1);
+		Format(sBuffer, iBufflen, "%s", "Unban a Client");
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Unban(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
-		sBuffer[0] = bHasAcces ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
+		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
 void Menu_ListBans(int client)
@@ -2228,7 +2224,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 		if (g_fNextSprayTime[client] > GetGameTime())
 			return Plugin_Handled;
 
-		if (!CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))
+		if (!CheckCommandAccess(client, "sm_spray", ADMFLAG_GENERIC))
 		{
 			if (g_cvarUseProximityCheck.BoolValue)
 			{
@@ -2243,7 +2239,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 					if (!IsPointInsideAABB(vecOrigin, g_SprayAABB[i]) && !CheckForAABBCollision(AABBTemp, g_SprayAABB[i]))
 						continue;
 
-					if (CheckCommandAccess(i, "", ADMFLAG_CUSTOM1, true) || CheckCommandAccess(i, "sm_sprayban", ADMFLAG_GENERIC))
+					if (CheckCommandAccess(i, "", ADMFLAG_CUSTOM1, true) || CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
 					{
 						CPrintToChat(client, "{green}[SprayManager]{default} Your spray is too close to {green}%N{default}'s spray.", i);
 						return Plugin_Handled;
