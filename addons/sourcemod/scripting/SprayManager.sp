@@ -2905,7 +2905,7 @@ void AdminForceSprayNSFW(int client, int target)
 		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
 		g_sSprayHash[target], sAuthID[target], 1,
-		g_sSprayHash[client], sAuthID[client], 1
+		g_sSprayHash[target], sAuthID[target], 1
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
