@@ -105,7 +105,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907",
-	version		= "2.2.11",
+	version		= "2.2.12",
 	url			= ""
 }
 
@@ -267,16 +267,13 @@ public void OnClientPostAdminCheck(int client)
 	if (IsFakeClient(client))
 		return;
 
-	if (g_hDatabase != null)
-	{
-		ClearPlayerInfo(client);
-		GetPlayerDecalFile(client, g_sSprayHash[client], sizeof(g_sSprayHash[]));
-		if (AreClientCookiesCached(client))
-			OnClientCookiesCached(client);
-		UpdatePlayerInfo(client);
-		UpdateSprayHashInfo(client);
-		UpdateNSFWInfo(client);
-	}
+	ClearPlayerInfo(client);
+	GetPlayerDecalFile(client, g_sSprayHash[client], sizeof(g_sSprayHash[]));
+	if (AreClientCookiesCached(client))
+		OnClientCookiesCached(client);
+	UpdatePlayerInfo(client);
+	UpdateSprayHashInfo(client);
+	UpdateNSFWInfo(client);
 
 	if (g_cvarSendSpraysToConnectingClients.BoolValue)
 	{
@@ -350,7 +347,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse)
 	if (!impulse || impulse != 201)
 		return Plugin_Continue;
 
-	if (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))
+	if (CheckCommandAccess(client, "sm_spray", ADMFLAG_GENERIC))
 	{
 		if (!g_bSprayBanned[client] && !g_bSprayHashBanned[client])
 		{
@@ -2908,7 +2905,7 @@ void AdminForceSprayNSFW(int client, int target)
 		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
 		ON DUPLICATE KEY UPDATE `sprayhash` = '%s', `sprayersteamid` = '%s', `setbyadmin` = '%d';",
 		g_sSprayHash[target], sAuthID[target], 1,
-		g_sSprayHash[client], sAuthID[client], 1
+		g_sSprayHash[target], sAuthID[target], 1
 	);
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
@@ -2980,15 +2977,15 @@ void AdminForceSpraySFW(int client)
 
 void UpdatePlayerInfo(int client)
 {
-	if (g_hDatabase == null || !g_bFullyConnected)
-		return;
-
 	if (!IsValidClient(client))
 		return;
 
 	char sSteamID[64];
 	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID), false);
 	FormatEx(sAuthID[client], sizeof(sAuthID[]), "%s", sSteamID);
+
+	if (g_hDatabase == null || !g_bFullyConnected)
+		return;
 
 	char sQuery[128];
 	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
