@@ -104,8 +104,8 @@ public Plugin myinfo =
 {
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
-	author		= "Obus, maxime1907",
-	version		= "2.2.12",
+	author		= "Obus, maxime1907, .Rushaway",
+	version		= "2.2.13",
 	url			= ""
 }
 
@@ -2484,11 +2484,11 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 	SQL_LockDatabase(g_hDatabase);
 	if (!strncmp(sDriver, "my", 2, false))
 	{
-		SQL_TQuery(g_hDatabase, DummyCallback, "SET NAMES \"UTF8\"");
+		SQL_TQuery(g_hDatabase, DummyCallback, "SET NAMES \"utf8mb4\"");
 
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32), PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
-		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci");
+		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32), PRIMARY KEY(sprayhash)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
 		g_bSQLite = false;
 	}
@@ -2539,7 +2539,7 @@ public Action RetryMainTableCreation(Handle hTimer)
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` TEXT NOT NULL, `name` TEXT DEFAULT 'unknown', `unbantime` INTEGER, `issuersteamid` TEXT, `issuername` TEXT DEFAULT 'unknown', `issuedtime` INTEGER NOT NULL, `issuedreason` TEXT DEFAULT 'none', PRIMARY KEY(steamid));");
 	else
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
+		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
@@ -2573,7 +2573,7 @@ public Action RetryBlacklistTableCreation(Handle hTimer)
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` TEXT NOT NULL, `sprayer` TEXT DEFAULT 'unknown', `sprayersteamid` TEXT NOT NULL, PRIMARY KEY(sprayhash));");
 	else
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci;");
+		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
@@ -2607,7 +2607,7 @@ public Action RetryNSFWlistTableCreation(Handle hTimer)
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` TEXT NOT NULL, `sprayersteamid` TEXT, `setbyadmin` INTEGER, PRIMARY KEY(sprayhash));");
 	else
-		SQL_TQuery(g_hDatabase,	OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT PRIMARY KEY(sprayhash)) CHARACTER SET utf8 COLLATE utf8_general_ci");
+		SQL_TQuery(g_hDatabase,	OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT PRIMARY KEY(sprayhash)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
@@ -2988,7 +2988,7 @@ void UpdatePlayerInfo(int client)
 		return;
 
 	char sQuery[128];
-	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
+	Format(sQuery, sizeof(sQuery), "SELECT 1 FROM `spraymanager` WHERE `steamid` = '%s' LIMIT 1;", sAuthID[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
 }
@@ -3002,7 +3002,7 @@ void UpdateSprayHashInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `sprayblacklist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_High);
 }
@@ -3016,7 +3016,7 @@ void UpdateNSFWInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `spraynsfwlist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
 }
