@@ -2988,7 +2988,7 @@ void UpdatePlayerInfo(int client)
 		return;
 
 	char sQuery[128];
-	Format(sQuery, sizeof(sQuery), "SELECT 1 FROM `spraymanager` WHERE `steamid` = '%s' LIMIT 1;", sAuthID[client]);
+	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
 }
@@ -3002,7 +3002,7 @@ void UpdateSprayHashInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `sprayblacklist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_High);
 }
@@ -3016,7 +3016,7 @@ void UpdateNSFWInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `spraynsfwlist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
 }
