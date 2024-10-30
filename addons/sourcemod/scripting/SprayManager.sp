@@ -109,7 +109,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "2.2.13",
+	version		= "3.0.0",
 	url			= ""
 }
 

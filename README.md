@@ -5,7 +5,7 @@ This plugin provides functionalities to manage and control player sprays on the 
 ## Installation
 
 > [!IMPORTANT]
-> For previous users, the version **`2.2.13`** introduce MySQL update to force usage of `utf8mb4`
+> For previous users, the version **`3.0.0`** introduce MySQL update to force usage of `utf8mb4`
 > You need to perform manual queries if you used SprayManager old database character. (See [Manual database update](#manual-database-update))
 
 To install SprayManager, follow these steps:
@@ -55,25 +55,5 @@ You can configure SprayManager by editing the configuration file located at `cfg
 
 ## Manual database update
 
-In 2.2.13 we introduced utf8mb4 as standard, you will need to run these queries:
-
-**You need to replace `MY_DATABASE_NAME` with .. your database name (see database.cfg)**
-1. Update the global database
-```sql
-ALTER DATABASE MY_DATABASE_NAME CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-```
-
-2. Update all tables in one query
-```sql
--- Update spraymanager table
-ALTER TABLE `spraymanager` 
-CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Update sprayblacklist table
-ALTER TABLE `sprayblacklist` 
-CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Update spraynsfwlist table
-ALTER TABLE `spraynsfwlist` 
-CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+In 3.0.0 we introduced utf8mb4 as standard, you will need to run these queries:
+To simplify the update process, we have provided a migration script. You can find the script at: [migration/300_character_collate_utf8mb4.sql](migration/300_character_collate_utf8mb4.sql)
