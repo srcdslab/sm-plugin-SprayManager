@@ -57,6 +57,7 @@ bool g_bFullyConnected;
 bool g_bSkipDecalHook;
 
 char sAuthID[MAXPLAYERS + 1][64];
+char sAuthID3[MAXPLAYERS + 1][32];
 char g_sBanIssuer[MAXPLAYERS + 1][64];
 char g_sBanIssuerSID[MAXPLAYERS + 1][32];
 char g_sBanReason[MAXPLAYERS + 1][32];
@@ -578,7 +579,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 void Menu_Trace(int client, int target)
 {
 	Menu TraceMenu = new Menu(MenuHandler_Menu_Trace);
-	TraceMenu.SetTitle("Sprayed by: %N (%s)", target, sAuthID[target]);
+	TraceMenu.SetTitle("Sprayed by: %N (%s)", target, sAuthID3[target]);
 
 	if (g_bInvokedThroughTopMenu[client])
 		TraceMenu.ExitBackButton = true;
@@ -587,7 +588,7 @@ void Menu_Trace(int client, int target)
 	TraceMenu.AddItem("2", "Slap and Warn Client", (CheckCommandAccess(client, "sm_slap", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("3", "Kick Client", (CheckCommandAccess(client, "sm_kick", ADMFLAG_KICK))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("4", "Spray Ban Client", (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-	TraceMenu.AddItem("5", "Ban Clients Spray Hash");
+	TraceMenu.AddItem("5", "Ban Clients Spray Hash", (CheckCommandAccess(client, "sm_banspray", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("", "", ITEMDRAW_SPACER);
 	TraceMenu.AddItem("6", "Ban Client", (CheckCommandAccess(client, "sm_ban", ADMFLAG_BAN))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 
@@ -2355,7 +2356,7 @@ public void PerformPlayerTraces(int client)
 
 		if (IsPointInsideAABB(vecPos, g_SprayAABB[i]))
 		{
-			PrintHintText(client, "Sprayed by: %N (%s) [%s]", i, sAuthID[i], g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
+			PrintHintText(client, "Sprayed by: %N (%s) [%s]", i, sAuthID3[i], g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
 			StopSound(client, SNDCHAN_STATIC, "UI/hint.wav");
 
 			g_bSprayNotified[client] = true;
@@ -3009,6 +3010,11 @@ void UpdatePlayerInfo(int client)
 	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID), false);
 	FormatEx(sAuthID[client], sizeof(sAuthID[]), "%s", sSteamID);
 
+	GetClientAuthId(client, AuthId_Steam3, sSteamID, sizeof(sSteamID), false);
+	ReplaceString(sSteamID, sizeof(sSteamID), "[", "", false);
+	ReplaceString(sSteamID, sizeof(sSteamID), "]", "", false);
+	FormatEx(sAuthID3[client], sizeof(sAuthID3[]), "%s", sSteamID);
+
 	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
@@ -3323,6 +3329,7 @@ stock void ClearPlayerInfo(int client)
 	strcopy(g_sBanReason[client], sizeof(g_sBanReason[]), "");
 	strcopy(g_sSprayHash[client], sizeof(g_sSprayHash[]), "");
 	strcopy(sAuthID[client], sizeof(sAuthID[]), "");
+	strcopy(sAuthID3[client], sizeof(sAuthID3[]), "");
 	g_bSprayBanned[client] = false;
 	g_bSprayHashBanned[client] = false;
 	g_iClientSprayLifetime[client] = 2;
