@@ -110,7 +110,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.0.0",
+	version		= "3.0.1",
 	url			= ""
 }
 
@@ -3019,7 +3019,7 @@ void UpdatePlayerInfo(int client)
 		return;
 
 	char sQuery[128];
-	Format(sQuery, sizeof(sQuery), "SELECT * FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
+	Format(sQuery, sizeof(sQuery), "SELECT `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason` FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
 }
@@ -3033,7 +3033,7 @@ void UpdateSprayHashInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `sprayblacklist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_High);
 }
@@ -3047,7 +3047,7 @@ void UpdateNSFWInfo(int client)
 		return;
 
 	char sSprayQuery[128];
-	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT * FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT `setbyadmin` FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
 }
@@ -3083,12 +3083,12 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 	if (SQL_FetchRow(hChild))
 	{
 		g_bSprayBanned[client] = true;
-		g_iSprayUnbanTimestamp[client] = SQL_FetchInt(hChild, 2);
-		g_iSprayBanTimestamp[client] = SQL_FetchInt(hChild, 5);
 
-		SQL_FetchString(hChild, 3, g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]));
-		SQL_FetchString(hChild, 4, g_sBanIssuer[client], sizeof(g_sBanIssuer[]));
-		SQL_FetchString(hChild, 6, g_sBanReason[client], sizeof(g_sBanReason[]));
+		g_iSprayUnbanTimestamp[client] = SQL_FetchInt(hChild, 0);
+		SQL_FetchString(hChild, 1, g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]));
+		SQL_FetchString(hChild, 2, g_sBanIssuer[client], sizeof(g_sBanIssuer[]));
+		g_iSprayBanTimestamp[client] = SQL_FetchInt(hChild, 3);
+		SQL_FetchString(hChild, 4, g_sBanReason[client], sizeof(g_sBanReason[]));
 	}
 }
 
@@ -3127,7 +3127,7 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 		g_bHasNSFWSpray[client] = true;
 
 		char sSetByAdmin[8];
-		SQL_FetchString(hChild, 2, sSetByAdmin, sizeof(sSetByAdmin));
+		SQL_FetchString(hChild, 0, sSetByAdmin, sizeof(sSetByAdmin));
 
 		g_bMarkedNSFWByAdmin[client] = view_as<bool>(StringToInt(sSetByAdmin));
 	}
