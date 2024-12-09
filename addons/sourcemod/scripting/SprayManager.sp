@@ -2473,7 +2473,7 @@ void InitializeSQL()
 
 public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any data)
 {
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("Failed to connect to database, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, ReconnectSQL);
@@ -2524,7 +2524,7 @@ public Action ReconnectSQL(Handle hTimer)
 
 public void OnSQLTableCreated(Handle hParent, Handle hChild, const char[] err, any data)
 {
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("Database error while creating/checking for \"spraymanager\" table, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetryMainTableCreation);
@@ -2562,7 +2562,7 @@ public Action RetryMainTableCreation(Handle hTimer)
 
 public void OnSQLSprayBlacklistCreated(Handle hParent, Handle hChild, const char[] err, any data)
 {
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("Database error while creating/checking for \"sprayblacklist\" table, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetryBlacklistTableCreation);
@@ -2600,7 +2600,7 @@ public Action RetryBlacklistTableCreation(Handle hTimer)
 
 public void OnSQLNSFWListCreated(Handle hParent, Handle hChild, const char[] err, any data)
 {
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("Database error while creating/checking for \"spraynsfwlist\" table, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetryNSFWlistTableCreation);
@@ -3072,7 +3072,7 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 	if (!IsValidClient(client))
 		return;
 
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("An error occurred while querying the database for a user ban, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetryPlayerInfoUpdate, client);
@@ -3097,7 +3097,7 @@ public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const cha
 	if (!IsValidClient(client))
 		return;
 
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("An error occurred while querying the database for a spray ban, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetrySprayHashUpdate, client);
@@ -3114,7 +3114,7 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 	if (!IsValidClient(client))
 		return;
 
-	if (hChild == null)
+	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("An error occurred while querying the NSFW database for a spray, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, RetryNSFWSprayLookup, client);
