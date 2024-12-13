@@ -110,7 +110,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.0.1",
+	version		= "3.0.2",
 	url			= ""
 }
 
@@ -343,14 +343,14 @@ public Action CS_OnTerminateRound(float &fDelay, CSRoundEndReason &reason)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse)
 {
+	if (!impulse || impulse != 201)
+		return Plugin_Continue;
+
 	if (!g_bEnableSprays)
 	{
 		CPrintToChat(client, "{green}[SprayManager] {white}Sorry, all sprays are currently disabled on the server.");
-		return Plugin_Handled;
-	}
-
-	if (!impulse || impulse != 201)
 		return Plugin_Continue;
+	}
 
 	if (CheckCommandAccess(client, "sm_spray", ADMFLAG_GENERIC))
 	{
@@ -2173,6 +2173,9 @@ public Action Command_SprayManager_UpdateInfo(int client, int argc)
 
 public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClients, float fSendDelay)
 {
+	if (!g_bEnableSprays)
+		return Plugin_Stop;
+
 	if (g_bSkipDecalHook)
 		return Plugin_Continue;
 
@@ -3018,7 +3021,7 @@ void UpdatePlayerInfo(int client)
 	if (g_hDatabase == null || !g_bFullyConnected)
 		return;
 
-	char sQuery[128];
+	char sQuery[256];
 	Format(sQuery, sizeof(sQuery), "SELECT `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason` FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
 	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
