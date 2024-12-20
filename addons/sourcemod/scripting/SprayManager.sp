@@ -41,6 +41,8 @@ ConVar g_cvarUsePersistentSprays = null;
 ConVar g_cvarMaxSprayLifetime = null;
 ConVar g_cvarEnableSprays = null;
 ConVar g_cvarAuthorizedFlags = null;
+ConVar g_cvarSprayBanLength = null;
+ConVar g_cvarDefaultBehavior = null;
 
 int g_iNSFWDecalIndex;
 int g_iHiddenDecalIndex;
@@ -110,7 +112,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.0.2",
+	version		= "3.1.0",
 	url			= ""
 }
 
@@ -185,6 +187,10 @@ public void OnPluginStart()
 	g_cvarUsePersistentSprays = CreateConVar("sm_spraymanager_persistentsprays", "1", "Re-spray sprays when their client-sided lifetime (in rounds) expires");
 
 	g_cvarMaxSprayLifetime = CreateConVar("sm_spraymanager_maxspraylifetime", "2", "If not using persistent sprays, remove sprays after their global lifetime (in rounds) exceeds this number");
+
+	g_cvarSprayBanLength = CreateConVar("sm_spraymanager_spraybanlength", "0", "How long to ban a player from spraying for", FCVAR_NOTIFY);
+
+	g_cvarDefaultBehavior = CreateConVar("sm_spraymanager_defaultbehavior", "1", "Default behavior for sprays (0 = Block spray until client passed all verifications | 1 = Allow spray)", FCVAR_NOTIFY);
 
 	AutoExecConfig(true);
 	GetConVars();
@@ -2737,13 +2743,21 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	}
 
 	int iTime = GetTime();
+	int iDefaultBanLength = g_cvarSprayBanLength.IntValue;
+
+	if (iDefaultBanLength < 0)
+		iDefaultBanLength = 0;
 
 	char sQuery[512];
 	char sAdminName[64];
 	char sTargetName[64];
 	char sAdminSteamID[32];
 
-	GetClientName(client, sAdminName, sizeof(sAdminName));
+	if (client != 0)
+		GetClientName(client, sAdminName, sizeof(sAdminName));
+	else
+		Format(sAdminName, sizeof(sAdminName), "Console");
+
 	GetClientName(target, sTargetName, sizeof(sTargetName));
 
 	if (client != 0)
@@ -2763,7 +2777,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 		sizeof(sQuery),
 		"INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s') \
 		ON DUPLICATE KEY UPDATE `name` = '%s', `unbantime` = '%d', `issuersteamid` = '%s', `issuername` = '%s', `issuedtime` = '%d', `issuedreason` = '%s';",
-		sAuthID[target], sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none",
+		sAuthID[target], sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : (iDefaultBanLength * 60), sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none",
 		sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none"
 	);
 
@@ -3009,6 +3023,21 @@ void UpdatePlayerInfo(int client)
 	if (!IsValidClient(client))
 		return;
 
+	if (g_cvarDefaultBehavior.IntValue != 1)
+	{
+		// We consider client as banned by default, so we can check if the player is banned or not.
+		// This is a safety measure to prevent any client to use spray exploit if the database is not connected.
+		// On the next queries, we will update the client's information.
+
+		g_bSprayBanned[client] = true;
+		g_bSprayHashBanned[client] = true;
+		g_iSprayUnbanTimestamp[client] = -1;
+		g_iSprayBanTimestamp[client] = -1;
+		strcopy(g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]), "Console");
+		strcopy(g_sBanIssuer[client], sizeof(g_sBanIssuer[]), "Server");
+		strcopy(g_sBanReason[client], sizeof(g_sBanReason[]), "Retrieving data, please wait");
+	}
+
 	char sSteamID[64];
 	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof(sSteamID), false);
 	FormatEx(sAuthID[client], sizeof(sAuthID[]), "%s", sSteamID);
@@ -3019,7 +3048,10 @@ void UpdatePlayerInfo(int client)
 	FormatEx(sAuthID3[client], sizeof(sAuthID3[]), "%s", sSteamID);
 
 	if (g_hDatabase == null || !g_bFullyConnected)
+	{
+		CreateTimer(10.0, RetryPlayerInfoUpdate, client);
 		return;
+	}
 
 	char sQuery[256];
 	Format(sQuery, sizeof(sQuery), "SELECT `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason` FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
@@ -3093,6 +3125,15 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 		g_iSprayBanTimestamp[client] = SQL_FetchInt(hChild, 3);
 		SQL_FetchString(hChild, 4, g_sBanReason[client], sizeof(g_sBanReason[]));
 	}
+	else
+	{
+		g_bSprayBanned[client] = false;
+		g_iSprayUnbanTimestamp[client] = -1;
+		g_iSprayBanTimestamp[client] = -1;
+		strcopy(g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]), "");
+		strcopy(g_sBanIssuer[client], sizeof(g_sBanIssuer[]), "");
+		strcopy(g_sBanReason[client], sizeof(g_sBanReason[]), "");
+	}
 }
 
 public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const char[] err, any client)
@@ -3108,8 +3149,7 @@ public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const cha
 		return;
 	}
 
-	if (SQL_FetchRow(hChild))
-		g_bSprayHashBanned[client] = true;
+	g_bSprayHashBanned[client] = SQL_FetchRow(hChild);
 }
 
 public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const char[] err, any client)
@@ -3378,9 +3418,15 @@ stock void ResetHiddenSprayArray(int client)
 
 stock void FormatRemainingTime(int iTimestamp, char[] sBuffer, int iBuffSize)
 {
-	if (!iTimestamp)
+	if (iTimestamp == 0)
 	{
 		Format(sBuffer, iBuffSize, "Permanent");
+		return;
+	}
+
+	if (!iTimestamp)
+	{
+		Format(sBuffer, iBuffSize, "Temporary");
 		return;
 	}
 
