@@ -3424,7 +3424,7 @@ stock void FormatRemainingTime(int iTimestamp, char[] sBuffer, int iBuffSize)
 		return;
 	}
 
-	if (!iTimestamp)
+	if (iTimestamp < 0)
 	{
 		Format(sBuffer, iBuffSize, "Temporary");
 		return;
