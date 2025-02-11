@@ -112,7 +112,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.1.0",
+	version		= "3.1.1",
 	url			= ""
 }
 
@@ -2211,7 +2211,10 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 	{
 		if (g_bSprayHashBanned[client])
 		{
-			CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
+			if (strcmp(g_sBanReason[client], "Retrieving data, please wait") == 0)
+				CPrintToChat(client, "{green}[SprayManager]{default} Your spray is currently being checked, please wait a few seconds.");
+			else
+				CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
 			return Plugin_Handled;
 		}
 
