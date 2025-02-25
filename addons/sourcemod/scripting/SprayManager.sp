@@ -10,6 +10,7 @@
 
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
+#tryinclude <spray_exploit>
 #define REQUIRE_PLUGIN
 
 #pragma newdecls required
@@ -52,7 +53,7 @@ ConVar g_cvarAuthorizedFlags = null;
 ConVar g_cvarSprayBanLength = null;
 ConVar g_cvarDefaultBehavior = null;
 
-int g_iNSFWDecalIndex;
+int g_iNSFWDecalIndex[3];
 int g_iHiddenDecalIndex;
 int g_iTransparentDecalIndex;
 int g_iOldDecalFreqVal;
@@ -160,12 +161,19 @@ public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 
-	AddFileToDownloadsTable("materials/spraymanager/1.vtf");
-	AddFileToDownloadsTable("materials/spraymanager/1.vmt");
+	// NSFW
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_1.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_1.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_2.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_2.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_3.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/nsfw_3.vmt");
 
-	AddFileToDownloadsTable("materials/spraymanager/2.vtf");
-	AddFileToDownloadsTable("materials/spraymanager/2.vmt");
+	// Un-Hide
+	AddFileToDownloadsTable("materials/spraymanager/unhide.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/unhide.vmt");
 
+	// Invisible spray
 	AddFileToDownloadsTable("materials/spraymanager/3.vtf");
 	AddFileToDownloadsTable("materials/spraymanager/3.vmt");
 
@@ -262,9 +270,16 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
-	g_iNSFWDecalIndex = PrecacheDecal("spraymanager/1.vtf", true);
-	g_iHiddenDecalIndex = PrecacheDecal("spraymanager/2.vtf", true);
+	g_iNSFWDecalIndex[0] = PrecacheDecal("spraymanager/nsfw_1.vtf", true);
+	g_iNSFWDecalIndex[1] = PrecacheDecal("spraymanager/nsfw_2.vtf", true);
+	g_iNSFWDecalIndex[2] = PrecacheDecal("spraymanager/nsfw_3.vtf", true);
+	g_iHiddenDecalIndex = PrecacheDecal("spraymanager/unhide.vtf", true);
 	g_iTransparentDecalIndex = PrecacheDecal("spraymanager/3.vtf", true);
+}
+
+stock int GetRandomNSFWDecalIndex()
+{
+    return g_iNSFWDecalIndex[GetRandomInt(0, 2)];
 }
 
 public void OnMapEnd()
@@ -331,7 +346,7 @@ public void OnClientPostAdminCheck(int client)
 
 			if (g_bHasNSFWSpray[i] && !g_bWantsToSeeNSFWSprays[client])
 			{
-				PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[i], client);
+				PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[i], client);
 				continue;
 			}
 
@@ -1572,7 +1587,30 @@ public Action Command_MarkNSFW(int client, int argc)
 	g_bHasNSFWSpray[client] = true;
 
 	DB_UpdateSprayNSFWStatus(client, false);
-	UpdateSprayVisibilityForAllClients(client);
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		for (int x = 1; x <= MaxClients; x++)
+		{
+			if (!IsValidClient(x))
+				continue;
+
+			if (g_bHasSprayHidden[i][x])
+				continue;
+
+			if (g_bWantsToSeeNSFWSprays[i])
+				continue;
+
+			PaintWorldDecalToOne(g_bHasNSFWSpray[x] ? GetRandomNSFWDecalIndex() : g_iTransparentDecalIndex, g_vecSprayOrigin[x], i);
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(x, i, g_bHasNSFWSpray[x] ? 0 : g_iDecalEntity[x], g_bHasNSFWSpray[x] ? ACTUAL_NULL_VECTOR : g_vecSprayOrigin[x]);
+			g_iClientToClientSprayLifetime[i][x] = g_bHasNSFWSpray[x] ? g_iClientToClientSprayLifetime[i][x] : 0;
+			g_bSkipDecalHook = false;
+			break;
+		}
+	}
 	Call_OnClientSprayMarkedNSFW(0, client);
 
 	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as NSFW.");
@@ -1615,9 +1653,26 @@ public Action Command_MarkSFW(int client, int argc)
 	g_bHasNSFWSpray[client] = false;
 
 	DB_DeleteSprayNSFWStatus(client);
-	UpdateSprayVisibilityForAllClients(client);
-	Call_OnClientSprayMarkedSFW(0, client);
 
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		if (g_bHasSprayHidden[i][client])
+			continue;
+
+		if (g_bWantsToSeeNSFWSprays[i])
+			continue;
+
+		PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[client], i);
+		g_bSkipDecalHook = true;
+		SprayClientDecalToOne(client, i, g_iDecalEntity[client], g_vecSprayOrigin[client]);
+		g_iClientToClientSprayLifetime[i][client] = 0;
+		g_bSkipDecalHook = false;
+	}
+
+	Call_OnClientSprayMarkedSFW(0, client);
 	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as SFW.");
 
 	return Plugin_Continue;
@@ -1643,7 +1698,23 @@ public Action Command_NSFW(int client, int argc)
 
 	CPrintToChat(client, "{green}[SprayManager]{default} You can %s", g_bWantsToSeeNSFWSprays[client] ? "now see {purple}NSFW{default} sprays." : "no longer see {purple}NSFW{default} sprays.");
 
-	UpdateNSFWSprayVisibilityForClient(client, g_bWantsToSeeNSFWSprays[client]);
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		if (!g_bHasNSFWSpray[i])
+			continue;
+
+		if (g_bHasSprayHidden[client][i])
+			continue;
+
+		PaintWorldDecalToOne(g_bWantsToSeeNSFWSprays[client] ? g_iTransparentDecalIndex : GetRandomNSFWDecalIndex(), g_vecSprayOrigin[i], client);
+		g_bSkipDecalHook = true;
+		SprayClientDecalToOne(i, client, g_bWantsToSeeNSFWSprays[client] ? g_iDecalEntity[i] : 0, g_bWantsToSeeNSFWSprays[client] ? g_vecSprayOrigin[i] : ACTUAL_NULL_VECTOR);
+		g_iClientToClientSprayLifetime[client][i] = g_bWantsToSeeNSFWSprays[client] ? 0 : g_iClientToClientSprayLifetime[client][i];
+		g_bSkipDecalHook = false;
+	}
 
 	return Plugin_Handled;
 }
@@ -1728,7 +1799,7 @@ public Action Command_UnhideSpray(int client, int argc)
 
 		if (!g_bWantsToSeeNSFWSprays[client] && g_bHasNSFWSpray[iTarget])
 		{
-			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[iTarget], client);
+			PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[iTarget], client);
 			return Plugin_Handled;
 		}
 
@@ -1756,7 +1827,7 @@ public Action Command_UnhideSpray(int client, int argc)
 
 			if (!g_bWantsToSeeNSFWSprays[client] && g_bHasNSFWSpray[i])
 			{
-				PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[i], client);
+				PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[i], client);
 				return Plugin_Handled;
 			}
 
@@ -2273,7 +2344,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 	}
 
 	PaintWorldDecalToSelected(g_iHiddenDecalIndex, vecOrigin, iarrHiddenClients, iCurHiddenIdx);
-	PaintWorldDecalToSelected(g_iNSFWDecalIndex, vecOrigin, iarrNoNSFWClients, iCurNoNSFWIdx);
+	PaintWorldDecalToSelected(GetRandomNSFWDecalIndex(), vecOrigin, iarrNoNSFWClients, iCurNoNSFWIdx);
 
 	g_bSkipDecalHook = true;
 	SprayClientDecalToSelected(client, g_iDecalEntity[client], vecOrigin, iarrValidClients, iCurValidIdx);
@@ -2377,7 +2448,7 @@ public Action Timer_ProcessPersistentSprays(Handle hThis)
 
 			if (!g_bWantsToSeeNSFWSprays[i] && g_bHasNSFWSpray[x] && !bDoNotSpray)
 			{
-				PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[x], i);
+				PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[x], i);
 				bDoNotSpray = true;
 			}
 
@@ -2427,7 +2498,7 @@ public Action Timer_ResetOldSprays(Handle hThis)
 				}
 
 				if (!g_bWantsToSeeNSFWSprays[x] && g_bHasNSFWSpray[i])
-					PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[i], x);
+					PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[i], x);
 			}
 		}
 	}
@@ -2920,7 +2991,29 @@ bool AdminForceSprayNSFW(int client, int target)
 	g_bMarkedNSFWByAdmin[target] = true;
 
 	UpdateSprayVisibilityForAllClients(target);
-	Call_OnClientSprayMarkedNSFW(client, target);
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		for (int x = 1; x <= MaxClients; x++)
+		{
+			if (!IsValidClient(x))
+				continue;
+
+			if (g_bHasSprayHidden[i][x])
+				continue;
+
+			if (g_bWantsToSeeNSFWSprays[i])
+				continue;
+
+			PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[x], i);
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(x, i, 0, ACTUAL_NULL_VECTOR);
+			g_bSkipDecalHook = false;
+			break;
+		}
+	}
 
 	CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", target);
 	LogAction(client, target, "[SprayManager] %L Marked %L spray as NSFW.", client, target);
@@ -2936,7 +3029,27 @@ void AdminForceSpraySFW(int admin, int target)
 	g_bHasNSFWSpray[target] = false;
 	g_bMarkedNSFWByAdmin[target] = false;
 
-	UpdateSprayVisibilityForAllClients(target);
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		for (int x = 1; x <= MaxClients; x++)
+		{
+			if (!IsValidClient(x))
+				continue;
+
+			if (g_bHasSprayHidden[i][x])
+				continue;
+
+			PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[x], i);
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(x, i, g_iDecalEntity[x], g_vecSprayOrigin[x]);
+			g_iClientToClientSprayLifetime[i][x] = 0;
+			g_bSkipDecalHook = false;
+			break;
+		}
+	}
 	Call_OnClientSprayMarkedSFW(admin, target);
 }
 
@@ -3440,6 +3553,36 @@ public bool IsDefaultGameSprayHash(const char[] string)
 	return false;
 }
 
+#if defined _spray_exploit_included
+public void OnSprayExploit(int client, int index, int value)
+{
+	if (index != 24)
+		return;
+	
+	if (!IsValidClient(client))
+		return;
+
+	SprayExploitFixer_LogCustom("Spray exploit detected for %L. Index: %d, Value: %d", client, index, value);
+
+	if (!BanClientSpray(0, client))
+		LogAction(-1, -1, "[SprayManager] Failed to ban spray hash (%s) for %L for spray exploit.", g_sSprayHash[client], client);
+	else
+		LogAction(-1, -1, "[SprayManager] %L was spray hash banned (%s) for spray exploit.", client, g_sSprayHash[client]);
+
+	int iBanLength = g_cvarSprayBanLength.IntValue;
+	if (iBanLength < 0)
+		return;
+
+	if (!g_bSprayBanned[client])
+	{
+		if (!SprayBanClient(0, client, iBanLength, "Spray exploit detected"))
+			LogAction(-1, -1, "[SprayManager] Failed to spray ban %L for %d minutes with the following reason: Spray exploit detected.", client, iBanLength);
+		else
+			LogAction(-1, -1, "[SprayManager] %L was spray banned for %d minutes. Reason: Attempt to use spray exploit.", client, iBanLength);
+	}
+}
+#endif
+
 void UpdateNSFWSprayVisibilityForClient(int client, bool wantToSee)
 {
 	for (int i = 1; i <= MaxClients; i++)
@@ -3454,7 +3597,7 @@ void UpdateNSFWSprayVisibilityForClient(int client, bool wantToSee)
 			continue;
 
 		// Replace the NSFW decal with the original spray or vice versa
-		PaintWorldDecalToOne(wantToSee ? g_iTransparentDecalIndex : g_iNSFWDecalIndex, g_vecSprayOrigin[i], client);
+		PaintWorldDecalToOne(wantToSee ? g_iTransparentDecalIndex : GetRandomNSFWDecalIndex(), g_vecSprayOrigin[i], client);
 
 		// Update client-to-client spray
 		g_bSkipDecalHook = true;
@@ -3481,7 +3624,7 @@ void UpdateSprayVisibilityForAllClients(int sprayOwner)
 		if (g_bHasNSFWSpray[sprayOwner] && !g_bWantsToSeeNSFWSprays[i])
 		{
 			// Display the NSFW decal
-			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[sprayOwner], i);
+			PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[sprayOwner], i);
 			g_bSkipDecalHook = true;
 			SprayClientDecalToOne(sprayOwner, i, 0, ACTUAL_NULL_VECTOR);
 			g_bSkipDecalHook = false;
@@ -3789,7 +3932,7 @@ public int Native_SetClientSprayHidden(Handle plugin, int numParams)
 
 		if (!g_bWantsToSeeNSFWSprays[client] && g_bHasNSFWSpray[target])
 		{
-			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[target], client);
+			PaintWorldDecalToOne(GetRandomNSFWDecalIndex(), g_vecSprayOrigin[target], client);
 		}
 		else
 		{
