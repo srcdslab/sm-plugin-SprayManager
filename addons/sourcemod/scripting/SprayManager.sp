@@ -278,7 +278,7 @@ public void OnMapStart()
 
 stock int GetRandomNSFWDecalIndex()
 {
-    return g_iNSFWDecalIndex[GetRandomInt(0, 2)];
+	return g_iNSFWDecalIndex[GetRandomInt(0, 2)];
 }
 
 public void OnMapEnd()
