@@ -10,7 +10,6 @@
 
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
-#tryinclude <spray_exploit>
 #define REQUIRE_PLUGIN
 
 #pragma newdecls required
@@ -3552,36 +3551,6 @@ public bool IsDefaultGameSprayHash(const char[] string)
 
 	return false;
 }
-
-#if defined _spray_exploit_included
-public void OnSprayExploit(int client, int index, int value)
-{
-	if (index != 24)
-		return;
-	
-	if (!IsValidClient(client))
-		return;
-
-	SprayExploitFixer_LogCustom("Spray exploit detected for %L. Index: %d, Value: %d", client, index, value);
-
-	if (!BanClientSpray(0, client))
-		LogAction(-1, -1, "[SprayManager] Failed to ban spray hash (%s) for %L for spray exploit.", g_sSprayHash[client], client);
-	else
-		LogAction(-1, -1, "[SprayManager] %L was spray hash banned (%s) for spray exploit.", client, g_sSprayHash[client]);
-
-	int iBanLength = g_cvarSprayBanLength.IntValue;
-	if (iBanLength < 0)
-		return;
-
-	if (!g_bSprayBanned[client])
-	{
-		if (!SprayBanClient(0, client, iBanLength, "Spray exploit detected"))
-			LogAction(-1, -1, "[SprayManager] Failed to spray ban %L for %d minutes with the following reason: Spray exploit detected.", client, iBanLength);
-		else
-			LogAction(-1, -1, "[SprayManager] %L was spray banned for %d minutes. Reason: Attempt to use spray exploit.", client, iBanLength);
-	}
-}
-#endif
 
 void UpdateNSFWSprayVisibilityForClient(int client, bool wantToSee)
 {
