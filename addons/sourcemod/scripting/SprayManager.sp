@@ -1,5 +1,6 @@
 #pragma semicolon 1
 
+#include <SprayManager>
 #include <sourcemod>
 #include <sdktools>
 #include <clientprefs>
@@ -27,6 +28,13 @@ enum
 	AABBMaxZ = 5,
 	AABBTotalPoints = 6
 }
+
+GlobalForward g_hForward_OnClientSprayBanned;
+GlobalForward g_hForward_OnClientSprayUnbanned;
+GlobalForward g_hForward_OnClientSprayHashBanned;
+GlobalForward g_hForward_OnClientSprayHashUnbanned;
+GlobalForward g_hForward_OnClientSprayMarkedNSFW;
+GlobalForward g_hForward_OnClientSprayMarkedSFW;
 
 Handle g_hDatabase = null;
 Handle g_hRoundEndTimer = null;
@@ -112,12 +120,37 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.1.1",
+	version		= "3.1.2",
 	url			= ""
 }
 
 public APLRes AskPluginLoad2(Handle hThis, bool bLate, char[] err, int iErrLen)
 {
+	CreateNative("SprayManager_IsClientSprayBanned", Native_IsClientSprayBanned);
+	CreateNative("SprayManager_IsClientSprayHashBanned", Native_IsClientSprayHashBanned);
+	CreateNative("SprayManager_IsClientSprayNSFW", Native_IsClientSprayNSFW);
+	CreateNative("SprayManager_BanClientSpray", Native_BanClientSpray);
+	CreateNative("SprayManager_UnbanClientSpray", Native_UnbanClientSpray);
+	CreateNative("SprayManager_BanClientSprayHash", Native_BanClientSprayHash);
+	CreateNative("SprayManager_UnbanClientSprayHash", Native_UnbanClientSprayHash);
+	CreateNative("SprayManager_ForceSpray", Native_ForceSpray);
+	CreateNative("SprayManager_MarkSprayAsNSFW", Native_MarkSprayAsNSFW);
+	CreateNative("SprayManager_MarkSprayAsSFW", Native_MarkSprayAsSFW);
+	CreateNative("SprayManager_GetClientSprayHash", Native_GetClientSprayHash);
+	CreateNative("SprayManager_ClientWantsToSeeNSFW", Native_ClientWantsToSeeNSFW);
+	CreateNative("SprayManager_SetClientWantsToSeeNSFW", Native_SetClientWantsToSeeNSFW);
+	CreateNative("SprayManager_HasClientHiddenSpray", Native_HasClientHiddenSpray);
+	CreateNative("SprayManager_SetClientSprayHidden", Native_SetClientSprayHidden);
+
+	g_hForward_OnClientSprayBanned = CreateGlobalForward("SprayManager_OnClientSprayBanned", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
+	g_hForward_OnClientSprayUnbanned = CreateGlobalForward("SprayManager_OnClientSprayUnbanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayHashBanned = CreateGlobalForward("SprayManager_OnClientSprayHashBanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayHashUnbanned = CreateGlobalForward("SprayManager_OnClientSprayHashUnbanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayMarkedNSFW = CreateGlobalForward("SprayManager_OnClientSprayMarkedNSFW", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayMarkedSFW = CreateGlobalForward("SprayManager_OnClientSprayMarkedSFW", ET_Ignore, Param_Cell, Param_Cell);
+
+	RegPluginLibrary("spraymanager");
+
 	g_bLoadedLate = bLate;
 
 	return APLRes_Success;
@@ -1538,41 +1571,9 @@ public Action Command_MarkNSFW(int client, int argc)
 
 	g_bHasNSFWSpray[client] = true;
 
-	char sQuery[256];
-	FormatEx(
-		sQuery,
-		sizeof(sQuery),
-		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
-		ON DUPLICATE KEY UPDATE `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[client], sAuthID[client], 0,
-		sAuthID[client], 0
-	);
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
-
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsValidClient(i))
-			continue;
-
-		for (int x = 1; x <= MaxClients; x++)
-		{
-			if (!IsValidClient(x))
-				continue;
-
-			if (g_bHasSprayHidden[i][x])
-				continue;
-
-			if (g_bWantsToSeeNSFWSprays[i])
-				continue;
-
-			PaintWorldDecalToOne(g_bHasNSFWSpray[x] ? g_iNSFWDecalIndex : g_iTransparentDecalIndex, g_vecSprayOrigin[x], i);
-			g_bSkipDecalHook = true;
-			SprayClientDecalToOne(x, i, g_bHasNSFWSpray[x] ? 0 : g_iDecalEntity[x], g_bHasNSFWSpray[x] ? ACTUAL_NULL_VECTOR : g_vecSprayOrigin[x]);
-			g_iClientToClientSprayLifetime[i][x] = g_bHasNSFWSpray[x] ? g_iClientToClientSprayLifetime[i][x] : 0;
-			g_bSkipDecalHook = false;
-			break;
-		}
-	}
+	DB_UpdateSprayNSFWStatus(client, false);
+	UpdateSprayVisibilityForAllClients(client);
+	Call_OnClientSprayMarkedNSFW(0, client);
 
 	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as NSFW.");
 
@@ -1613,28 +1614,9 @@ public Action Command_MarkSFW(int client, int argc)
 
 	g_bHasNSFWSpray[client] = false;
 
-	char sQuery[256];
-
-	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
-
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsValidClient(i))
-			continue;
-
-		if (g_bHasSprayHidden[i][client])
-			continue;
-
-		if (g_bWantsToSeeNSFWSprays[i])
-			continue;
-
-		PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[client], i);
-		g_bSkipDecalHook = true;
-		SprayClientDecalToOne(client, i, g_iDecalEntity[client], g_vecSprayOrigin[client]);
-		g_iClientToClientSprayLifetime[i][client] = 0;
-		g_bSkipDecalHook = false;
-	}
+	DB_DeleteSprayNSFWStatus(client);
+	UpdateSprayVisibilityForAllClients(client);
+	Call_OnClientSprayMarkedSFW(0, client);
 
 	CPrintToChat(client, "{green}[SprayManager]{default} Your spray is now marked as SFW.");
 
@@ -1661,23 +1643,7 @@ public Action Command_NSFW(int client, int argc)
 
 	CPrintToChat(client, "{green}[SprayManager]{default} You can %s", g_bWantsToSeeNSFWSprays[client] ? "now see {purple}NSFW{default} sprays." : "no longer see {purple}NSFW{default} sprays.");
 
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsValidClient(i))
-			continue;
-
-		if (!g_bHasNSFWSpray[i])
-			continue;
-
-		if (g_bHasSprayHidden[client][i])
-			continue;
-
-		PaintWorldDecalToOne(g_bWantsToSeeNSFWSprays[client] ? g_iTransparentDecalIndex : g_iNSFWDecalIndex, g_vecSprayOrigin[i], client);
-		g_bSkipDecalHook = true;
-		SprayClientDecalToOne(i, client, g_bWantsToSeeNSFWSprays[client] ? g_iDecalEntity[i] : 0, g_bWantsToSeeNSFWSprays[client] ? g_vecSprayOrigin[i] : ACTUAL_NULL_VECTOR);
-		g_iClientToClientSprayLifetime[client][i] = g_bWantsToSeeNSFWSprays[client] ? 0 : g_iClientToClientSprayLifetime[client][i];
-		g_bSkipDecalHook = false;
-	}
+	UpdateNSFWSprayVisibilityForClient(client, g_bWantsToSeeNSFWSprays[client]);
 
 	return Plugin_Handled;
 }
@@ -1715,7 +1681,7 @@ public Action Command_HideSpray(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
@@ -1778,7 +1744,7 @@ public Action Command_UnhideSpray(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
@@ -1938,7 +1904,7 @@ public Action Command_BanSpray(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
@@ -2051,7 +2017,7 @@ public Action Command_RemoveSpray(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
@@ -2096,7 +2062,7 @@ public Action Command_ForceNSFW(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
@@ -2129,7 +2095,7 @@ public Action Command_ForceSFW(int client, int argc)
 		if ((iTarget = FindTarget(client, sTarget)) <= 0)
 			return Plugin_Handled;
 
-		AdminForceSpraySFW(iTarget);
+		AdminForceSpraySFW(client, iTarget);
 		CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as SFW.", iTarget);
 		LogAction(client, iTarget, "[SprayManager] %L Marked %L spray as SFW.", client, iTarget);
 		NotifyAdmins(client, iTarget, "{default}spray was marked as {green}SFW");
@@ -2141,12 +2107,12 @@ public Action Command_ForceSFW(int client, int argc)
 
 	if (TracePlayerAngles(client, vecEndPos))
 	{
-	 	for (int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsPointInsideAABB(vecEndPos, g_SprayAABB[i]))
 				continue;
 
-			AdminForceSpraySFW(i);
+			AdminForceSpraySFW(client, i);
 			CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as SFW.", i);
 			LogAction(client, i, "[SprayManager] %L Marked %L spray as SFW.", client, i);
 			NotifyAdmins(client, i, "{default}spray was marked as {green}SFW");
@@ -2796,6 +2762,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 
 	g_iAllowSpray = target;
 	SprayClientDecalToAll(target, 0, ACTUAL_NULL_VECTOR);
+	Call_OnClientSprayBanned(client, target, iBanLength, sReason);
 
 	return true;
 }
@@ -2837,6 +2804,7 @@ bool SprayUnbanClient(int target, int client=-1)
 	g_iSprayBanTimestamp[target] = 0;
 	g_iSprayUnbanTimestamp[target] = -1;
 	g_fNextSprayTime[target] = 0.0;
+	Call_OnClientSprayUnbanned(client, target);
 
 	return true;
 }
@@ -2896,6 +2864,7 @@ bool BanClientSpray(int client, int target)
 
 	g_iAllowSpray = target;
 	SprayClientDecalToAll(target, 0, ACTUAL_NULL_VECTOR);
+	Call_OnClientSprayHashBanned(client, target);
 
 	return true;
 }
@@ -2926,99 +2895,49 @@ bool UnbanClientSpray(int client, int target)
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
 	g_bSprayHashBanned[target] = false;
+	Call_OnClientSprayHashUnbanned(client, target);
 
 	return true;
 }
 
-void AdminForceSprayNSFW(int client, int target)
+bool AdminForceSprayNSFW(int client, int target)
 {
 	if (!IsValidClient(target))
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
-		return;
+		return false;
 	}
 
 	if (IsDefaultGameSprayHash(g_sSprayHash[target]))
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}has a default game spray.", target);
-		return;
+		return false;
 	}
 
-	char sQuery[256];
-	FormatEx(
-		sQuery,
-		sizeof(sQuery),
-		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
-		ON DUPLICATE KEY UPDATE `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[target], sAuthID[target], 1,
-		sAuthID[target], 1
-	);
-
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	DB_UpdateSprayNSFWStatus(target, true);
 
 	g_bHasNSFWSpray[target] = true;
 	g_bMarkedNSFWByAdmin[target] = true;
 
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsValidClient(i))
-			continue;
-
-		for (int x = 1; x <= MaxClients; x++)
-		{
-			if (!IsValidClient(x))
-				continue;
-
-			if (g_bHasSprayHidden[i][x])
-				continue;
-
-			if (g_bWantsToSeeNSFWSprays[i])
-				continue;
-
-			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[x], i);
-			g_bSkipDecalHook = true;
-			SprayClientDecalToOne(x, i, 0, ACTUAL_NULL_VECTOR);
-			g_bSkipDecalHook = false;
-			break;
-		}
-	}
+	UpdateSprayVisibilityForAllClients(target);
+	Call_OnClientSprayMarkedNSFW(client, target);
 
 	CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", target);
 	LogAction(client, target, "[SprayManager] %L Marked %L spray as NSFW.", client, target);
 	NotifyAdmins(client, target, "{default}spray was marked as {green}NSFW");
+
+	return true;
 }
 
-void AdminForceSpraySFW(int client)
+void AdminForceSpraySFW(int admin, int target)
 {
-	char sQuery[256];
-	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
+	DB_DeleteSprayNSFWStatus(target);
 
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_bHasNSFWSpray[target] = false;
+	g_bMarkedNSFWByAdmin[target] = false;
 
-	g_bHasNSFWSpray[client] = false;
-	g_bMarkedNSFWByAdmin[client] = false;
-
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsValidClient(i))
-			continue;
-
-		for (int x = 1; x <= MaxClients; x++)
-		{
-			if (!IsValidClient(x))
-				continue;
-
-			if (g_bHasSprayHidden[i][x])
-				continue;
-
-			PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[x], i);
-			g_bSkipDecalHook = true;
-			SprayClientDecalToOne(x, i, g_iDecalEntity[x], g_vecSprayOrigin[x]);
-			g_iClientToClientSprayLifetime[i][x] = 0;
-			g_bSkipDecalHook = false;
-			break;
-		}
-	}
+	UpdateSprayVisibilityForAllClients(target);
+	Call_OnClientSprayMarkedSFW(admin, target);
 }
 
 void UpdatePlayerInfo(int client)
@@ -3519,4 +3438,475 @@ public bool IsDefaultGameSprayHash(const char[] string)
 	}
 
 	return false;
+}
+
+void UpdateNSFWSprayVisibilityForClient(int client, bool wantToSee)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		if (!g_bHasNSFWSpray[i])
+			continue;
+
+		if (g_bHasSprayHidden[client][i])
+			continue;
+
+		// Replace the NSFW decal with the original spray or vice versa
+		PaintWorldDecalToOne(wantToSee ? g_iTransparentDecalIndex : g_iNSFWDecalIndex, g_vecSprayOrigin[i], client);
+
+		// Update client-to-client spray
+		g_bSkipDecalHook = true;
+		SprayClientDecalToOne(i, client, wantToSee ? g_iDecalEntity[i] : 0, wantToSee ? g_vecSprayOrigin[i] : ACTUAL_NULL_VECTOR);
+		g_iClientToClientSprayLifetime[client][i] = wantToSee ? 0 : g_iClientToClientSprayLifetime[client][i];
+		g_bSkipDecalHook = false;
+	}
+}
+
+void UpdateSprayVisibilityForAllClients(int sprayOwner)
+{
+	if (!IsValidClient(sprayOwner) || IsVectorZero(g_vecSprayOrigin[sprayOwner]))
+		return;
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i))
+			continue;
+
+		if (g_bHasSprayHidden[i][sprayOwner])
+			continue;
+
+		// If the spray is NSFW and the client does not want to see NSFW sprays
+		if (g_bHasNSFWSpray[sprayOwner] && !g_bWantsToSeeNSFWSprays[i])
+		{
+			// Display the NSFW decal
+			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[sprayOwner], i);
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(sprayOwner, i, 0, ACTUAL_NULL_VECTOR);
+			g_bSkipDecalHook = false;
+		}
+		else // If the spray is SFW or if the client wants to see NSFW sprays
+		{
+			// First clear any existing decal
+			PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[sprayOwner], i);
+
+			// Then display the normal spray
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(sprayOwner, i, g_iDecalEntity[sprayOwner], g_vecSprayOrigin[sprayOwner]);
+			g_iClientToClientSprayLifetime[i][sprayOwner] = 0;
+			g_bSkipDecalHook = false;
+		}
+	}
+}
+
+stock void DB_UpdateSprayNSFWStatus(int target, bool bSetByAdmin) 
+{
+	int iSetByAdmin = bSetByAdmin ? 1 : 0;
+
+	char sQuery[256];
+	FormatEx(sQuery,sizeof(sQuery),
+		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
+		ON DUPLICATE KEY UPDATE `sprayersteamid` = '%s', `setbyadmin` = '%d';",
+		g_sSprayHash[target], sAuthID[target], iSetByAdmin,
+		sAuthID[target], iSetByAdmin);
+	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+}
+
+stock void DB_DeleteSprayNSFWStatus(int target)
+{
+	char sQuery[256];
+
+	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[target]);
+	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+}
+
+stock void Call_OnClientSprayBanned(int admin, int target, int length, const char[] reason)
+{
+	Call_StartForward(g_hForward_OnClientSprayBanned);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_PushCell(length);
+	Call_PushString(reason);
+	Call_Finish();
+}
+
+stock void Call_OnClientSprayUnbanned(int admin, int target)
+{
+	Call_StartForward(g_hForward_OnClientSprayUnbanned);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+stock void Call_OnClientSprayHashBanned(int admin, int target)
+{
+	Call_StartForward(g_hForward_OnClientSprayHashBanned);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+stock void Call_OnClientSprayHashUnbanned(int admin, int target)
+{
+	Call_StartForward(g_hForward_OnClientSprayHashUnbanned);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+stock void Call_OnClientSprayMarkedNSFW(int admin, int target)
+{
+	Call_StartForward(g_hForward_OnClientSprayMarkedNSFW);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+stock void Call_OnClientSprayMarkedSFW(int admin, int target)
+{
+	Call_StartForward(g_hForward_OnClientSprayMarkedSFW);
+	Call_PushCell(admin);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+public int Native_IsClientSprayBanned(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	return g_bSprayBanned[client];
+}
+
+public int Native_IsClientSprayHashBanned(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	return g_bSprayHashBanned[client];
+}
+
+public int Native_IsClientSprayNSFW(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	return g_bHasNSFWSpray[client];
+}
+
+public int Native_BanClientSpray(Handle plugin, int numParams)
+{
+	int admin = GetNativeCell(1);
+	int target = GetNativeCell(2);
+	int length = GetNativeCell(3);
+
+	char reason[64];
+	GetNativeString(4, reason, sizeof(reason));
+
+	return SprayBanClient(admin, target, length, reason);
+}
+
+public int Native_UnbanClientSpray(Handle plugin, int numParams)
+{
+	int target = GetNativeCell(1);
+	int admin = GetNativeCell(2);
+
+	return SprayUnbanClient(target, admin);
+}
+
+public int Native_BanClientSprayHash(Handle plugin, int numParams)
+{
+	int admin = GetNativeCell(1);
+	int target = GetNativeCell(2);
+
+	return BanClientSpray(admin, target);
+}
+
+public int Native_UnbanClientSprayHash(Handle plugin, int numParams)
+{
+	int admin = GetNativeCell(1);
+	int target = GetNativeCell(2);
+
+	return UnbanClientSpray(admin, target);
+}
+
+public int Native_ForceSpray(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int target = GetNativeCell(2);
+	bool bPlaySound = GetNativeCell(3);
+
+	return ForceSpray(client, target, bPlaySound);
+}
+
+public int Native_MarkSprayAsNSFW(Handle plugin, int numParams)
+{
+	int admin = GetNativeCell(1);
+	int target = GetNativeCell(2);
+
+	if (!IsValidClient(target))
+		return false;
+
+	if (admin == 0)
+	{
+		// Self-marking
+		if (g_bMarkedNSFWByAdmin[target] || g_bHasNSFWSpray[target])
+			return false;
+
+		g_bHasNSFWSpray[target] = true;
+
+		DB_UpdateSprayNSFWStatus(target, false);
+		UpdateSprayVisibilityForAllClients(target);
+		Call_OnClientSprayMarkedNSFW(0, target);
+		return true;
+	}
+	else
+	{
+		// Admin marking
+		if (g_bHasNSFWSpray[target] && g_bMarkedNSFWByAdmin[target])
+			return false;
+
+		return AdminForceSprayNSFW(admin, target);
+	}
+}
+
+public int Native_MarkSprayAsSFW(Handle plugin, int numParams)
+{
+	int admin = GetNativeCell(1);
+	int target = GetNativeCell(2);
+
+	if (!IsValidClient(target))
+		return false;
+
+	if (admin == 0)
+	{
+		// Self-marking
+		if (g_bMarkedNSFWByAdmin[target])
+			return false;
+
+		if (!g_bHasNSFWSpray[target])
+			return false;
+
+		g_bHasNSFWSpray[target] = false;
+
+		DB_DeleteSprayNSFWStatus(target);
+		UpdateSprayVisibilityForAllClients(target);
+		Call_OnClientSprayMarkedSFW(0, target);
+	}
+	else
+	{
+		// Admin marking
+		if (!g_bHasNSFWSpray[target])
+			return false;
+
+		AdminForceSpraySFW(admin, target);
+	}
+
+	return true;
+}
+
+public int Native_GetClientSprayHash(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	int maxlen = GetNativeCell(3);
+	SetNativeString(2, g_sSprayHash[client], maxlen);
+
+	return true;
+}
+
+public int Native_ClientWantsToSeeNSFW(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	return g_bWantsToSeeNSFWSprays[client];
+}
+
+public int Native_SetClientWantsToSeeNSFW(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	bool bWantToSee = GetNativeCell(2);
+
+	if (!IsValidClient(client))
+		return false;
+
+	if (!AreClientCookiesCached(client))
+		return false;
+
+	g_bWantsToSeeNSFWSprays[client] = bWantToSee;
+	SetClientCookie(client, g_hWantsToSeeNSFWCookie, bWantToSee ? "1" : "0");
+
+	UpdateNSFWSprayVisibilityForClient(client, bWantToSee);
+
+	return true;
+}
+
+public int Native_HasClientHiddenSpray(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int target = GetNativeCell(2);
+
+	if (!IsValidClient(client) || !IsValidClient(target))
+		return false;
+
+	return g_bHasSprayHidden[client][target];
+}
+
+public int Native_SetClientSprayHidden(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int target = GetNativeCell(2);
+	bool bHide = GetNativeCell(3);
+
+	if (!IsValidClient(client) || !IsValidClient(target))
+		return false;
+
+	g_bHasSprayHidden[client][target] = bHide;
+
+	if (bHide)
+	{
+		PaintWorldDecalToOne(g_iHiddenDecalIndex, g_vecSprayOrigin[target], client);
+		g_bSkipDecalHook = true;
+		SprayClientDecalToOne(target, client, 0, ACTUAL_NULL_VECTOR);
+		g_bSkipDecalHook = false;
+	}
+	else
+	{
+		PaintWorldDecalToOne(g_iTransparentDecalIndex, g_vecSprayOrigin[target], client);
+
+		if (!g_bWantsToSeeNSFWSprays[client] && g_bHasNSFWSpray[target])
+		{
+			PaintWorldDecalToOne(g_iNSFWDecalIndex, g_vecSprayOrigin[target], client);
+		}
+		else
+		{
+			g_bSkipDecalHook = true;
+			SprayClientDecalToOne(target, client, g_iDecalEntity[target], g_vecSprayOrigin[target]);
+			g_iClientToClientSprayLifetime[client][target] = 0;
+			g_bSkipDecalHook = false;
+		}
+	}
+
+	return true;
+}
+
+public int Native_GetClientSprayPosition(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	if (IsVectorZero(g_vecSprayOrigin[client]))
+		return false;
+
+	SetNativeArray(2, g_vecSprayOrigin[client], 3);
+	
+	return true;
+}
+
+public int Native_AreSpraysEnabled(Handle plugin, int numParams)
+{
+	return g_bEnableSprays;
+}
+
+public int Native_SetSpraysEnabled(Handle plugin, int numParams)
+{
+	bool bEnable = GetNativeCell(1);
+
+	g_bEnableSprays = bEnable;
+	g_cvarEnableSprays.BoolValue = bEnable;
+
+	if (!bEnable)
+		RemoveAllSprays();
+	
+	return true;
+}
+
+public int Native_GetClientNextSprayTime(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return view_as<int>(0.0);
+
+	float nextTime = g_fNextSprayTime[client] - GetGameTime();
+	return view_as<int>(nextTime > 0.0 ? nextTime : 0.0);
+}
+
+public int Native_SetClientNextSprayTime(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	float fTime = GetNativeCell(2);
+
+	if (!IsValidClient(client))
+		return false;
+
+	g_fNextSprayTime[client] = GetGameTime() + fTime;
+
+	return true;
+}
+
+public int Native_GetClientUnbanTimestamp(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return -1;
+
+	if (!g_bSprayBanned[client])
+		return -1;
+
+	return g_iSprayUnbanTimestamp[client];
+}
+
+public int Native_GetClientBanReason(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	if (!g_bSprayBanned[client])
+		return false;
+
+	int maxlen = GetNativeCell(3);
+	SetNativeString(2, g_sBanReason[client], maxlen);
+
+	return true;
+}
+
+public int Native_GetClientBanIssuer(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (!IsValidClient(client))
+		return false;
+
+	if (!g_bSprayBanned[client])
+		return false;
+
+	int maxlen = GetNativeCell(3);
+	SetNativeString(2, g_sBanIssuer[client], maxlen);
+
+	return true;
+}
+
+public int Native_RemoveAllSprays(Handle plugin, int numParams)
+{
+	RemoveAllSprays();
+	return true;
 }
