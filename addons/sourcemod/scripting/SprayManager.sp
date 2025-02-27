@@ -173,8 +173,8 @@ public void OnPluginStart()
 	AddFileToDownloadsTable("materials/spraymanager/unhide.vmt");
 
 	// Invisible spray
-	AddFileToDownloadsTable("materials/spraymanager/3.vtf");
-	AddFileToDownloadsTable("materials/spraymanager/3.vmt");
+	AddFileToDownloadsTable("materials/spraymanager/transparent.vtf");
+	AddFileToDownloadsTable("materials/spraymanager/transparent.vmt");
 
 	RegConsoleCmd("sm_marknsfw", Command_MarkNSFW, "Marks your spray as NSFW");
 	RegConsoleCmd("sm_marksfw", Command_MarkSFW, "Marks your spray as SFW");
@@ -273,7 +273,7 @@ public void OnMapStart()
 	g_iNSFWDecalIndex[1] = PrecacheDecal("spraymanager/nsfw_2.vtf", true);
 	g_iNSFWDecalIndex[2] = PrecacheDecal("spraymanager/nsfw_3.vtf", true);
 	g_iHiddenDecalIndex = PrecacheDecal("spraymanager/unhide.vtf", true);
-	g_iTransparentDecalIndex = PrecacheDecal("spraymanager/3.vtf", true);
+	g_iTransparentDecalIndex = PrecacheDecal("spraymanager/transparent.vtf", true);
 }
 
 stock int GetRandomNSFWDecalIndex()
