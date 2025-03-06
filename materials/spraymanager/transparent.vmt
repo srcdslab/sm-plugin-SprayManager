@@ -1,0 +1,8 @@
+"LightmappedGeneric"
+{
+	"$basetexture"	"spraymanager/transparent"
+	"$translucent" 	"1"
+	"$decal" 		"1"
+	"$decalscale" 	0.02
+	"$surfaceprop" 	"Default"
+}
