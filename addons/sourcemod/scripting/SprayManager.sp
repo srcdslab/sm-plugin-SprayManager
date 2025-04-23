@@ -6,7 +6,6 @@
 #include <clientprefs>
 #include <cstrike>
 #include <multicolors>
-#include <LagReducer>
 
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
@@ -51,12 +50,14 @@ ConVar g_cvarEnableSprays = null;
 ConVar g_cvarAuthorizedFlags = null;
 ConVar g_cvarSprayBanLength = null;
 ConVar g_cvarDefaultBehavior = null;
+ConVar g_cvarFramesToSkip = null;
 
 int g_iNSFWDecalIndex[3];
 int g_iHiddenDecalIndex;
 int g_iTransparentDecalIndex;
 int g_iOldDecalFreqVal;
 int g_iAllowSpray;
+int g_iFramesToSkip;
 
 bool g_bLoadedLate;
 bool g_bSQLite;
@@ -120,7 +121,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.1.2",
+	version		= "3.1.3",
 	url			= ""
 }
 
@@ -231,6 +232,10 @@ public void OnPluginStart()
 	g_cvarSprayBanLength = CreateConVar("sm_spraymanager_spraybanlength", "0", "How long to ban a player from spraying for", FCVAR_NOTIFY);
 
 	g_cvarDefaultBehavior = CreateConVar("sm_spraymanager_defaultbehavior", "1", "Default behavior for sprays (0 = Block spray until client passed all verifications | 1 = Allow spray)", FCVAR_NOTIFY);
+
+	g_cvarFramesToSkip = CreateConVar("sm_spraymanager_framestoskip", "10", "Number of frames to skip before trace a player spray", FCVAR_NOTIFY, true, 0.0, true, 66.0);
+	g_cvarFramesToSkip.AddChangeHook(ConVarChanged_FramesToSkip);
+	g_iFramesToSkip = g_cvarFramesToSkip.IntValue;
 
 	AutoExecConfig(true);
 	GetConVars();
@@ -2380,19 +2385,29 @@ public Action HookSprayer(int iClients[MAXPLAYERS], int &iNumClients, char sSoun
 	return Plugin_Continue;
 }
 
-public void LagReducer_OnClientGameFrame(int iClient)
+public void OnGameFrame()
 {
-	PerformPlayerTraces(iClient);
+	static int iFrame = 0;
+	iFrame++;
+
+	if (iFrame % g_iFramesToSkip != 0)
+		return;
+
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsValidClient(client))
+			continue;
+
+		PerformPlayerTraces(client);
+	}
+
+	iFrame = 0;
 }
 
 public void PerformPlayerTraces(int client)
 {
 	bool bLookingatSpray = false;
-
 	float vecPos[3];
-
-	if (!IsValidClient(client))
-		return;
 
 	if (!TracePlayerAngles(client, vecPos))
 		return;
@@ -2751,14 +2766,18 @@ public void ConVarChanged_AuthorizedFlags(ConVar cvar, const char[] sOldValue, c
 
 public void ConVarChanged_DecalFrequency(ConVar cvar, const char[] sOldValue, const char[] sNewValue)
 {
-	if (cvar == g_cvarHookedDecalFrequency)
+	if (StringToInt(sNewValue) != 0)
 	{
-		if (StringToInt(sNewValue) != 0)
-		{
-			LogMessage("ConVar \"decalfrequency\" needs to be 0 at all times, please use sm_decalfrequency instead.");
-			cvar.IntValue = 0;
-		}
+		LogMessage("ConVar \"decalfrequency\" needs to be 0 at all times, please use sm_decalfrequency instead.");
+		cvar.IntValue = 0;
 	}
+}
+
+public void ConVarChanged_FramesToSkip(ConVar cvar, const char[] sOldValue, const char[] sNewValue)
+{
+	int iNewValue = StringToInt(sNewValue);
+	cvar.IntValue = iNewValue;
+	g_iFramesToSkip = iNewValue;
 }
 
 bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason)
