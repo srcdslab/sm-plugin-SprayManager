@@ -122,7 +122,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.0",
+	version		= "3.2.1",
 	url			= ""
 }
 
@@ -2550,7 +2550,6 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 	g_hDatabase = CloneHandle(hChild);
 	SQL_GetDriverIdent(hParent, sDriver, sizeof(sDriver));
 
-	SQL_LockDatabase(g_hDatabase);
 	if (!strncmp(sDriver, "my", 2, false))
 	{
 		char sQuery[MAX_SQL_QUERY_LENGTH];
@@ -2576,7 +2575,6 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 
 		g_bSQLite = true;
 	}
-	SQL_UnlockDatabase(g_hDatabase);
 }
 
 public Action ReconnectSQL(Handle hTimer)
@@ -2611,7 +2609,6 @@ public void OnSQLTableCreated(Handle hParent, Handle hChild, const char[] err, a
 
 public Action RetryMainTableCreation(Handle hTimer)
 {
-	SQL_LockDatabase(g_hDatabase);
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` TEXT NOT NULL, `name` TEXT DEFAULT 'unknown', `unbantime` INTEGER, `issuersteamid` TEXT, `issuername` TEXT DEFAULT 'unknown', `issuedtime` INTEGER NOT NULL, `issuedreason` TEXT DEFAULT 'none', PRIMARY KEY(steamid));");
 	else
@@ -2620,7 +2617,6 @@ public Action RetryMainTableCreation(Handle hTimer)
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
 		SQL_TQuery(g_hDatabase, OnSQLTableCreated, sQuery);
 	}
-	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
 
@@ -2649,7 +2645,6 @@ public void OnSQLSprayBlacklistCreated(Handle hParent, Handle hChild, const char
 
 public Action RetryBlacklistTableCreation(Handle hTimer)
 {
-	SQL_LockDatabase(g_hDatabase);
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` TEXT NOT NULL, `sprayer` TEXT DEFAULT 'unknown', `sprayersteamid` TEXT NOT NULL, PRIMARY KEY(sprayhash));");
 	else
@@ -2658,7 +2653,6 @@ public Action RetryBlacklistTableCreation(Handle hTimer)
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
 		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, sQuery);
 	}
-	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
 
@@ -2687,7 +2681,6 @@ public void OnSQLNSFWListCreated(Handle hParent, Handle hChild, const char[] err
 
 public Action RetryNSFWlistTableCreation(Handle hTimer)
 {
-	SQL_LockDatabase(g_hDatabase);
 	if (g_bSQLite)
 		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` TEXT NOT NULL, `sprayersteamid` TEXT, `setbyadmin` INTEGER, PRIMARY KEY(sprayhash));");
 	else
@@ -2696,7 +2689,6 @@ public Action RetryNSFWlistTableCreation(Handle hTimer)
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
 		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, sQuery);
 	}
-	SQL_UnlockDatabase(g_hDatabase);
 	return Plugin_Continue;
 }
 
