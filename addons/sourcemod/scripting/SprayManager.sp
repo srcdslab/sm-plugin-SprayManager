@@ -122,7 +122,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.1",
+	version		= "3.2.2",
 	url			= ""
 }
 
@@ -644,7 +644,10 @@ void Menu_Trace(int client, int target)
 		TraceMenu.ExitBackButton = true;
 
 	TraceMenu.AddItem("1", "Warn Client");
-	TraceMenu.AddItem("2", "Slap and Warn Client", (CheckCommandAccess(client, "sm_slap", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	if (g_bHasNSFWSpray[target])
+		TraceMenu.AddItem("2", "Mark as SFW", (CheckCommandAccess(client, "sm_forcesfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	else
+		TraceMenu.AddItem("2", "Mark as NSFW", (CheckCommandAccess(client, "sm_forcensfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("3", "Kick Client", (CheckCommandAccess(client, "sm_kick", ADMFLAG_KICK))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("4", "Spray Ban Client", (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("5", "Ban Clients Spray Hash", (CheckCommandAccess(client, "sm_banspray", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
@@ -701,10 +704,11 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 					case 2:
 					{
-						SlapPlayer(target, 0);
-						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
-						LogAction(target, iParam1, "[SprayManager] \"%L\" has been warned and slapped for his spray by \"%L\"", target, iParam1);
-						NotifyAdmins(iParam1, target, "{default}has been {green}warned and slapped {default}for his spray");
+						if (!g_bHasNSFWSpray[target])
+							AdminForceSprayNSFW(iParam1, target);
+						else
+							AdminForceSpraySFW(iParam1, target);
+
 						Menu_Trace(iParam1, target);
 					}
 
