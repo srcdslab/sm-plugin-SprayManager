@@ -15,7 +15,7 @@
 #pragma newdecls required
 
 #include "modules/functions.inc"
-#include "modules/module_API.inc"
+#include "modules/module_api.inc"
 #include "modules/module_commands.inc"
 #include "modules/module_cvars.inc"
 #include "modules/module_menu.inc"
