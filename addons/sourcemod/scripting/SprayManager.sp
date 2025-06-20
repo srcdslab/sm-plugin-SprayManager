@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.3",
+	version		= "3.2.5",
 	url			= ""
 }
 
@@ -168,6 +168,7 @@ public void OnClientPostAdminCheck(int client)
 	if (AreClientCookiesCached(client))
 		OnClientCookiesCached(client);
 	UpdatePlayerInfo(client);
+	g_bSprayCheckComplete[client] = false;
 	UpdateSprayHashInfo(client);
 	UpdateNSFWInfo(client);
 
@@ -222,12 +223,12 @@ public Action CS_OnTerminateRound(float &fDelay, CSRoundEndReason &reason)
 {
 	if (g_cvarUsePersistentSprays.BoolValue)
 	{
-		g_hRoundEndTimer = CreateTimer(fDelay + 0.5, Timer_ProcessPersistentSprays);
+		g_hRoundEndTimer = CreateTimer(fDelay + 0.5, Timer_ProcessPersistentSprays, _, TIMER_FLAG_NO_MAPCHANGE);
 
 		return Plugin_Continue;
 	}
 
-	g_hRoundEndTimer = CreateTimer(fDelay, Timer_ResetOldSprays);
+	g_hRoundEndTimer = CreateTimer(fDelay, Timer_ResetOldSprays, _, TIMER_FLAG_NO_MAPCHANGE);
 
 	return Plugin_Continue;
 }
@@ -281,8 +282,37 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 		return Plugin_Handled;
 	}
 
+	if (!g_bSprayCheckComplete[client])
+	{
+		if (g_iSprayCheckAttempts[client] >= 5)
+			CPrintToChat(client, "{green}[SprayManager]{default} An error occurred while checking your spray. Please wait next map.");
+		else
+			CPrintToChat(client, "{green}[SprayManager]{default} Your spray is currently being checked, please wait a few seconds.");
+		return Plugin_Handled;
+	}
+
 	if (g_fNextSprayTime[client] > GetGameTime())
 		return Plugin_Handled;
+
+	if (g_bSprayHashBanned[client])
+	{
+		CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
+		return Plugin_Handled;
+	}
+
+	if (g_iSprayUnbanTimestamp[client] != 0 && g_iSprayUnbanTimestamp[client] != -1)
+	{
+		if (g_iSprayUnbanTimestamp[client] < GetTime())
+			SprayUnbanClient(client);
+	}
+
+	if (g_bSprayBanned[client])
+	{
+		char sRemainingTime[512];
+		FormatRemainingTime(g_iSprayUnbanTimestamp[client], sRemainingTime, sizeof(sRemainingTime));
+		CPrintToChat(client, "{green}[SprayManager]{default} You are currently spray banned. ({green}%s{default})", sRemainingTime);
+		return Plugin_Handled;
+	}
 
 	float vecOrigin[3];
 	TE_ReadVector("m_vecOrigin", vecOrigin);
@@ -298,32 +328,6 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 
 	if (g_iAllowSpray != client)
 	{
-		if (g_bSprayHashBanned[client])
-		{
-			if (strcmp(g_sBanReason[client], "Retrieving data, please wait") == 0)
-				CPrintToChat(client, "{green}[SprayManager]{default} Your spray is currently being checked, please wait a few seconds.");
-			else
-				CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
-			return Plugin_Handled;
-		}
-
-		if (g_iSprayUnbanTimestamp[client] != 0 && g_iSprayUnbanTimestamp[client] != -1)
-		{
-			if (g_iSprayUnbanTimestamp[client] < GetTime())
-				SprayUnbanClient(client);
-		}
-
-		if (g_bSprayBanned[client])
-		{
-			char sRemainingTime[512];
-
-			FormatRemainingTime(g_iSprayUnbanTimestamp[client], sRemainingTime, sizeof(sRemainingTime));
-
-			CPrintToChat(client, "{green}[SprayManager]{default} You are currently spray banned. ({green}%s{default})", sRemainingTime);
-
-			return Plugin_Handled;
-		}
-
 		if (!CheckCommandAccess(client, "sm_spray", ADMFLAG_GENERIC))
 		{
 			if (g_cvarUseProximityCheck.BoolValue)
@@ -579,12 +583,41 @@ void InitializeSQL()
 		SetFailState("Could not find \"spraymanager\" entry in databases.cfg.");
 }
 
+Transaction CreateTablesTransaction()
+{
+	Transaction T_CreateTables = SQL_CreateTransaction();
+
+	if (!g_bSQLite)
+	{
+		char sQuery[MAX_SQL_QUERY_LENGTH];
+		Format(sQuery, sizeof(sQuery), "SET NAMES \"%s\"", CHARSET);
+		T_CreateTables.AddQuery(sQuery);
+
+		Format(sQuery, sizeof(sQuery),"CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
+		T_CreateTables.AddQuery(sQuery);
+
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
+		T_CreateTables.AddQuery(sQuery);
+
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
+		T_CreateTables.AddQuery(sQuery);
+	}
+	else
+	{
+		T_CreateTables.AddQuery("CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` TEXT NOT NULL, `name` TEXT DEFAULT 'unknown', `unbantime` INTEGER, `issuersteamid` TEXT, `issuername` TEXT DEFAULT 'unknown', `issuedtime` INTEGER NOT NULL, `issuedreason` TEXT DEFAULT 'none', PRIMARY KEY(steamid));");
+		T_CreateTables.AddQuery("CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` TEXT NOT NULL, `sprayer` TEXT DEFAULT 'unknown', `sprayersteamid` TEXT, PRIMARY KEY(sprayhash));");
+		T_CreateTables.AddQuery("CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` TEXT NOT NULL, `sprayersteamid` TEXT, `setbyadmin` INTEGER, PRIMARY KEY(sprayhash));");
+	}
+
+	return T_CreateTables;
+}
+
 public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any data)
 {
 	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("Failed to connect to database, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, ReconnectSQL);
+		CreateTimer(10.0, ReconnectSQL, _, TIMER_FLAG_NO_MAPCHANGE);
 		g_bFullyConnected = false;
 
 		return;
@@ -595,30 +628,37 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 	SQL_GetDriverIdent(hParent, sDriver, sizeof(sDriver));
 
 	if (!strncmp(sDriver, "my", 2, false))
-	{
-		char sQuery[MAX_SQL_QUERY_LENGTH];
-		Format(sQuery, sizeof(sQuery), "SET NAMES \"%s\"", CHARSET);
-		SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
-
-		Format(sQuery, sizeof(sQuery),"CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, sQuery);
-
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, sQuery);
-
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, sQuery);
-
 		g_bSQLite = false;
-	}
 	else
-	{
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` TEXT NOT NULL, `name` TEXT DEFAULT 'unknown', `unbantime` INTEGER, `issuersteamid` TEXT, `issuername` TEXT DEFAULT 'unknown', `issuedtime` INTEGER NOT NULL, `issuedreason` TEXT DEFAULT 'none', PRIMARY KEY(steamid));");
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` TEXT NOT NULL, `sprayer` TEXT DEFAULT 'unknown', `sprayersteamid` TEXT, PRIMARY KEY(sprayhash));");
-		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` TEXT NOT NULL, `sprayersteamid` TEXT, `setbyadmin` INTEGER, PRIMARY KEY(sprayhash));");
-
 		g_bSQLite = true;
-	}
+
+	Transaction T_CreateTables = CreateTablesTransaction();
+	SQL_ExecuteTransaction(g_hDatabase, T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
+}
+
+public void OnSQLCreateTables_Success(Database db, any data, int numQueries, Handle[] results, any[] queryData)
+{
+	if (g_bLoadedLate)
+		CreateTimer(2.5, RetryUpdatingPlayerInfo, _, TIMER_FLAG_NO_MAPCHANGE);
+
+	LogMessage("Successfully connected to %s database!", g_bSQLite ? "SQLite" : "mySQL");
+	g_bFullyConnected = true;
+}
+
+public void OnSQLCreateTables_Error(Database db, any data, int numQueries, const char[] error, int failIndex, any[] queryData)
+{
+	LogError("Database error while creating tables, retrying in 10 seconds. (%s)", error);
+	CreateTimer(10.0, RetryTableCreation, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action RetryTableCreation(Handle hTimer)
+{
+	if (g_hDatabase == null)
+		return Plugin_Handled;
+
+	Transaction T_CreateTables = CreateTablesTransaction();
+	SQL_ExecuteTransaction(g_hDatabase, T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
+	return Plugin_Handled;
 }
 
 public Action ReconnectSQL(Handle hTimer)
@@ -626,114 +666,6 @@ public Action ReconnectSQL(Handle hTimer)
 	InitializeSQL();
 
 	return Plugin_Handled;
-}
-
-public void OnSQLTableCreated(Handle hParent, Handle hChild, const char[] err, any data)
-{
-	if (hChild == null || hParent == null || err[0])
-	{
-		LogError("Database error while creating/checking for \"spraymanager\" table, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetryMainTableCreation);
-
-		return;
-	}
-
-	g_bGotBans = true;
-
-	if (g_bGotBlacklist && g_bGotNSFWList)
-	{
-		if (g_bLoadedLate)
-			CreateTimer(2.5, RetryUpdatingPlayerInfo);
-
-		LogMessage("Successfully connected to %s database!", g_bSQLite ? "SQLite" : "mySQL");
-
-		g_bFullyConnected = true;
-	}
-}
-
-public Action RetryMainTableCreation(Handle hTimer)
-{
-	if (g_bSQLite)
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` TEXT NOT NULL, `name` TEXT DEFAULT 'unknown', `unbantime` INTEGER, `issuersteamid` TEXT, `issuername` TEXT DEFAULT 'unknown', `issuedtime` INTEGER NOT NULL, `issuedreason` TEXT DEFAULT 'none', PRIMARY KEY(steamid));");
-	else
-	{
-		char sQuery[MAX_SQL_QUERY_LENGTH];
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLTableCreated, sQuery);
-	}
-	return Plugin_Continue;
-}
-
-public void OnSQLSprayBlacklistCreated(Handle hParent, Handle hChild, const char[] err, any data)
-{
-	if (hChild == null || hParent == null || err[0])
-	{
-		LogError("Database error while creating/checking for \"sprayblacklist\" table, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetryBlacklistTableCreation);
-
-		return;
-	}
-
-	g_bGotBlacklist = true;
-
-	if (g_bGotBans && g_bGotNSFWList)
-	{
-		if (g_bLoadedLate)
-			CreateTimer(2.5, RetryUpdatingPlayerInfo);
-
-		LogMessage("Successfully connected to %s database!", g_bSQLite ? "SQLite" : "mySQL");
-
-		g_bFullyConnected = true;
-	}
-}
-
-public Action RetryBlacklistTableCreation(Handle hTimer)
-{
-	if (g_bSQLite)
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` TEXT NOT NULL, `sprayer` TEXT DEFAULT 'unknown', `sprayersteamid` TEXT NOT NULL, PRIMARY KEY(sprayhash));");
-	else
-	{
-		char sQuery[MAX_SQL_QUERY_LENGTH];
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `sprayblacklist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayer` VARCHAR(32) NOT NULL, `sprayersteamid` VARCHAR(32) NOT NULL, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLSprayBlacklistCreated, sQuery);
-	}
-	return Plugin_Continue;
-}
-
-public void OnSQLNSFWListCreated(Handle hParent, Handle hChild, const char[] err, any data)
-{
-	if (hChild == null || hParent == null || err[0])
-	{
-		LogError("Database error while creating/checking for \"spraynsfwlist\" table, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetryNSFWlistTableCreation);
-
-		return;
-	}
-
-	g_bGotNSFWList = true;
-
-	if (g_bGotBans && g_bGotBlacklist)
-	{
-		if (g_bLoadedLate)
-			CreateTimer(2.5, RetryUpdatingPlayerInfo);
-
-		LogMessage("Successfully connected to %s database!", g_bSQLite ? "SQLite" : "mySQL");
-
-		g_bFullyConnected = true;
-	}
-}
-
-public Action RetryNSFWlistTableCreation(Handle hTimer)
-{
-	if (g_bSQLite)
-		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` TEXT NOT NULL, `sprayersteamid` TEXT, `setbyadmin` INTEGER, PRIMARY KEY(sprayhash));");
-	else
-	{
-		char sQuery[MAX_SQL_QUERY_LENGTH];
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `spraynsfwlist` (`sprayhash` VARCHAR(16) NOT NULL, `sprayersteamid` VARCHAR(32), `setbyadmin` TINYINT, PRIMARY KEY(sprayhash)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
-		SQL_TQuery(g_hDatabase, OnSQLNSFWListCreated, sQuery);
-	}
-	return Plugin_Continue;
 }
 
 public Action RetryUpdatingPlayerInfo(Handle hTimer)
@@ -1085,7 +1017,7 @@ void UpdatePlayerInfo(int client)
 
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		CreateTimer(10.0, RetryPlayerInfoUpdate, client);
+		CreateTimer(10.0, RetryPlayerInfoUpdate, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
 	}
 
@@ -1098,7 +1030,10 @@ void UpdatePlayerInfo(int client)
 void UpdateSprayHashInfo(int client)
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
+	{
+		CreateTimer(10.0, RetrySprayHashUpdate, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
+	}
 
 	if (!IsValidClient(client))
 		return;
@@ -1146,8 +1081,7 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("An error occurred while querying the database for a user ban, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetryPlayerInfoUpdate, client);
-
+		CreateTimer(10.0, RetryPlayerInfoUpdate, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
 	}
 
@@ -1179,13 +1113,15 @@ public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const cha
 
 	if (hChild == null || hParent == null || err[0])
 	{
+		g_iSprayCheckAttempts[client]++;
 		LogError("An error occurred while querying the database for a spray ban, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetrySprayHashUpdate, client);
-
+		CreateTimer(10.0, RetrySprayHashUpdate, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
 	}
 
 	g_bSprayHashBanned[client] = SQL_FetchRow(hChild);
+	g_bSprayCheckComplete[client] = true;
+	g_iSprayCheckAttempts[client] = 0;
 }
 
 public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const char[] err, any client)
@@ -1196,8 +1132,7 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 	if (hChild == null || hParent == null || err[0])
 	{
 		LogError("An error occurred while querying the NSFW database for a spray, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, RetryNSFWSprayLookup, client);
-
+		CreateTimer(10.0, RetryNSFWSprayLookup, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
 	}
 
@@ -1212,22 +1147,34 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 	}
 }
 
-public Action RetryPlayerInfoUpdate(Handle hTimer, any client)
+public Action RetryPlayerInfoUpdate(Handle timer, any serialClient)
 {
+	int client = GetClientFromSerial(serialClient);
+	if (client == 0 || IsFakeClient(client))
+		return Plugin_Stop;
+
 	UpdatePlayerInfo(client);
-	return Plugin_Continue;
+	return Plugin_Stop;
 }
 
-public Action RetrySprayHashUpdate(Handle hTimer, any client)
+public Action RetrySprayHashUpdate(Handle timer, any serialClient)
 {
+	int client = GetClientFromSerial(serialClient);
+	if (client == 0 || IsFakeClient(client))
+		return Plugin_Stop;
+
 	UpdateSprayHashInfo(client);
-	return Plugin_Continue;
+	return Plugin_Stop;
 }
 
-public Action RetryNSFWSprayLookup(Handle hTimer, any client)
+public Action RetryNSFWSprayLookup(Handle timer, any serialClient)
 {
+	int client = GetClientFromSerial(serialClient);
+	if (client == 0 || IsFakeClient(client))
+		return Plugin_Stop;
+
 	UpdateNSFWInfo(client);
-	return Plugin_Continue;
+	return Plugin_Stop;
 }
 
 stock bool ForceSpray(int client, int target, bool bPlaySound=true)
@@ -1285,6 +1232,7 @@ stock void ClearPlayerInfo(int client)
 	strcopy(sAuthID3[client], sizeof(sAuthID3[]), "");
 	g_bSprayBanned[client] = false;
 	g_bSprayHashBanned[client] = false;
+	g_bSprayCheckComplete[client] = false;
 	g_iClientSprayLifetime[client] = 2;
 	g_iSprayLifetime[client] = 0;
 	ResetClientToClientSprayLifeTime(client);
@@ -1298,6 +1246,7 @@ stock void ClearPlayerInfo(int client)
 	g_bHasNSFWSpray[client] = false;
 	g_bMarkedNSFWByAdmin[client] = false;
 	g_bWantsToSeeNSFWSprays[client] = false;
+	g_iSprayCheckAttempts[client] = 0;
 }
 
 #if defined _spray_exploit_included

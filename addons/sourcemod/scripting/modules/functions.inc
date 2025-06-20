@@ -46,9 +46,6 @@ int g_iFramesToSkip;
 
 bool g_bLoadedLate;
 bool g_bSQLite;
-bool g_bGotBans;
-bool g_bGotBlacklist;
-bool g_bGotNSFWList;
 bool g_bFullyConnected;
 bool g_bSkipDecalHook;
 
@@ -75,8 +72,10 @@ int g_iSprayTraceTarget[MAXPLAYERS + 1];
 int g_iBanTarget[MAXPLAYERS + 1];
 int g_iDecalEntity[MAXPLAYERS + 1];
 int g_iAuthorizedFlags[32] = { -1, ...};
+int g_iSprayCheckAttempts[MAXPLAYERS + 1];
 
 bool g_bEnableSprays = true;
+bool g_bSprayCheckComplete[MAXPLAYERS + 1];
 bool g_bWantsToSeeNSFWSprays[MAXPLAYERS + 1];
 bool g_bHasNSFWSpray[MAXPLAYERS + 1];
 bool g_bMarkedNSFWByAdmin[MAXPLAYERS + 1];
