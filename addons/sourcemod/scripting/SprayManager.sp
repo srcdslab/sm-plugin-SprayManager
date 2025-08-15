@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.5",
+	version		= "3.2.6",
 	url			= ""
 }
 
@@ -1041,7 +1041,7 @@ void UpdateSprayHashInfo(int client)
 	char sSprayQuery[128];
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
-	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_High);
+	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_Normal);
 }
 
 void UpdateNSFWInfo(int client)
