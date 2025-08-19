@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.6",
+	version		= "3.2.7",
 	url			= ""
 }
 
@@ -745,14 +745,26 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 	SQL_EscapeString(g_hDatabase, sTargetName, sSafeTargetName, 2 * strlen(sTargetName) + 1);
 	SQL_EscapeString(g_hDatabase, sReason, sSafeReason, 2 * strlen(sReason) + 1);
 
-	FormatEx(
-		sQuery,
-		sizeof(sQuery),
-		"INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s') \
-		ON DUPLICATE KEY UPDATE `name` = '%s', `unbantime` = '%d', `issuersteamid` = '%s', `issuername` = '%s', `issuedtime` = '%d', `issuedreason` = '%s';",
-		sAuthID[target], sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : (iDefaultBanLength * 60), sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none",
-		sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none"
-	);
+	if (g_bSQLite)
+	{
+		FormatEx(
+			sQuery,
+			sizeof(sQuery),
+			"INSERT OR REPLACE INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s');",
+			sAuthID[target], sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : (iDefaultBanLength * 60), sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none"
+		);
+	}
+	else
+	{
+		FormatEx(
+			sQuery,
+			sizeof(sQuery),
+			"INSERT INTO `spraymanager` (`steamid`, `name`, `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason`) VALUES ('%s', '%s', '%d', '%s', '%s', '%d', '%s') \
+			ON DUPLICATE KEY UPDATE `name` = '%s', `unbantime` = '%d', `issuersteamid` = '%s', `issuername` = '%s', `issuedtime` = '%d', `issuedreason` = '%s';",
+			sAuthID[target], sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : (iDefaultBanLength * 60), sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none",
+			sSafeTargetName, iBanLength ? (iTime + (iBanLength * 60)) : 0, sAdminSteamID, sSafeAdminName, iTime, strlen(sSafeReason) > 1 ? sSafeReason : "none"
+		);
+	}
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -853,14 +865,26 @@ bool BanClientSpray(int client, int target)
 	char[] sSafeTargetName = new char[2 * strlen(sTargetName) + 1];
 	SQL_EscapeString(g_hDatabase, sTargetName, sSafeTargetName, 2 * strlen(sTargetName) + 1);
 
-	FormatEx(
-		sQuery,
-		sizeof(sQuery),
-		"INSERT INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s') \
-		ON DUPLICATE KEY UPDATE `sprayer` = '%s', `sprayersteamid` = '%s';",
-		g_sSprayHash[target], sSafeTargetName, sAuthID[target],
-		sSafeTargetName, sAuthID[target]
-	);
+	if (g_bSQLite)
+	{
+		FormatEx(
+			sQuery,
+			sizeof(sQuery),
+			"INSERT OR REPLACE INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s');",
+			g_sSprayHash[target], sSafeTargetName, sAuthID[target]
+		);
+	}
+	else
+	{
+		FormatEx(
+			sQuery,
+			sizeof(sQuery),
+			"INSERT INTO `sprayblacklist` (`sprayhash`, `sprayer`, `sprayersteamid`) VALUES ('%s', '%s', '%s') \
+			ON DUPLICATE KEY UPDATE `sprayer` = '%s', `sprayersteamid` = '%s';",
+			g_sSprayHash[target], sSafeTargetName, sAuthID[target],
+			sSafeTargetName, sAuthID[target]
+		);
+	}
 
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 
@@ -1350,11 +1374,20 @@ stock void DB_UpdateSprayNSFWStatus(int target, bool bSetByAdmin)
 	int iSetByAdmin = bSetByAdmin ? 1 : 0;
 
 	char sQuery[256];
-	FormatEx(sQuery,sizeof(sQuery),
-		"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
-		ON DUPLICATE KEY UPDATE `sprayersteamid` = '%s', `setbyadmin` = '%d';",
-		g_sSprayHash[target], sAuthID[target], iSetByAdmin,
-		sAuthID[target], iSetByAdmin);
+	if (g_bSQLite)
+	{
+		FormatEx(sQuery,sizeof(sQuery),
+			"INSERT OR REPLACE INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d');",
+			g_sSprayHash[target], sAuthID[target], iSetByAdmin);
+	}
+	else
+	{
+		FormatEx(sQuery,sizeof(sQuery),
+			"INSERT INTO `spraynsfwlist` (`sprayhash`, `sprayersteamid`, `setbyadmin`) VALUES ('%s', '%s', '%d') \
+			ON DUPLICATE KEY UPDATE `sprayersteamid` = '%s', `setbyadmin` = '%d';",
+			g_sSprayHash[target], sAuthID[target], iSetByAdmin,
+			sAuthID[target], iSetByAdmin);
+	}
 	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
 }
 
