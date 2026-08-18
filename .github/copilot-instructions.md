@@ -16,7 +16,7 @@ SprayManager is a comprehensive SourcePawn plugin for SourceMod that manages pla
 ### Core Files
 - **`addons/sourcemod/scripting/SprayManager.sp`** - Main plugin file (1,400+ lines)
 - **`addons/sourcemod/scripting/include/SprayManager.inc`** - Public API for external plugins
-- **`sourceknight.yaml`** - Build configuration for SourceKnight build system
+- **`.github/workflows/ci.yml`** - Native GitHub Actions build/release configuration
 
 ### Modular Components (`addons/sourcemod/scripting/modules/`)
 - **`functions.inc`** - Core utility functions and database operations
@@ -33,26 +33,26 @@ SprayManager is a comprehensive SourcePawn plugin for SourceMod that manages pla
 ## Development Environment
 
 ### Build System
-This project uses **SourceKnight** as the build system, which is primarily used in CI/CD workflows. SourceKnight automatically manages dependencies and compilation.
+This project uses native **GitHub Actions** (`.github/workflows/ci.yml`) as the build system. The workflow installs the SourcePawn compiler via `rumblefrog/setup-sp`, clones the git dependencies, and runs `spcomp` directly.
 
-**Build Configuration**: `sourceknight.yaml` defines:
-- SourceMod 1.11.0-git6934 (automatically downloaded)
+**Build Configuration**: `.github/workflows/ci.yml` defines:
+- SourceMod 1.12.x (via `rumblefrog/setup-sp`)
 - MultiColors plugin dependency
 - FixSprayExploit plugin dependency
-- Build targets and output paths
+- Build target and output paths
 
 **Local Development**: The build process is designed for CI environments. For local development, you would need the SourcePawn compiler (spcomp) and the required dependencies manually installed.
 
 **CI Build Process** (via GitHub Actions):
 ```bash
-# Uses maxime1907/action-sourceknight@v1
-# Automatically installs dependencies and compiles
-# Outputs to .sourceknight/package/addons/sourcemod/plugins/
+# Uses rumblefrog/setup-sp to install spcomp (SourceMod 1.12.x)
+# Clones MultiColors and FixSprayExploit includes into addons/sourcemod/scripting/include
+# Compiles with spcomp and packages to addons/sourcemod/plugins/SprayManager.smx
 ```
 
 ### Dependencies
-The plugin requires these dependencies (auto-managed by SourceKnight):
-- **SourceMod 1.11.0+** - Core framework
+The plugin requires these dependencies (cloned in CI):
+- **SourceMod 1.12.x** - Core framework
 - **MultiColors** - Advanced chat coloring
 - **FixSprayExploit** - Security patches for spray exploits
 
@@ -285,8 +285,8 @@ See `SprayManager.inc` for full API documentation with parameter descriptions an
 
 ### Automated Build Process
 The GitHub Actions workflow (`ci.yml`) automatically:
-1. Builds the plugin using SourceKnight
-2. Packages materials and configurations
+1. Builds the plugin with `spcomp` after fetching dependencies
+2. Packages the compiled plugin
 3. Creates release artifacts
 4. Tags and releases on master/main branch updates
 
@@ -298,9 +298,9 @@ The GitHub Actions workflow (`ci.yml`) automatically:
 # 2. SourceMod includes
 # 3. Required dependencies (MultiColors, FixSprayExploit)
 
-# With SourceKnight in CI:
-# Uses maxime1907/action-sourceknight@v1 GitHub Action
-# Output: .sourceknight/package/addons/sourcemod/plugins/SprayManager.smx
+# In CI:
+# Uses rumblefrog/setup-sp@v1.3.1 to install spcomp (SourceMod 1.12.x)
+# Output: addons/sourcemod/plugins/SprayManager.smx
 ```
 
 ### Deployment Package Contents
