@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.8",
+	version		= "3.2.9",
 	url			= ""
 }
 
@@ -578,7 +578,7 @@ void InitializeSQL()
 	g_bFullyConnected = false;
 
 	if (SQL_CheckConfig("spraymanager"))
-		SQL_TConnect(OnSQLConnected, "spraymanager");
+		Database.Connect(OnSQLConnected, "spraymanager");
 	else
 		SetFailState("Could not find \"spraymanager\" entry in databases.cfg.");
 }
@@ -612,9 +612,9 @@ Transaction CreateTablesTransaction()
 	return T_CreateTables;
 }
 
-public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any data)
+public void OnSQLConnected(Database db, const char[] err, any data)
 {
-	if (hChild == null || hParent == null || err[0])
+	if (db == null || err[0])
 	{
 		LogError("Failed to connect to database, retrying in 10 seconds. (%s)", err);
 		CreateTimer(10.0, ReconnectSQL, _, TIMER_FLAG_NO_MAPCHANGE);
@@ -624,8 +624,8 @@ public void OnSQLConnected(Handle hParent, Handle hChild, const char[] err, any 
 	}
 
 	char sDriver[16];
-	g_hDatabase = CloneHandle(hChild);
-	SQL_GetDriverIdent(hParent, sDriver, sizeof(sDriver));
+	g_hDatabase = db;
+	db.Driver.GetIdentifier(sDriver, sizeof(sDriver));
 
 	if (!strncmp(sDriver, "my", 2, false))
 		g_bSQLite = false;
