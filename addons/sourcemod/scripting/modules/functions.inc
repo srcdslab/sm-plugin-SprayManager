@@ -20,7 +20,7 @@ GlobalForward g_hForward_OnClientSprayHashUnbanned;
 GlobalForward g_hForward_OnClientSprayMarkedNSFW;
 GlobalForward g_hForward_OnClientSprayMarkedSFW;
 
-Handle g_hDatabase = null;
+Database g_hDatabase = null;
 Handle g_hRoundEndTimer = null;
 Handle g_hTopMenu = null;
 Handle g_hWantsToSeeNSFWCookie = null;
