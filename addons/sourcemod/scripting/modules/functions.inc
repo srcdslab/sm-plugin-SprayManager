@@ -22,8 +22,8 @@ GlobalForward g_hForward_OnClientSprayMarkedSFW;
 
 Database g_hDatabase = null;
 Handle g_hRoundEndTimer = null;
-Handle g_hTopMenu = null;
-Handle g_hWantsToSeeNSFWCookie = null;
+TopMenu g_hTopMenu = null;
+Cookie g_hWantsToSeeNSFWCookie = null;
 
 ConVar g_cvarHookedDecalFrequency = null;
 ConVar g_cvarDecalFrequency = null;

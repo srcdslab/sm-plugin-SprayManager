@@ -12,7 +12,7 @@ public void CreateConVars()
 	g_cvarEnableSprays.AddChangeHook(ConVarChanged_EnableSpray);
 	g_cvarAuthorizedFlags.AddChangeHook(ConVarChanged_AuthorizedFlags);
 
-	HookConVarChange(g_cvarHookedDecalFrequency, ConVarChanged_DecalFrequency);
+	g_cvarHookedDecalFrequency.AddChangeHook(ConVarChanged_DecalFrequency);
 
 	g_cvarUseProximityCheck = CreateConVar("sm_spraymanager_blockoverspraying", "1", "Blocks people from overspraying each other", FCVAR_NOTIFY);
 

@@ -19,12 +19,12 @@ public void CreateNatives()
 
 public void CreateForwards()
 {
-    g_hForward_OnClientSprayBanned = CreateGlobalForward("SprayManager_OnClientSprayBanned", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
-	g_hForward_OnClientSprayUnbanned = CreateGlobalForward("SprayManager_OnClientSprayUnbanned", ET_Ignore, Param_Cell, Param_Cell);
-	g_hForward_OnClientSprayHashBanned = CreateGlobalForward("SprayManager_OnClientSprayHashBanned", ET_Ignore, Param_Cell, Param_Cell);
-	g_hForward_OnClientSprayHashUnbanned = CreateGlobalForward("SprayManager_OnClientSprayHashUnbanned", ET_Ignore, Param_Cell, Param_Cell);
-	g_hForward_OnClientSprayMarkedNSFW = CreateGlobalForward("SprayManager_OnClientSprayMarkedNSFW", ET_Ignore, Param_Cell, Param_Cell);
-	g_hForward_OnClientSprayMarkedSFW = CreateGlobalForward("SprayManager_OnClientSprayMarkedSFW", ET_Ignore, Param_Cell, Param_Cell);
+    g_hForward_OnClientSprayBanned = new GlobalForward("SprayManager_OnClientSprayBanned", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
+	g_hForward_OnClientSprayUnbanned = new GlobalForward("SprayManager_OnClientSprayUnbanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayHashBanned = new GlobalForward("SprayManager_OnClientSprayHashBanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayHashUnbanned = new GlobalForward("SprayManager_OnClientSprayHashUnbanned", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayMarkedNSFW = new GlobalForward("SprayManager_OnClientSprayMarkedNSFW", ET_Ignore, Param_Cell, Param_Cell);
+	g_hForward_OnClientSprayMarkedSFW = new GlobalForward("SprayManager_OnClientSprayMarkedSFW", ET_Ignore, Param_Cell, Param_Cell);
 }
 
 stock void Call_OnClientSprayBanned(int admin, int target, int length, const char[] reason)
@@ -253,7 +253,7 @@ public int Native_SetClientWantsToSeeNSFW(Handle plugin, int numParams)
 		return false;
 
 	g_bWantsToSeeNSFWSprays[client] = bWantToSee;
-	SetClientCookie(client, g_hWantsToSeeNSFWCookie, bWantToSee ? "1" : "0");
+	g_hWantsToSeeNSFWCookie.Set(client, bWantToSee ? "1" : "0");
 
 	UpdateNSFWSprayVisibilityForClient(client, bWantToSee);
 

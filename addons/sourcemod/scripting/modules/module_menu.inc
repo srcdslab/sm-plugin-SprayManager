@@ -3,19 +3,19 @@ public void OnAdminMenuReady(Handle hAdminMenu)
 	if (hAdminMenu == g_hTopMenu)
 		return;
 
-	g_hTopMenu = CloneHandle(hAdminMenu);
+	g_hTopMenu = view_as<TopMenu>(CloneHandle(hAdminMenu));
 
-	TopMenuObject hMenuObj = AddToTopMenu(g_hTopMenu, "SprayManagerCommands", TopMenuObject_Category, TopMenu_Main_Handler, INVALID_TOPMENUOBJECT);
+	TopMenuObject hMenuObj = g_hTopMenu.AddCategory("SprayManagerCommands", TopMenu_Main_Handler);
 
 	if (hMenuObj == INVALID_TOPMENUOBJECT)
 		return;
 
-	AddToTopMenu(g_hTopMenu, "SprayManager_Spraybanlist", TopMenuObject_Item, Handler_SprayBanList, hMenuObj, "sm_banspray", ADMFLAG_GENERIC);
-	AddToTopMenu(g_hTopMenu, "SprayManager_Tracespray", TopMenuObject_Item, Handler_TraceSpray, hMenuObj, "sm_tracespray", ADMFLAG_GENERIC);
-	AddToTopMenu(g_hTopMenu, "SprayManager_Spray", TopMenuObject_Item, Handler_Spray, hMenuObj, "sm_spray", ADMFLAG_GENERIC);
-	AddToTopMenu(g_hTopMenu, "SprayManager_Sprayban", TopMenuObject_Item, Handler_SprayBan, hMenuObj, "sm_sprayban", ADMFLAG_GENERIC);
-	AddToTopMenu(g_hTopMenu, "SprayManager_Banspray", TopMenuObject_Item, Handler_BanSpray, hMenuObj, "sm_banspray", ADMFLAG_GENERIC);
-	AddToTopMenu(g_hTopMenu, "SprayManager_Unban", TopMenuObject_Item, Handler_UnbanSpray, hMenuObj, "sm_unbanspray", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Spraybanlist", Handler_SprayBanList, hMenuObj, "sm_banspray", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Tracespray", Handler_TraceSpray, hMenuObj, "sm_tracespray", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Spray", Handler_Spray, hMenuObj, "sm_spray", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Sprayban", Handler_SprayBan, hMenuObj, "sm_sprayban", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Banspray", Handler_BanSpray, hMenuObj, "sm_banspray", ADMFLAG_GENERIC);
+	g_hTopMenu.AddItem("SprayManager_Unban", Handler_UnbanSpray, hMenuObj, "sm_unbanspray", ADMFLAG_GENERIC);
 }
 
 public void OnLibraryRemoved(const char[] sLibraryName)
@@ -24,7 +24,7 @@ public void OnLibraryRemoved(const char[] sLibraryName)
 		delete g_hTopMenu;
 }
 
-public void TopMenu_Main_Handler(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void TopMenu_Main_Handler(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	if (hAction == TopMenuAction_DisplayOption)
 		Format(sBuffer, iBufflen, "%s", "SprayManager Commands");
@@ -32,7 +32,7 @@ public void TopMenu_Main_Handler(Handle hMenu, TopMenuAction hAction, TopMenuObj
 		Format(sBuffer, iBufflen, "%s", "SprayManager Commands:");
 }
 
-public void Handler_SprayBanList(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_SprayBanList(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_GENERIC);
 
@@ -44,7 +44,7 @@ public void Handler_SprayBanList(Handle hMenu, TopMenuAction hAction, TopMenuObj
 		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
-public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_TraceSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_tracespray", ADMFLAG_GENERIC);
 
@@ -73,13 +73,13 @@ public void Handler_TraceSpray(Handle hMenu, TopMenuAction hAction, TopMenuObjec
 		CPrintToChat(iParam1, "{green}[SprayManager]{default} Trace did not hit any sprays.");
 
 		if (g_hTopMenu != null)
-			DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+			g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 	}
 	else if (hAction == TopMenuAction_DrawOption)
 		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
-public void Handler_Spray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_Spray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_spray", ADMFLAG_GENERIC);
 
@@ -91,7 +91,7 @@ public void Handler_Spray(Handle hMenu, TopMenuAction hAction, TopMenuObject hOb
 		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
-public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_SprayBan(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_sprayban", ADMFLAG_GENERIC);
 
@@ -103,7 +103,7 @@ public void Handler_SprayBan(Handle hMenu, TopMenuAction hAction, TopMenuObject 
 		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
-public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_BanSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_banspray", ADMFLAG_GENERIC);
 
@@ -115,7 +115,7 @@ public void Handler_BanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject 
 		sBuffer[0] = bHasAcces ? ITEMDRAW_DEFAULT : ITEMDRAW_IGNORE;
 }
 
-public void Handler_UnbanSpray(Handle hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
+public void Handler_UnbanSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_unbanspray", ADMFLAG_GENERIC);
 
@@ -173,7 +173,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -188,7 +188,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -236,7 +236,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -253,7 +253,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 				g_bInvokedThroughTopMenu[iParam1] = false;
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -370,7 +370,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 				else if (g_hTopMenu != null)
 				{
 					g_bInvokedThroughTopMenu[iParam1] = false;
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				}
 				else
 				{
@@ -395,7 +395,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 				g_bInvokedThroughTopMenu[iParam1] = false;
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -433,7 +433,7 @@ int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int i
 				else if (g_hTopMenu != null)
 				{
 					g_bInvokedThroughTopMenu[iParam1] = false;
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				}
 				else
 				{
@@ -458,7 +458,7 @@ int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int i
 				g_bInvokedThroughTopMenu[iParam1] = false;
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -532,7 +532,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -547,7 +547,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -611,7 +611,7 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -626,7 +626,7 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -748,7 +748,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -823,7 +823,7 @@ int MenuHandler_Menu_UnbanSpray(Menu hMenu, MenuAction action, int iParam1, int 
 		case MenuAction_Cancel:
 		{
 			if (iParam2 == MenuCancel_ExitBack && g_hTopMenu != null)
-				DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+				g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 		}
 
 		case MenuAction_Select:
@@ -996,7 +996,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				if (IsValidClient(g_iSprayUnbanTarget[iParam1]))
 					Menu_ListBans_Target(iParam1, g_iSprayUnbanTarget[iParam1]);
 				else if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -1016,7 +1016,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				g_iSprayUnbanTarget[iParam1] = 0;
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -1068,7 +1068,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 				if (IsValidClient(g_iSprayUnbanTarget[iParam1]))
 					Menu_ListBans_Target(iParam1, g_iSprayUnbanTarget[iParam1]);
 				else if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
@@ -1088,7 +1088,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 				g_iSprayUnbanTarget[iParam1] = 0;
 
 				if (g_hTopMenu != null)
-					DisplayTopMenu(g_hTopMenu, iParam1, TopMenuPosition_LastCategory);
+					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
 				else
 					delete hMenu;
 			}
