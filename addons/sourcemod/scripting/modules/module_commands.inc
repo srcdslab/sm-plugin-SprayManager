@@ -157,7 +157,7 @@ public Action Command_NSFW(int client, int argc)
 
 	g_bWantsToSeeNSFWSprays[client] = !g_bWantsToSeeNSFWSprays[client];
 
-	SetClientCookie(client, g_hWantsToSeeNSFWCookie, g_bWantsToSeeNSFWSprays[client] ? "1" : "0");
+	g_hWantsToSeeNSFWCookie.Set(client, g_bWantsToSeeNSFWSprays[client] ? "1" : "0");
 
 	CPrintToChat(client, "{green}[SprayManager]{default} You can %s", g_bWantsToSeeNSFWSprays[client] ? "now see {purple}NSFW{default} sprays." : "no longer see {purple}NSFW{default} sprays.");
 

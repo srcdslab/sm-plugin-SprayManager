@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.10",
+	version		= "3.2.11",
 	url			= ""
 }
 
@@ -62,7 +62,7 @@ public void OnPluginStart()
 
 	RegisterCommands();
 
-	g_hWantsToSeeNSFWCookie = RegClientCookie("spraymanager_wanttoseensfw", "Does this client want to see NSFW sprays?", CookieAccess_Private);
+	g_hWantsToSeeNSFWCookie = new Cookie("spraymanager_wanttoseensfw", "Does this client want to see NSFW sprays?", CookieAccess_Private);
 
 	AddTempEntHook("Player Decal", HookDecal);
 	AddNormalSoundHook(HookSprayer);
@@ -99,7 +99,7 @@ public void OnPluginEnd()
 
 	RemoveTempEntHook("Player Decal", HookDecal);
 	RemoveNormalSoundHook(HookSprayer);
-	UnhookConVarChange(g_cvarHookedDecalFrequency, ConVarChanged_DecalFrequency);
+	g_cvarHookedDecalFrequency.RemoveChangeHook(ConVarChanged_DecalFrequency);
 
 	if (g_hDatabase != null)
 		delete g_hDatabase;
@@ -140,7 +140,7 @@ public void OnClientCookiesCached(int client)
 		return;
 
 	char sWantsToSeeNSFW[8];
-	GetClientCookie(client, g_hWantsToSeeNSFWCookie, sWantsToSeeNSFW, sizeof(sWantsToSeeNSFW));
+	g_hWantsToSeeNSFWCookie.Get(client, sWantsToSeeNSFW, sizeof(sWantsToSeeNSFW));
 
 	g_bWantsToSeeNSFWSprays[client] = view_as<bool>(StringToInt(sWantsToSeeNSFW));
 }
@@ -585,7 +585,7 @@ void InitializeSQL()
 
 Transaction CreateTablesTransaction()
 {
-	Transaction T_CreateTables = SQL_CreateTransaction();
+	Transaction T_CreateTables = new Transaction();
 
 	if (!g_bSQLite)
 	{
@@ -633,7 +633,7 @@ public void OnSQLConnected(Database db, const char[] err, any data)
 		g_bSQLite = true;
 
 	Transaction T_CreateTables = CreateTablesTransaction();
-	SQL_ExecuteTransaction(g_hDatabase, T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
+	g_hDatabase.Execute(T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
 }
 
 public void OnSQLCreateTables_Success(Database db, any data, int numQueries, Handle[] results, any[] queryData)
@@ -657,7 +657,7 @@ public Action RetryTableCreation(Handle hTimer)
 		return Plugin_Handled;
 
 	Transaction T_CreateTables = CreateTablesTransaction();
-	SQL_ExecuteTransaction(g_hDatabase, T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
+	g_hDatabase.Execute(T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
 	return Plugin_Handled;
 }
 
@@ -759,7 +759,7 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 		);
 	}
 
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 
 	strcopy(g_sBanIssuer[target], sizeof(g_sBanIssuer[]), sAdminName);
 	strcopy(g_sBanIssuerSID[target], sizeof(g_sBanIssuerSID[]), sAdminSteamID);
@@ -802,7 +802,7 @@ bool SprayUnbanClient(int target, int client=-1)
 	char sQuery[128];
 	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraymanager` WHERE steamid = '%s';", sAuthID[target]);
 
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 
 	strcopy(g_sBanIssuer[target], sizeof(g_sBanIssuer[]), "");
 	strcopy(g_sBanIssuerSID[target], sizeof(g_sBanIssuerSID[]), "");
@@ -876,7 +876,7 @@ bool BanClientSpray(int client, int target)
 		);
 	}
 
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 
 	g_bSprayHashBanned[target] = true;
 
@@ -910,7 +910,7 @@ bool UnbanClientSpray(int client, int target)
 	char sQuery[128];
 	Format(sQuery, sizeof(sQuery), "DELETE FROM `sprayblacklist` WHERE `sprayhash` = '%s';", g_sSprayHash[target]);
 
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 
 	g_bSprayHashBanned[target] = false;
 	Call_OnClientSprayHashUnbanned(client, target);
@@ -1038,7 +1038,7 @@ void UpdatePlayerInfo(int client)
 	char sQuery[256];
 	Format(sQuery, sizeof(sQuery), "SELECT `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason` FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
-	SQL_TQuery(g_hDatabase, OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
+	g_hDatabase.Query(OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
 }
 
 void UpdateSprayHashInfo(int client)
@@ -1055,7 +1055,7 @@ void UpdateSprayHashInfo(int client)
 	char sSprayQuery[128];
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
-	SQL_TQuery(g_hDatabase, OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_Normal);
+	g_hDatabase.Query(OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_Normal);
 }
 
 void UpdateNSFWInfo(int client)
@@ -1069,7 +1069,7 @@ void UpdateNSFWInfo(int client)
 	char sSprayQuery[128];
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT `setbyadmin` FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
-	SQL_TQuery(g_hDatabase, OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
+	g_hDatabase.Query(OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
 }
 
 void NotifyAdmins(int iParam1, int target, const char[] sReason)
@@ -1081,13 +1081,13 @@ void NotifyAdmins(int iParam1, int target, const char[] sReason)
 	}
 }
 
-public void DummyCallback(Handle hOwner, Handle hChild, const char[] err, any data)
+public void DummyCallback(Database hOwner, DBResultSet hChild, const char[] err, any data)
 {
 	if (hOwner == null || hChild == null)
 		LogError("Query error. (%s)", err);
 }
 
-public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, any client)
+public void OnSQLCheckBanQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
 {
 	if (!IsValidClient(client))
 		return;
@@ -1099,15 +1099,15 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 		return;
 	}
 
-	if (SQL_FetchRow(hChild))
+	if (hChild.FetchRow())
 	{
 		g_bSprayBanned[client] = true;
 
-		g_iSprayUnbanTimestamp[client] = SQL_FetchInt(hChild, 0);
-		SQL_FetchString(hChild, 1, g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]));
-		SQL_FetchString(hChild, 2, g_sBanIssuer[client], sizeof(g_sBanIssuer[]));
-		g_iSprayBanTimestamp[client] = SQL_FetchInt(hChild, 3);
-		SQL_FetchString(hChild, 4, g_sBanReason[client], sizeof(g_sBanReason[]));
+		g_iSprayUnbanTimestamp[client] = hChild.FetchInt(0);
+		hChild.FetchString(1, g_sBanIssuerSID[client], sizeof(g_sBanIssuerSID[]));
+		hChild.FetchString(2, g_sBanIssuer[client], sizeof(g_sBanIssuer[]));
+		g_iSprayBanTimestamp[client] = hChild.FetchInt(3);
+		hChild.FetchString(4, g_sBanReason[client], sizeof(g_sBanReason[]));
 	}
 	else
 	{
@@ -1120,7 +1120,7 @@ public void OnSQLCheckBanQuery(Handle hParent, Handle hChild, const char[] err, 
 	}
 }
 
-public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const char[] err, any client)
+public void OnSQLCheckSprayHashBanQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
 {
 	if (!IsValidClient(client))
 		return;
@@ -1133,12 +1133,12 @@ public void OnSQLCheckSprayHashBanQuery(Handle hParent, Handle hChild, const cha
 		return;
 	}
 
-	g_bSprayHashBanned[client] = SQL_FetchRow(hChild);
+	g_bSprayHashBanned[client] = hChild.FetchRow();
 	g_bSprayCheckComplete[client] = true;
 	g_iSprayCheckAttempts[client] = 0;
 }
 
-public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const char[] err, any client)
+public void OnSQLCheckNSFWSprayHashQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
 {
 	if (!IsValidClient(client))
 		return;
@@ -1150,12 +1150,12 @@ public void OnSQLCheckNSFWSprayHashQuery(Handle hParent, Handle hChild, const ch
 		return;
 	}
 
-	if (SQL_FetchRow(hChild))
+	if (hChild.FetchRow())
 	{
 		g_bHasNSFWSpray[client] = true;
 
 		char sSetByAdmin[8];
-		SQL_FetchString(hChild, 0, sSetByAdmin, sizeof(sSetByAdmin));
+		hChild.FetchString(0, sSetByAdmin, sizeof(sSetByAdmin));
 
 		g_bMarkedNSFWByAdmin[client] = view_as<bool>(StringToInt(sSetByAdmin));
 	}
@@ -1378,7 +1378,7 @@ stock void DB_UpdateSprayNSFWStatus(int target, bool bSetByAdmin)
 			g_sSprayHash[target], sAuthID[target], iSetByAdmin,
 			sAuthID[target], iSetByAdmin);
 	}
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 }
 
 stock void DB_DeleteSprayNSFWStatus(int target)
@@ -1386,5 +1386,5 @@ stock void DB_DeleteSprayNSFWStatus(int target)
 	char sQuery[256];
 
 	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[target]);
-	SQL_TQuery(g_hDatabase, DummyCallback, sQuery);
+	g_hDatabase.Query(DummyCallback, sQuery);
 }
