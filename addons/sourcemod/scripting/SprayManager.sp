@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.11",
+	version		= "3.2.12",
 	url			= ""
 }
 
@@ -442,18 +442,23 @@ public void OnGameFrame()
 	if (iFrame % g_iFramesToSkip != 0)
 		return;
 
+	// Validate every client once, instead of once per traced client
+	int iValidClients[MAXPLAYERS];
+	int iValidCount = 0;
+
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (!IsValidClient(client))
-			continue;
-
-		PerformPlayerTraces(client);
+		if (IsValidClient(client))
+			iValidClients[iValidCount++] = client;
 	}
+
+	for (int i = 0; i < iValidCount; i++)
+		PerformPlayerTraces(iValidClients[i], iValidClients, iValidCount);
 
 	iFrame = 0;
 }
 
-public void PerformPlayerTraces(int client)
+public void PerformPlayerTraces(int client, const int[] iValidClients, int iValidCount)
 {
 	bool bLookingatSpray = false;
 	float vecPos[3];
@@ -461,10 +466,9 @@ public void PerformPlayerTraces(int client)
 	if (!TracePlayerAngles(client, vecPos))
 		return;
 
-	for (int i = 1; i <= MaxClients; i++)
+	for (int j = 0; j < iValidCount; j++)
 	{
-		if (!IsValidClient(i))
-			continue;
+		int i = iValidClients[j];
 
 		if (IsPointInsideAABB(vecPos, g_SprayAABB[i]))
 		{
