@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.12",
+	version		= "3.2.13",
 	url			= ""
 }
 
@@ -594,8 +594,13 @@ Transaction CreateTablesTransaction()
 	if (!g_bSQLite)
 	{
 		char sQuery[MAX_SQL_QUERY_LENGTH];
-		Format(sQuery, sizeof(sQuery), "SET NAMES \"%s\"", CHARSET);
-		T_CreateTables.AddQuery(sQuery);
+
+		// Fallback only: SetCharset() survives the driver's auto-reconnect, SET NAMES doesn't
+		if (!g_bCharsetSet)
+		{
+			Format(sQuery, sizeof(sQuery), "SET NAMES \"%s\"", CHARSET);
+			T_CreateTables.AddQuery(sQuery);
+		}
 
 		Format(sQuery, sizeof(sQuery),"CREATE TABLE IF NOT EXISTS `spraymanager` (`steamid` VARCHAR(32) NOT NULL, `name` VARCHAR(32) NOT NULL, `unbantime` INT, `issuersteamid` VARCHAR(32), `issuername` VARCHAR(32) NOT NULL, `issuedtime` INT, `issuedreason` VARCHAR(64) NOT NULL, PRIMARY KEY(steamid)) CHARACTER SET %s COLLATE %s;", CHARSET, COLLATION);
 		T_CreateTables.AddQuery(sQuery);
@@ -621,20 +626,24 @@ public void OnSQLConnected(Database db, const char[] err, any data)
 	if (db == null || err[0])
 	{
 		LogError("Failed to connect to database, retrying in 10 seconds. (%s)", err);
-		CreateTimer(10.0, ReconnectSQL, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(10.0, ReconnectSQL);
 		g_bFullyConnected = false;
 
 		return;
 	}
 
 	char sDriver[16];
-	g_hDatabase = db;
 	db.Driver.GetIdentifier(sDriver, sizeof(sDriver));
 
 	if (!strncmp(sDriver, "my", 2, false))
 		g_bSQLite = false;
 	else
 		g_bSQLite = true;
+
+	// Once per connection, before any query is queued
+	g_bCharsetSet = !g_bSQLite && db.SetCharset(CHARSET);
+
+	g_hDatabase = db;
 
 	Transaction T_CreateTables = CreateTablesTransaction();
 	g_hDatabase.Execute(T_CreateTables, OnSQLCreateTables_Success, OnSQLCreateTables_Error, _, DBPrio_High);
@@ -652,7 +661,7 @@ public void OnSQLCreateTables_Success(Database db, any data, int numQueries, Han
 public void OnSQLCreateTables_Error(Database db, any data, int numQueries, const char[] error, int failIndex, any[] queryData)
 {
 	LogError("Database error while creating tables, retrying in 10 seconds. (%s)", error);
-	CreateTimer(10.0, RetryTableCreation, _, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(10.0, RetryTableCreation);
 }
 
 public Action RetryTableCreation(Handle hTimer)
@@ -1042,7 +1051,7 @@ void UpdatePlayerInfo(int client)
 	char sQuery[256];
 	Format(sQuery, sizeof(sQuery), "SELECT `unbantime`, `issuersteamid`, `issuername`, `issuedtime`, `issuedreason` FROM `spraymanager` WHERE `steamid` = '%s';", sAuthID[client]);
 
-	g_hDatabase.Query(OnSQLCheckBanQuery, sQuery, client, DBPrio_High);
+	g_hDatabase.Query(OnSQLCheckBanQuery, sQuery, GetClientUserId(client), DBPrio_High);
 }
 
 void UpdateSprayHashInfo(int client)
@@ -1059,13 +1068,16 @@ void UpdateSprayHashInfo(int client)
 	char sSprayQuery[128];
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT 1 FROM `sprayblacklist` WHERE `sprayhash` = '%s' LIMIT 1;", g_sSprayHash[client]);
 
-	g_hDatabase.Query(OnSQLCheckSprayHashBanQuery, sSprayQuery, client, DBPrio_Normal);
+	g_hDatabase.Query(OnSQLCheckSprayHashBanQuery, sSprayQuery, GetClientUserId(client), DBPrio_Normal);
 }
 
 void UpdateNSFWInfo(int client)
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
+	{
+		CreateTimer(10.0, RetryNSFWSprayLookup, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
 		return;
+	}
 
 	if (!IsValidClient(client))
 		return;
@@ -1073,7 +1085,7 @@ void UpdateNSFWInfo(int client)
 	char sSprayQuery[128];
 	Format(sSprayQuery, sizeof(sSprayQuery), "SELECT `setbyadmin` FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[client]);
 
-	g_hDatabase.Query(OnSQLCheckNSFWSprayHashQuery, sSprayQuery, client);
+	g_hDatabase.Query(OnSQLCheckNSFWSprayHashQuery, sSprayQuery, GetClientUserId(client));
 }
 
 void NotifyAdmins(int iParam1, int target, const char[] sReason)
@@ -1091,9 +1103,10 @@ public void DummyCallback(Database hOwner, DBResultSet hChild, const char[] err,
 		LogError("Query error. (%s)", err);
 }
 
-public void OnSQLCheckBanQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
+public void OnSQLCheckBanQuery(Database hParent, DBResultSet hChild, const char[] err, int userid)
 {
-	if (!IsValidClient(client))
+	int client = GetClientOfUserId(userid);
+	if (!client || !IsValidClient(client))
 		return;
 
 	if (hChild == null || hParent == null || err[0])
@@ -1124,9 +1137,10 @@ public void OnSQLCheckBanQuery(Database hParent, DBResultSet hChild, const char[
 	}
 }
 
-public void OnSQLCheckSprayHashBanQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
+public void OnSQLCheckSprayHashBanQuery(Database hParent, DBResultSet hChild, const char[] err, int userid)
 {
-	if (!IsValidClient(client))
+	int client = GetClientOfUserId(userid);
+	if (!client || !IsValidClient(client))
 		return;
 
 	if (hChild == null || hParent == null || err[0])
@@ -1142,9 +1156,10 @@ public void OnSQLCheckSprayHashBanQuery(Database hParent, DBResultSet hChild, co
 	g_iSprayCheckAttempts[client] = 0;
 }
 
-public void OnSQLCheckNSFWSprayHashQuery(Database hParent, DBResultSet hChild, const char[] err, any client)
+public void OnSQLCheckNSFWSprayHashQuery(Database hParent, DBResultSet hChild, const char[] err, int userid)
 {
-	if (!IsValidClient(client))
+	int client = GetClientOfUserId(userid);
+	if (!client || !IsValidClient(client))
 		return;
 
 	if (hChild == null || hParent == null || err[0])
@@ -1365,6 +1380,9 @@ void UpdateSprayVisibilityForAllClients(int sprayOwner)
 
 stock void DB_UpdateSprayNSFWStatus(int target, bool bSetByAdmin) 
 {
+	if (g_hDatabase == null)
+		return;
+
 	int iSetByAdmin = bSetByAdmin ? 1 : 0;
 
 	char sQuery[256];
@@ -1387,6 +1405,9 @@ stock void DB_UpdateSprayNSFWStatus(int target, bool bSetByAdmin)
 
 stock void DB_DeleteSprayNSFWStatus(int target)
 {
+	if (g_hDatabase == null)
+		return;
+
 	char sQuery[256];
 
 	Format(sQuery, sizeof(sQuery), "DELETE FROM `spraynsfwlist` WHERE `sprayhash` = '%s';", g_sSprayHash[target]);

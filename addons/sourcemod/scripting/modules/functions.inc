@@ -46,6 +46,7 @@ int g_iFramesToSkip;
 
 bool g_bLoadedLate;
 bool g_bSQLite;
+bool g_bCharsetSet;
 bool g_bFullyConnected;
 bool g_bSkipDecalHook;
 
