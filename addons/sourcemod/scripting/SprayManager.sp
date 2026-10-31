@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name		= "Spray Manager",
 	description	= "Help manage player sprays.",
 	author		= "Obus, maxime1907, .Rushaway",
-	version		= "3.2.13",
+	version		= "3.2.14",
 	url			= ""
 }
 
@@ -43,6 +43,7 @@ public APLRes AskPluginLoad2(Handle hThis, bool bLate, char[] err, int iErrLen)
 public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
+	LoadTranslations("SprayManager.phrases");
 
 	// NSFW
 	AddFileToDownloadsTable("materials/spraymanager/nsfw_1.vtf");
@@ -240,7 +241,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse)
 
 	if (!g_bEnableSprays)
 	{
-		CPrintToChat(client, "{green}[SprayManager] {white}Sorry, all sprays are currently disabled on the server.");
+		CPrintToChat(client, "{green}[SprayManager] %t", "Sprays Disabled");
 		return Plugin_Continue;
 	}
 
@@ -285,9 +286,9 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 	if (!g_bSprayCheckComplete[client])
 	{
 		if (g_iSprayCheckAttempts[client] >= 5)
-			CPrintToChat(client, "{green}[SprayManager]{default} An error occurred while checking your spray. Please wait next map.");
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Spray Check Error");
 		else
-			CPrintToChat(client, "{green}[SprayManager]{default} Your spray is currently being checked, please wait a few seconds.");
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Spray Being Checked");
 		return Plugin_Handled;
 	}
 
@@ -296,7 +297,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 
 	if (g_bSprayHashBanned[client])
 	{
-		CPrintToChat(client, "{green}[SprayManager]{default} Your spray is blacklisted, change it.");
+		CPrintToChat(client, "{green}[SprayManager]{default} %t", "Spray Blacklisted");
 		return Plugin_Handled;
 	}
 
@@ -309,8 +310,8 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 	if (g_bSprayBanned[client])
 	{
 		char sRemainingTime[512];
-		FormatRemainingTime(g_iSprayUnbanTimestamp[client], sRemainingTime, sizeof(sRemainingTime));
-		CPrintToChat(client, "{green}[SprayManager]{default} You are currently spray banned. ({green}%s{default})", sRemainingTime);
+		FormatRemainingTime(g_iSprayUnbanTimestamp[client], sRemainingTime, sizeof(sRemainingTime), client);
+		CPrintToChat(client, "{green}[SprayManager]{default} %t", "Currently Spray Banned", sRemainingTime);
 		return Plugin_Handled;
 	}
 
@@ -345,7 +346,7 @@ public Action HookDecal(const char[] sTEName, const int[] iClients, int iNumClie
 
 					if (CheckCommandAccess(i, "", ADMFLAG_CUSTOM1, true) || CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
 					{
-						CPrintToChat(client, "{green}[SprayManager]{default} Your spray is too close to {green}%N{default}'s spray.", i);
+						CPrintToChat(client, "{green}[SprayManager]{default} %t", "Spray Too Close", i);
 						return Plugin_Handled;
 					}
 				}
@@ -472,7 +473,7 @@ public void PerformPlayerTraces(int client, const int[] iValidClients, int iVali
 
 		if (IsPointInsideAABB(vecPos, g_SprayAABB[i]))
 		{
-			PrintHintText(client, "Sprayed by: %N (%s) [%s]", i, sAuthID3[i], g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
+			PrintHintText(client, "%t", "Hint Sprayed By", i, sAuthID3[i], g_bHasNSFWSpray[i] ? "NSFW" : "SFW");
 			StopSound(client, SNDCHAN_STATIC, "UI/hint.wav");
 
 			g_bSprayNotified[client] = true;
@@ -712,19 +713,19 @@ bool SprayBanClient(int client, int target, int iBanLength, const char[] sReason
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Database Not Connected");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
-		ReplyToCommand(client, "[SprayManager] Target is no longer valid.");
+		ReplyToCommand(client, "[SprayManager] %t", "Player no longer available");
 		return false;
 	}
 
 	if (g_bSprayBanned[target])
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is already spray banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "Already Spray Banned", target);
 		return false;
 	}
 
@@ -794,21 +795,21 @@ bool SprayUnbanClient(int target, int client=-1)
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
 		if (client != -1)
-			CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+			CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Database Not Connected");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
 		if (client != -1)
-			CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
+			CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Player no longer available");
 		return false;
 	}
 
 	if (!g_bSprayBanned[target])
 	{
 		if (client != -1)
-			CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not spray banned.", target);
+			CReplyToCommand(client, "{green}[SprayManager] %t", "Not Spray Banned", target);
 		return false;
 	}
 
@@ -835,31 +836,31 @@ bool BanClientSpray(int client, int target)
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Database Not Connected");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Player no longer available");
 		return false;
 	}
 
 	if (!g_sSprayHash[target][0])
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}does not have a valid spray hash.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "No Valid Spray Hash", target);
 		return false;
 	}
 
 	if (g_bSprayHashBanned[target])
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is already hash banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "Already Hash Banned", target);
 		return false;
 	}
 
 	if (IsDefaultGameSprayHash(g_sSprayHash[target]))
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}has a default game spray.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "Default Game Spray", target);
 		return false;
 	}
 
@@ -904,19 +905,19 @@ bool UnbanClientSpray(int client, int target)
 {
 	if (g_hDatabase == null || !g_bFullyConnected)
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Database is not connected.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Database Not Connected");
 		return false;
 	}
 
 	if (!IsValidClient(target))
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Player no longer available");
 		return false;
 	}
 
 	if (!g_bSprayHashBanned[target])
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}is not hash banned.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "Not Hash Banned", target);
 		return false;
 	}
 
@@ -935,13 +936,13 @@ bool AdminForceSprayNSFW(int client, int target)
 {
 	if (!IsValidClient(target))
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{default} Target is no longer valid.");
+		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "Player no longer available");
 		return false;
 	}
 
 	if (IsDefaultGameSprayHash(g_sSprayHash[target]))
 	{
-		CReplyToCommand(client, "{green}[SprayManager]{olive} %N {default}has a default game spray.", target);
+		CReplyToCommand(client, "{green}[SprayManager] %t", "Default Game Spray", target);
 		return false;
 	}
 
@@ -975,9 +976,9 @@ bool AdminForceSprayNSFW(int client, int target)
 		}
 	}
 
-	CPrintToChat(client, "{green}[SprayManager]{default} Marked {green}%N{default}'s spray as NSFW.", target);
+	CPrintToChat(client, "{green}[SprayManager]{default} %t", "Marked Spray NSFW", target);
 	LogAction(client, target, "[SprayManager] %L Marked %L spray as NSFW.", client, target);
-	NotifyAdmins(client, target, "{default}spray was marked as {green}NSFW");
+	NotifyAdmins(client, target, "Notify Marked NSFW");
 
 	return true;
 }
@@ -1088,12 +1089,12 @@ void UpdateNSFWInfo(int client)
 	g_hDatabase.Query(OnSQLCheckNSFWSprayHashQuery, sSprayQuery, GetClientUserId(client));
 }
 
-void NotifyAdmins(int iParam1, int target, const char[] sReason)
+void NotifyAdmins(int iParam1, int target, const char[] sPhrase)
 {
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGame(i) && !IsFakeClient(i) && CheckCommandAccess(i, "sm_spray", ADMFLAG_GENERIC))
-			CPrintToChat(i, "{green}[SM]{olive} %N %s {default}by {olive}%N{default}.", target, sReason, iParam1);
+			CPrintToChat(i, "{green}[SM] %t", sPhrase, target, iParam1);
 	}
 }
 
@@ -1233,7 +1234,7 @@ stock bool ForceSpray(int client, int target, bool bPlaySound=true)
 		}
 		if (!bAuthorized)
 		{
-			CPrintToChat(client, "{green}[SprayManager] {white}Sorry, all sprays are currently disabled on the server.");
+			CPrintToChat(client, "{green}[SprayManager] %t", "Sprays Disabled");
 			return false;
 		}
 	}
@@ -1250,7 +1251,7 @@ stock bool ForceSpray(int client, int target, bool bPlaySound=true)
 		return true;
 	}
 
-	CPrintToChat(client, "{green}[SprayManager]{default} Could not spray here, try somewhere else.");
+	CPrintToChat(client, "{green}[SprayManager]{default} %t", "Cannot Spray Here");
 
 	return false;
 }
