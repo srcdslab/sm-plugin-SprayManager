@@ -27,9 +27,9 @@ public void OnLibraryRemoved(const char[] sLibraryName)
 public void TopMenu_Main_Handler(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
 {
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "SprayManager Commands");
+		Format(sBuffer, iBufflen, "%T", "Menu Category", iParam1);
 	else if (hAction == TopMenuAction_DisplayTitle)
-		Format(sBuffer, iBufflen, "%s", "SprayManager Commands:");
+		Format(sBuffer, iBufflen, "%T", "Menu Category Title", iParam1);
 }
 
 public void Handler_SprayBanList(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hObjID, int iParam1, char[] sBuffer, int iBufflen)
@@ -37,7 +37,7 @@ public void Handler_SprayBanList(TopMenu hMenu, TopMenuAction hAction, TopMenuOb
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_slap", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "List Spray Banned Clients");
+		Format(sBuffer, iBufflen, "%T", "Menu List Bans", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_ListBans(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
@@ -50,7 +50,7 @@ public void Handler_TraceSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObje
 
 	if (hAction == TopMenuAction_DisplayOption)
 	{
-		Format(sBuffer, iBufflen, "%s", "Trace a Spray");
+		Format(sBuffer, iBufflen, "%T", "Menu Trace Spray", iParam1);
 	}
 	else if (hAction == TopMenuAction_SelectOption)
 	{
@@ -70,7 +70,7 @@ public void Handler_TraceSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObje
 			}
 		}
 
-		CPrintToChat(iParam1, "{green}[SprayManager]{default} Trace did not hit any sprays.");
+		CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Trace No Spray");
 
 		if (g_hTopMenu != null)
 			g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
@@ -84,7 +84,7 @@ public void Handler_Spray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject hO
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_spray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Spray a Client's Spray");
+		Format(sBuffer, iBufflen, "%T", "Menu Force Spray", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Spray(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
@@ -96,7 +96,7 @@ public void Handler_SprayBan(TopMenu hMenu, TopMenuAction hAction, TopMenuObject
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_sprayban", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Spray Ban a Client");
+		Format(sBuffer, iBufflen, "%T", "Menu Spray Ban", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_SprayBan(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
@@ -108,7 +108,7 @@ public void Handler_BanSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObject
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_banspray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Ban a Client's Hash Spray");
+		Format(sBuffer, iBufflen, "%T", "Menu Ban Spray", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_BanSpray(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
@@ -120,7 +120,7 @@ public void Handler_UnbanSpray(TopMenu hMenu, TopMenuAction hAction, TopMenuObje
 	bool bHasAcces = CheckCommandAccess(iParam1, "sm_unbanspray", ADMFLAG_GENERIC);
 
 	if (hAction == TopMenuAction_DisplayOption)
-		Format(sBuffer, iBufflen, "%s", "Unban a Client");
+		Format(sBuffer, iBufflen, "%T", "Menu Unban", iParam1);
 	else if (hAction == TopMenuAction_SelectOption)
 		Menu_Unban(iParam1);
 	else if (hAction == TopMenuAction_DrawOption)
@@ -135,7 +135,7 @@ void Menu_ListBans(int client)
 	int iBannedClients;
 
 	Menu ListMenu = new Menu(MenuHandler_Menu_ListBans);
-	ListMenu.SetTitle("[SprayManager] Banned Clients:");
+	ListMenu.SetTitle("[SprayManager] %T", "Menu Banned Clients Title", client);
 	ListMenu.ExitBackButton =  true;
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -158,7 +158,7 @@ void Menu_ListBans(int client)
 	}
 
 	if (!iBannedClients)
-		ListMenu.AddItem("", "No Banned Clients.", ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(ListMenu, "", "Menu No Banned Clients", client, ITEMDRAW_DISABLED);
 
 	ListMenu.Display(client, MENU_TIME_FOREVER);
 }
@@ -185,7 +185,7 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				if (g_hTopMenu != null)
 					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
@@ -205,21 +205,21 @@ int MenuHandler_Menu_ListBans(Menu hMenu, MenuAction action, int iParam1, int iP
 void Menu_Trace(int client, int target)
 {
 	Menu TraceMenu = new Menu(MenuHandler_Menu_Trace);
-	TraceMenu.SetTitle("Sprayed by: %N (%s)", target, sAuthID3[target]);
+	TraceMenu.SetTitle("%T", "Menu Sprayed By Title", client, target, sAuthID3[target]);
 
 	if (g_bInvokedThroughTopMenu[client])
 		TraceMenu.ExitBackButton = true;
 
-	TraceMenu.AddItem("1", "Warn Client");
+	AddTranslatedMenuItem(TraceMenu, "1", "Menu Warn Client", client);
 	if (g_bHasNSFWSpray[target])
-		TraceMenu.AddItem("2", "Mark as SFW", (CheckCommandAccess(client, "sm_forcesfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(TraceMenu, "2", "Menu Mark SFW", client, (CheckCommandAccess(client, "sm_forcesfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	else
-		TraceMenu.AddItem("2", "Mark as NSFW", (CheckCommandAccess(client, "sm_forcensfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-	TraceMenu.AddItem("3", "Kick Client", (CheckCommandAccess(client, "sm_kick", ADMFLAG_KICK))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-	TraceMenu.AddItem("4", "Spray Ban Client", (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-	TraceMenu.AddItem("5", "Ban Clients Spray Hash", (CheckCommandAccess(client, "sm_banspray", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(TraceMenu, "2", "Menu Mark NSFW", client, (CheckCommandAccess(client, "sm_forcensfw", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	AddTranslatedMenuItem(TraceMenu, "3", "Menu Kick Client", client, (CheckCommandAccess(client, "sm_kick", ADMFLAG_KICK))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	AddTranslatedMenuItem(TraceMenu, "4", "Menu Spray Ban Client", client, (CheckCommandAccess(client, "sm_sprayban", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	AddTranslatedMenuItem(TraceMenu, "5", "Menu Ban Spray Hash", client, (CheckCommandAccess(client, "sm_banspray", ADMFLAG_GENERIC))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 	TraceMenu.AddItem("", "", ITEMDRAW_SPACER);
-	TraceMenu.AddItem("6", "Ban Client", (CheckCommandAccess(client, "sm_ban", ADMFLAG_BAN))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+	AddTranslatedMenuItem(TraceMenu, "6", "Menu Ban Client", client, (CheckCommandAccess(client, "sm_ban", ADMFLAG_BAN))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
 
 	g_iSprayTraceTarget[client] = target;
 
@@ -248,7 +248,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_bInvokedThroughTopMenu[iParam1] = false;
 
@@ -263,9 +263,9 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 				{
 					case 1:
 					{
-						CPrintToChat(target, "{green}[SprayManager]{default} Your spray is not allowed, change it.");
+						CPrintToChat(target, "{green}[SprayManager]{default} %t", "Spray Not Allowed");
 						LogAction(target, iParam1, "[SprayManager] \"%L\" has been warned for his spray by \"%L\"", target, iParam1);
-						NotifyAdmins(iParam1, target, "{default}has been {green}warned {default}for his spray");
+						NotifyAdmins(iParam1, target, "Notify Warned");
 						Menu_Trace(iParam1, target);
 					}
 
@@ -282,30 +282,30 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 					case 3:
 					{
 						g_bInvokedThroughTopMenu[iParam1] = false;
-						KickClient(target, "Your spray is not allowed, change it"); 
-						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Kicked {olive}%N{default}'s for his spray", target);
+						KickClient(target, "%t", "Spray Not Allowed");
+						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Kicked For Spray", target);
 						LogAction(target, iParam1, "[SprayManager] \"%L\" has been kicked for his spray by \"%L\"", target, iParam1);
 					}
 
 					case 4:
 					{
 						Menu TraceSpraySprayBan = new Menu(MenuHandler_Menu_Trace_SprayBan);
-						TraceSpraySprayBan.SetTitle("[SprayManager] Select a Spray Ban Length for %N (#%d)", target, GetClientUserId(target));
+						TraceSpraySprayBan.SetTitle("[SprayManager] %T", "Menu Spray Ban Length Title", iParam1, target, GetClientUserId(target));
 						TraceSpraySprayBan.ExitBackButton = true;
 
-						TraceSpraySprayBan.AddItem("10", "10 Minutes");
-						TraceSpraySprayBan.AddItem("30", "30 Minutes");
-						TraceSpraySprayBan.AddItem("60", "1 Hour");
-						TraceSpraySprayBan.AddItem("240", "4 Hours");
-						TraceSpraySprayBan.AddItem("480", "8 Hours");
-						TraceSpraySprayBan.AddItem("720", "12 Hours");
-						TraceSpraySprayBan.AddItem("1440", "1 Day");
-						TraceSpraySprayBan.AddItem("2880", "2 Days");
-						TraceSpraySprayBan.AddItem("4320", "3 Days");
-						TraceSpraySprayBan.AddItem("10080", "1 Week");
-						TraceSpraySprayBan.AddItem("20160", "2 Weeks");
-						TraceSpraySprayBan.AddItem("40320", "1 Month");
-						TraceSpraySprayBan.AddItem("0", "Permanent");
+						AddTranslatedMenuItem(TraceSpraySprayBan, "10", "Length 10 Minutes", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "30", "Length 30 Minutes", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "60", "Length 1 Hour", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "240", "Length 4 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "480", "Length 8 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "720", "Length 12 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "1440", "Length 1 Day", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "2880", "Length 2 Days", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "4320", "Length 3 Days", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "10080", "Length 1 Week", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "20160", "Length 2 Weeks", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "40320", "Length 1 Month", iParam1);
+						AddTranslatedMenuItem(TraceSpraySprayBan, "0", "Length Permanent", iParam1);
 
 						g_iSprayBanTarget[iParam1] = target;
 
@@ -316,7 +316,7 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 					{
 						if (BanClientSpray(iParam1, target))
 						{
-							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Banned {green}%N{default}'s spray.", target);
+							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Hash Banned", target);
 							LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 						}
 					}
@@ -324,22 +324,22 @@ int MenuHandler_Menu_Trace(Menu hMenu, MenuAction action, int iParam1, int iPara
 					case 6:
 					{
 						Menu TraceSprayBan = new Menu(MenuHandler_Menu_Trace_Ban);
-						TraceSprayBan.SetTitle("[SprayManager] Select a Ban Length for %N (#%d)", target, GetClientUserId(target));
+						TraceSprayBan.SetTitle("[SprayManager] %T", "Menu Ban Length Title", iParam1, target, GetClientUserId(target));
 						TraceSprayBan.ExitBackButton = true;
 
-						TraceSprayBan.AddItem("10", "10 Minutes");
-						TraceSprayBan.AddItem("30", "30 Minutes");
-						TraceSprayBan.AddItem("60", "1 Hour");
-						TraceSprayBan.AddItem("240", "4 Hours");
-						TraceSprayBan.AddItem("480", "8 Hours");
-						TraceSprayBan.AddItem("720", "12 Hours");
-						TraceSprayBan.AddItem("1440", "1 Day");
-						TraceSprayBan.AddItem("2880", "2 Days");
-						TraceSprayBan.AddItem("4320", "3 Days");
-						TraceSprayBan.AddItem("10080", "1 Week");
-						TraceSprayBan.AddItem("20160", "2 Weeks");
-						TraceSprayBan.AddItem("40320", "1 Month");
-						TraceSprayBan.AddItem("0", "Permanent");
+						AddTranslatedMenuItem(TraceSprayBan, "10", "Length 10 Minutes", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "30", "Length 30 Minutes", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "60", "Length 1 Hour", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "240", "Length 4 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "480", "Length 8 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "720", "Length 12 Hours", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "1440", "Length 1 Day", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "2880", "Length 2 Days", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "4320", "Length 3 Days", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "10080", "Length 1 Week", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "20160", "Length 2 Weeks", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "40320", "Length 1 Month", iParam1);
+						AddTranslatedMenuItem(TraceSprayBan, "0", "Length Permanent", iParam1);
 
 						g_iBanTarget[iParam1] = target;
 
@@ -389,7 +389,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_iSprayBanTarget[iParam1] = 0;
 				g_bInvokedThroughTopMenu[iParam1] = false;
@@ -403,7 +403,7 @@ int MenuHandler_Menu_Trace_SprayBan(Menu hMenu, MenuAction action, int iParam1, 
 			{
 				if (SprayBanClient(iParam1, target, StringToInt(sOption), "Inappropriate Spray"))
 				{
-					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray banned {olive}%N{default}.", target);
+					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Banned", target);
 					LogAction(iParam1, target, "\"%L\" spray banned \"%L\" (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 
@@ -452,7 +452,7 @@ int MenuHandler_Menu_Trace_Ban(Menu hMenu, MenuAction action, int iParam1, int i
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_iBanTarget[iParam1] = 0;
 				g_bInvokedThroughTopMenu[iParam1] = false;
@@ -479,7 +479,7 @@ void Menu_Spray(int client)
 		return;
 
 	Menu SprayMenu = new Menu(MenuHandler_Menu_Spray);
-	SprayMenu.SetTitle("[SprayManager] Select a Client to Force Spray:");
+	SprayMenu.SetTitle("[SprayManager] %T", "Menu Force Spray Title", client);
 	SprayMenu.ExitBackButton =  true;
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -488,26 +488,26 @@ void Menu_Spray(int client)
 			continue;
 
 		char sUserID[16];
-		char sBuff[64];
+		char sBuff[128];
 		int iUserID = GetClientUserId(i);
 
 		Format(sUserID, sizeof(sUserID), "%d", iUserID);
 
 		if (g_bSprayBanned[i] && g_bSprayHashBanned[i])
 		{
-			Format(sBuff, sizeof(sBuff), "%N (#%d) [Spray & Hash Banned]", i, iUserID);
+			Format(sBuff, sizeof(sBuff), "%N (#%d) [%T]", i, iUserID, "Menu Spray And Hash Banned", client);
 
 			SprayMenu.AddItem(sUserID, sBuff);
 		}
 		else if (g_bSprayBanned[i])
 		{
-			Format(sBuff, sizeof(sBuff), "%N (#%d) [Spray Banned]", i, iUserID);
+			Format(sBuff, sizeof(sBuff), "%N (#%d) [%T]", i, iUserID, "Menu Spray Banned", client);
 
 			SprayMenu.AddItem(sUserID, sBuff);
 		}
 		else if (g_bSprayHashBanned[i])
 		{
-			Format(sBuff, sizeof(sBuff), "%N (#%d) [Hash Banned]", i, iUserID);
+			Format(sBuff, sizeof(sBuff), "%N (#%d) [%T]", i, iUserID, "Menu Hash Banned", client);
 
 			SprayMenu.AddItem(sUserID, sBuff);
 		}
@@ -544,7 +544,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				if (g_hTopMenu != null)
 					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
@@ -556,7 +556,7 @@ int MenuHandler_Menu_Spray(Menu hMenu, MenuAction action, int iParam1, int iPara
 				g_iAllowSpray = target;
 				ForceSpray(iParam1, target);
 
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Sprayed {green}%N{default}'s spray(s).", target);
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Sprayed Client Spray", target);
 
 				Menu_Spray(iParam1);
 			}
@@ -573,7 +573,7 @@ void Menu_SprayBan(int client)
 	int iClientsToDisplay;
 
 	Menu SprayBanMenu = new Menu(MenuHandler_Menu_SprayBan);
-	SprayBanMenu.SetTitle("[SprayManager] Select a Client to Spray Ban:");
+	SprayBanMenu.SetTitle("[SprayManager] %T", "Menu Spray Ban Title", client);
 	SprayBanMenu.ExitBackButton = true;
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -596,7 +596,7 @@ void Menu_SprayBan(int client)
 	}
 
 	if (!iClientsToDisplay)
-		SprayBanMenu.AddItem("", "No eligible Clients found.", ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(SprayBanMenu, "", "Menu No Eligible Clients", client, ITEMDRAW_DISABLED);
 
 	SprayBanMenu.Display(client, MENU_TIME_FOREVER);
 }
@@ -623,7 +623,7 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				if (g_hTopMenu != null)
 					g_hTopMenu.Display(iParam1, TopMenuPosition_LastCategory);
@@ -633,22 +633,22 @@ int MenuHandler_Menu_SprayBan(Menu hMenu, MenuAction action, int iParam1, int iP
 			else
 			{
 				Menu SprayBanLengthMenu = new Menu(MenuHandler_Menu_SprayBan_Length);
-				SprayBanLengthMenu.SetTitle("[SprayManager] Choose a Spray Ban Length for %N (#%d)", target, GetClientUserId(target));
+				SprayBanLengthMenu.SetTitle("[SprayManager] %T", "Menu Spray Ban Length Title", iParam1, target, GetClientUserId(target));
 				SprayBanLengthMenu.ExitBackButton = true;
 
-				SprayBanLengthMenu.AddItem("10", "10 Minutes");
-				SprayBanLengthMenu.AddItem("30", "30 Minutes");
-				SprayBanLengthMenu.AddItem("60", "1 Hour");
-				SprayBanLengthMenu.AddItem("240", "4 Hours");
-				SprayBanLengthMenu.AddItem("480", "8 Hours");
-				SprayBanLengthMenu.AddItem("720", "12 Hours");
-				SprayBanLengthMenu.AddItem("1440", "1 Day");
-				SprayBanLengthMenu.AddItem("2880", "2 Days");
-				SprayBanLengthMenu.AddItem("4320", "3 Days");
-				SprayBanLengthMenu.AddItem("10080", "1 Week");
-				SprayBanLengthMenu.AddItem("20160", "2 Weeks");
-				SprayBanLengthMenu.AddItem("40320", "1 Month");
-				SprayBanLengthMenu.AddItem("0", "Permanent");
+				AddTranslatedMenuItem(SprayBanLengthMenu, "10", "Length 10 Minutes", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "30", "Length 30 Minutes", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "60", "Length 1 Hour", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "240", "Length 4 Hours", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "480", "Length 8 Hours", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "720", "Length 12 Hours", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "1440", "Length 1 Day", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "2880", "Length 2 Days", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "4320", "Length 3 Days", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "10080", "Length 1 Week", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "20160", "Length 2 Weeks", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "40320", "Length 1 Month", iParam1);
+				AddTranslatedMenuItem(SprayBanLengthMenu, "0", "Length Permanent", iParam1);
 
 				g_iSprayBanTarget[iParam1] = target;
 
@@ -681,7 +681,7 @@ int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1,
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_iSprayBanTarget[iParam1] = 0;
 
@@ -691,7 +691,7 @@ int MenuHandler_Menu_SprayBan_Length(Menu hMenu, MenuAction action, int iParam1,
 			{
 				if (SprayBanClient(iParam1, target, StringToInt(sOption), "Inappropriate Spray"))
 				{
-					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray banned {olive}%N", target);
+					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Banned", target);
 					LogAction(iParam1, target, "\"%L\" spray banned \"%L\" (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 
@@ -710,7 +710,7 @@ void Menu_BanSpray(int client)
 	int iClientsToDisplay;
 
 	Menu BanSprayMenu = new Menu(MenuHandler_Menu_BanSpray);
-	BanSprayMenu.SetTitle("[SprayManager] Select a Client to Ban their Spray:");
+	BanSprayMenu.SetTitle("[SprayManager] %T", "Menu Ban Spray Title", client);
 	BanSprayMenu.ExitBackButton =  true;
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -733,7 +733,7 @@ void Menu_BanSpray(int client)
 	}
 
 	if (!iClientsToDisplay)
-		BanSprayMenu.AddItem("", "No eligible Clients found.", ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(BanSprayMenu, "", "Menu No Eligible Clients", client, ITEMDRAW_DISABLED);
 
 	BanSprayMenu.Display(client, MENU_TIME_FOREVER);
 }
@@ -760,7 +760,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				Menu_BanSpray(iParam1);
 			}
@@ -768,7 +768,7 @@ int MenuHandler_Menu_BanSpray(Menu hMenu, MenuAction action, int iParam1, int iP
 			{
 				if (BanClientSpray(iParam1, target))
 				{
-					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Banned {olive}%N{default}'s spray", target);
+					CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Hash Banned", target);
 					LogAction(iParam1, target, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", iParam1, target, g_sSprayHash[target]);
 				}
 			}
@@ -785,7 +785,7 @@ void Menu_Unban(int client)
 	int iBannedClients;
 
 	Menu UnbanSprayMenu = new Menu(MenuHandler_Menu_UnbanSpray);
-	UnbanSprayMenu.SetTitle("[SprayManager] Select a Client for more information:");
+	UnbanSprayMenu.SetTitle("[SprayManager] %T", "Menu Unban Select Title", client);
 	UnbanSprayMenu.ExitBackButton =  true;
 
 	for (int i = 1; i <= MaxClients; i++)
@@ -808,7 +808,7 @@ void Menu_Unban(int client)
 	}
 
 	if (!iBannedClients)
-		UnbanSprayMenu.AddItem("", "No Banned Clients.", ITEMDRAW_DISABLED);
+		AddTranslatedMenuItem(UnbanSprayMenu, "", "Menu No Banned Clients", client, ITEMDRAW_DISABLED);
 
 	UnbanSprayMenu.Display(client, MENU_TIME_FOREVER);
 }
@@ -835,7 +835,7 @@ int MenuHandler_Menu_UnbanSpray(Menu hMenu, MenuAction action, int iParam1, int 
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				Menu_Unban(iParam1);
 			}
@@ -852,10 +852,10 @@ int MenuHandler_Menu_UnbanSpray(Menu hMenu, MenuAction action, int iParam1, int 
 void Menu_ListBans_Target(int client, int target)
 {
 	Menu ListTargetMenu = new Menu(MenuHandler_Menu_ListBans_Target);
-	ListTargetMenu.SetTitle("[SprayManager] Banned Client: %N (#%d)", target, GetClientUserId(target));
+	ListTargetMenu.SetTitle("[SprayManager] %T", "Menu Banned Client Title", client, target, GetClientUserId(target));
 	ListTargetMenu.ExitBackButton = true;
 
-	char sBanType[32];
+	char sBanType[64];
 	char sUserID[32];
 	int iUserID = GetClientUserId(target);
 
@@ -863,22 +863,22 @@ void Menu_ListBans_Target(int client, int target)
 
 	if (g_bSprayHashBanned[target] && !g_bSprayBanned[target])
 	{
-		strcopy(sBanType, sizeof(sBanType), "Type: Hash");
+		FormatEx(sBanType, sizeof(sBanType), "%T", "Ban Type Hash", client);
 
 		ListTargetMenu.AddItem("", sBanType, ITEMDRAW_DISABLED);
 		ListTargetMenu.AddItem("", "", ITEMDRAW_SPACER);
 
-		ListTargetMenu.AddItem(sUserID, "Unban Client?");
+		AddTranslatedMenuItem(ListTargetMenu, sUserID, "Menu Unban Client", client);
 
 		ListTargetMenu.Display(client, MENU_TIME_FOREVER);
 		return;
 	}
 
-	char sBanExpiryDate[64];
-	char sBanIssuedDate[64];
-	char sBanDuration[64];
-	char sBannedBy[128];
-	char sBanReason[64];
+	char sBanExpiryDate[128];
+	char sBanIssuedDate[128];
+	char sBanDuration[128];
+	char sBannedBy[192];
+	char sBanReason[128];
 	int iBanExpiryDate = g_iSprayUnbanTimestamp[target];
 	int iBanIssuedDate = g_iSprayBanTimestamp[target];
 	int iBanDuration = iBanExpiryDate ? ((iBanExpiryDate - iBanIssuedDate) / 60) : 0;
@@ -886,25 +886,25 @@ void Menu_ListBans_Target(int client, int target)
 	if (iBanExpiryDate)
 	{
 		FormatTime(sBanExpiryDate, sizeof(sBanExpiryDate), NULL_STRING, iBanExpiryDate);
-		Format(sBanDuration, sizeof(sBanDuration), "%d %s", iBanDuration, SingularOrMultiple(iBanDuration) ? "Minutes" : "Minute");
+		Format(sBanDuration, sizeof(sBanDuration), "%T", SingularOrMultiple(iBanDuration) ? "Time Minutes" : "Time Minute", client, iBanDuration);
 	}
 	else
 	{
-		strcopy(sBanExpiryDate, sizeof(sBanExpiryDate), "Never");
-		strcopy(sBanDuration, sizeof(sBanDuration), "Permanent");
+		FormatEx(sBanExpiryDate, sizeof(sBanExpiryDate), "%T", "Ban Never Expires", client);
+		FormatEx(sBanDuration, sizeof(sBanDuration), "%T", "Length Permanent", client);
 	}
 
 	FormatTime(sBanIssuedDate, sizeof(sBanIssuedDate), NULL_STRING, iBanIssuedDate);
-	Format(sBannedBy, sizeof(sBannedBy), "Banned by: %s (%s)", g_sBanIssuer[target], g_sBanIssuerSID[target]);
-	Format(sBanDuration, sizeof(sBanDuration), "Duration: %s", sBanDuration);
-	Format(sBanExpiryDate, sizeof(sBanExpiryDate), "Expires: %s", sBanExpiryDate);
-	Format(sBanIssuedDate, sizeof(sBanIssuedDate), "Issued on: %s", sBanIssuedDate);
-	Format(sBanReason, sizeof(sBanReason), "Reason: %s", g_sBanReason[target]);
+	Format(sBannedBy, sizeof(sBannedBy), "%T", "Ban Info Banned By", client, g_sBanIssuer[target], g_sBanIssuerSID[target]);
+	Format(sBanDuration, sizeof(sBanDuration), "%T", "Ban Info Duration", client, sBanDuration);
+	Format(sBanExpiryDate, sizeof(sBanExpiryDate), "%T", "Ban Info Expires", client, sBanExpiryDate);
+	Format(sBanIssuedDate, sizeof(sBanIssuedDate), "%T", "Ban Info Issued", client, sBanIssuedDate);
+	Format(sBanReason, sizeof(sBanReason), "%T", "Ban Info Reason", client, g_sBanReason[target]);
 
 	if (g_bSprayBanned[target] && g_bSprayHashBanned[target])
-		strcopy(sBanType, sizeof(sBanType), "Type: Spray & Hash");
+		FormatEx(sBanType, sizeof(sBanType), "%T", "Ban Type Spray And Hash", client);
 	else if (g_bSprayBanned[target])
-		strcopy(sBanType, sizeof(sBanType), "Type: Spray");
+		FormatEx(sBanType, sizeof(sBanType), "%T", "Ban Type Spray", client);
 
 	ListTargetMenu.AddItem("", sBanType, ITEMDRAW_DISABLED);
 	ListTargetMenu.AddItem("", sBannedBy, ITEMDRAW_DISABLED);
@@ -913,7 +913,7 @@ void Menu_ListBans_Target(int client, int target)
 	ListTargetMenu.AddItem("", sBanDuration, ITEMDRAW_DISABLED);
 	ListTargetMenu.AddItem("", sBanReason, ITEMDRAW_DISABLED);
 
-	ListTargetMenu.AddItem(sUserID, "Unban Client?");
+	AddTranslatedMenuItem(ListTargetMenu, sUserID, "Menu Unban Client", client);
 
 	ListTargetMenu.Display(client, MENU_TIME_FOREVER);
 }
@@ -944,7 +944,7 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 				Menu_ListBans(iParam1);
 			}
 			else
@@ -952,12 +952,12 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 				if (g_bSprayBanned[target] && g_bSprayHashBanned[target])
 				{
 					Menu MenuUnbanMode = new Menu(MenuHandler_Menu_UnbanMode);
-					MenuUnbanMode.SetTitle("[SprayManager] Unban %N?", target);
+					MenuUnbanMode.SetTitle("[SprayManager] %T", "Menu Unban Confirm Title", iParam1, target);
 					MenuUnbanMode.ExitBackButton = true;
 
-					MenuUnbanMode.AddItem("H", "Remove Hash Ban.");
-					MenuUnbanMode.AddItem("S", "Remove Spray Ban.");
-					MenuUnbanMode.AddItem("B", "Remove Both.");
+					AddTranslatedMenuItem(MenuUnbanMode, "H", "Menu Remove Hash Ban", iParam1);
+					AddTranslatedMenuItem(MenuUnbanMode, "S", "Menu Remove Spray Ban", iParam1);
+					AddTranslatedMenuItem(MenuUnbanMode, "B", "Menu Remove Both", iParam1);
 
 					g_iSprayUnbanTarget[iParam1] = target;
 
@@ -967,11 +967,11 @@ int MenuHandler_Menu_ListBans_Target(Menu hMenu, MenuAction action, int iParam1,
 				}
 
 				Menu MenuConfirmUnban = new Menu(MenuHandler_Menu_ConfirmUnban);
-				MenuConfirmUnban.SetTitle("[SprayManager] Unban %N?", target);
+				MenuConfirmUnban.SetTitle("[SprayManager] %T", "Menu Unban Confirm Title", iParam1, target);
 				MenuConfirmUnban.ExitBackButton = true;
 
-				MenuConfirmUnban.AddItem("Y", "Yes.");
-				MenuConfirmUnban.AddItem("N", "No.");
+				AddTranslatedMenuItem(MenuConfirmUnban, "Y", "Yes", iParam1);
+				AddTranslatedMenuItem(MenuConfirmUnban, "N", "No", iParam1);
 
 				g_iSprayUnbanTarget[iParam1] = target;
 
@@ -1011,7 +1011,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_iSprayUnbanTarget[iParam1] = 0;
 
@@ -1026,7 +1026,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (UnbanClientSpray(iParam1, target))
 					{
-						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Unbanned {olive}%N{default}'s spray", target);
+						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Hash Unbanned", target);
 						LogAction(iParam1, target, "\"%L\" unbanned \"%L\"'s spray", iParam1, target);
 					}
 				}
@@ -1034,7 +1034,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (SprayUnbanClient(target, iParam1))
 					{
-						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray unbanned {olive}%N", target);
+						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Unbanned", target);
 						LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 					}
 				}
@@ -1042,7 +1042,7 @@ int MenuHandler_Menu_UnbanMode(Menu hMenu, MenuAction action, int iParam1, int i
 				{
 					if (SprayUnbanClient(target, iParam1) && UnbanClientSpray(iParam1, target))
 					{
-						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray unbanned {olive}%N", target);
+						CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Unbanned", target);
 						LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 					}
 				}
@@ -1083,7 +1083,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 
 			if (!IsValidClient(target))
 			{
-				CPrintToChat(iParam1, "{green}[SprayManager]{default} Target no longer available.");
+				CPrintToChat(iParam1, "{green}[SprayManager]{default} %t", "Player no longer available");
 
 				g_iSprayUnbanTarget[iParam1] = 0;
 
@@ -1100,7 +1100,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (SprayUnbanClient(target, iParam1) && UnbanClientSpray(iParam1, target))
 						{
-							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray unbanned {olive}%N", target);
+							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Unbanned", target);
 							LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 						}
 					}
@@ -1108,7 +1108,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (SprayUnbanClient(target, iParam1))
 						{
-							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Spray unbanned {olive}%N", target);
+							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Unbanned", target);
 							LogAction(iParam1, target, "\"%L\" spray unbanned \"%L\"", iParam1, target);
 						}
 					}
@@ -1116,7 +1116,7 @@ int MenuHandler_Menu_ConfirmUnban(Menu hMenu, MenuAction action, int iParam1, in
 					{
 						if (UnbanClientSpray(iParam1, target))
 						{
-							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "{default}Unbanned {olive}%N{default}'s spray", target);
+							CShowActivity2(iParam1, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Hash Unbanned", target);
 							LogAction(iParam1, target, "\"%L\" unbanned \"%L\"'s spray", iParam1, target);
 						}
 					}

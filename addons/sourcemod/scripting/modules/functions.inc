@@ -258,17 +258,17 @@ stock void ResetHiddenSprayArray(int client)
 	}
 }
 
-stock void FormatRemainingTime(int iTimestamp, char[] sBuffer, int iBuffSize)
+stock void FormatRemainingTime(int iTimestamp, char[] sBuffer, int iBuffSize, int client)
 {
 	if (iTimestamp == 0)
 	{
-		Format(sBuffer, iBuffSize, "Permanent");
+		Format(sBuffer, iBuffSize, "%T", "Length Permanent", client);
 		return;
 	}
 
 	if (iTimestamp < 0)
 	{
-		Format(sBuffer, iBuffSize, "Temporary");
+		Format(sBuffer, iBuffSize, "%T", "Length Temporary", client);
 		return;
 	}
 
@@ -281,22 +281,29 @@ stock void FormatRemainingTime(int iTimestamp, char[] sBuffer, int iBuffSize)
 
 	if (tstamp > 86400)
 	{
-		Format(sBuffer, iBuffSize, "%d %s, %d %s, %d %s, %d %s", days, SingularOrMultiple(days) ? "Days" : "Day",
-			hours, SingularOrMultiple(hours) ? "Hours" : "Hour", minutes, SingularOrMultiple(minutes) ? "Minutes" : "Minute",
-			seconds, SingularOrMultiple(seconds)?"Seconds":"Second");
+		Format(sBuffer, iBuffSize, "%T, %T, %T, %T", SingularOrMultiple(days) ? "Time Days" : "Time Day", client, days,
+			SingularOrMultiple(hours) ? "Time Hours" : "Time Hour", client, hours, SingularOrMultiple(minutes) ? "Time Minutes" : "Time Minute", client, minutes,
+			SingularOrMultiple(seconds) ? "Time Seconds" : "Time Second", client, seconds);
 	}
 	else if (tstamp > 3600)
 	{
-		Format(sBuffer, iBuffSize, "%d %s, %d %s, %d %s", hours, SingularOrMultiple(hours) ? "Hours" : "Hour",
-			minutes, SingularOrMultiple(minutes) ? "Minutes" : "Minute", seconds, SingularOrMultiple(seconds) ? "Seconds" : "Second");
+		Format(sBuffer, iBuffSize, "%T, %T, %T", SingularOrMultiple(hours) ? "Time Hours" : "Time Hour", client, hours,
+			SingularOrMultiple(minutes) ? "Time Minutes" : "Time Minute", client, minutes, SingularOrMultiple(seconds) ? "Time Seconds" : "Time Second", client, seconds);
 	}
 	else if (tstamp > 60)
 	{
-		Format(sBuffer, iBuffSize, "%d %s, %d %s", minutes, SingularOrMultiple(minutes) ? "Minutes" : "Minute",
-			seconds, SingularOrMultiple(seconds) ? "Seconds" : "Second");
+		Format(sBuffer, iBuffSize, "%T, %T", SingularOrMultiple(minutes) ? "Time Minutes" : "Time Minute", client, minutes,
+			SingularOrMultiple(seconds) ? "Time Seconds" : "Time Second", client, seconds);
 	}
 	else
-		Format(sBuffer, iBuffSize, "%d %s", seconds, SingularOrMultiple(seconds) ? "Seconds":"Second");
+		Format(sBuffer, iBuffSize, "%T", SingularOrMultiple(seconds) ? "Time Seconds" : "Time Second", client, seconds);
+}
+
+stock void AddTranslatedMenuItem(Menu menu, const char[] sInfo, const char[] sPhrase, int client, int iStyle = ITEMDRAW_DEFAULT)
+{
+	char sBuffer[128];
+	FormatEx(sBuffer, sizeof(sBuffer), "%T", sPhrase, client);
+	menu.AddItem(sInfo, sBuffer, iStyle);
 }
 
 stock bool IsPointInsideAABB(float vecPoint[3], float AABB[6])
