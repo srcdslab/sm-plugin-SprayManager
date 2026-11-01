@@ -114,7 +114,7 @@
 	}
 	"Sprayed Target Sprays"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:t}"
 		"en"		"Sprayed {green}{1}{default}'s spray(s)."
 		"fr"		"Spray(s) de {green}{1}{default} appliqué(s)."
 		"ru"		"Спреи {green}{1}{default} нанесены."
@@ -251,7 +251,7 @@
 	}
 	"Removed Target Sprays"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:t}"
 		"en"		"Removed {green}{1}{default}'s spray(s)."
 		"fr"		"Spray(s) de {green}{1}{default} supprimé(s)."
 		"ru"		"Спреи {green}{1}{default} удалены."
