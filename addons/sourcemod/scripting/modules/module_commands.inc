@@ -412,7 +412,7 @@ public Action Command_SprayUnban(int client, int argc)
 
 public Action Command_BanSpray(int client, int argc)
 {
-	if (argc < 1 && !client)
+	if (argc < 1)
 	{
 		CReplyToCommand(client, "{green}[SprayManager]{default} %t", "BanSpray Usage");
 		return Plugin_Handled;
@@ -450,6 +450,7 @@ public Action Command_BanSpray(int client, int argc)
 				return Plugin_Handled;
 
 			CShowActivity2(client, "{green}[SprayManager]{olive} ", "%t", "Activity Spray Hash Banned", i);
+			LogAction(client, i, "\"%L\" banned \"%L\"'s spray", client, i);
 			LogAction(client, i, "\"%L\" banned \"%L\"'s spray (Hash: \"%s\")", client, i, g_sSprayHash[i]);
 
 			return Plugin_Handled;
