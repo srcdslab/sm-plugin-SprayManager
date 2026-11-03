@@ -338,7 +338,10 @@ public Action Command_AdminSpray(int client, int argc)
 			ForceSpray(client, iTargets[i], false);
 		}
 
-		CPrintToChat(client, "{green}[SprayManager]{default} %t", "Sprayed Target Sprays", sTargetName);
+		if (bIsML)
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Sprayed Target Sprays", sTargetName);
+		else
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Sprayed Target Sprays", "_s", sTargetName);
 
 		return Plugin_Handled;
 	}
@@ -542,7 +545,10 @@ public Action Command_RemoveSpray(int client, int argc)
 			SprayClientDecalToAll(iTargets[i], 0, ACTUAL_NULL_VECTOR);
 		}
 
-		CPrintToChat(client, "{green}[SprayManager]{default} %t", "Removed Target Sprays", sTargetName);
+		if (bIsML)
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Removed Target Sprays", sTargetName);
+		else
+			CPrintToChat(client, "{green}[SprayManager]{default} %t", "Removed Target Sprays", "_s", sTargetName);
 
 		return Plugin_Handled;
 	}
