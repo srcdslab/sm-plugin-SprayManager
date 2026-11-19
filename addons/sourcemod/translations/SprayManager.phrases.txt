@@ -9,6 +9,12 @@
 		"de"		"Status konnte nicht aktualisiert werden, bitte warte ein paar Sekunden und versuche es erneut."
 		"pt"		"Não foi possível atualizar o status, aguarde alguns segundos e tente novamente."
 		"chi"		"无法更新状态，请稍等几秒后重试。"
+		"it"		"Impossibile aggiornare lo stato, attendi qualche secondo e riprova."
+		"pl"		"Nie można zaktualizować statusu, poczekaj kilka sekund i spróbuj ponownie."
+		"tr"		"Durum güncellenemedi, lütfen birkaç saniye bekleyip tekrar dene."
+		"ua"		"Не вдалося оновити статус, зачекай кілька секунд і спробуй ще раз."
+		"zho"		"無法更新狀態，請稍候幾秒後再試一次。"
+		"cze"		"Stav se nepodařilo aktualizovat, počkej prosím pár sekund a zkus to znovu."
 	}
 	"Already Marked NSFW"
 	{
@@ -19,6 +25,12 @@
 		"de"		"Dein Spray ist bereits als NSFW markiert."
 		"pt"		"Seu spray já está marcado como NSFW."
 		"chi"		"你的喷漆已被标记为 NSFW。"
+		"it"		"Il tuo spray è già contrassegnato come NSFW."
+		"pl"		"Twój spray jest już oznaczony jako NSFW."
+		"tr"		"Spreyin zaten NSFW olarak işaretli."
+		"ua"		"Твій спрей уже позначено як NSFW."
+		"zho"		"你的噴漆已被標記為 NSFW。"
+		"cze"		"Tvůj sprej je již označen jako NSFW."
 	}
 	"Now Marked NSFW"
 	{
@@ -29,6 +41,12 @@
 		"de"		"Dein Spray ist jetzt als NSFW markiert."
 		"pt"		"Seu spray agora está marcado como NSFW."
 		"chi"		"你的喷漆现已标记为 NSFW。"
+		"it"		"Il tuo spray ora è contrassegnato come NSFW."
+		"pl"		"Twój spray został teraz oznaczony jako NSFW."
+		"tr"		"Spreyin artık NSFW olarak işaretlendi."
+		"ua"		"Твій спрей тепер позначено як NSFW."
+		"zho"		"你的噴漆現已被標記為 NSFW。"
+		"cze"		"Tvůj sprej je nyní označen jako NSFW."
 	}
 	"Marked NSFW By Admin"
 	{
@@ -39,6 +57,12 @@
 		"de"		"Dein Spray wurde von einem Admin als NSFW markiert, du kannst das nicht ändern."
 		"pt"		"Seu spray foi marcado como NSFW por um admin, você não pode alterar isso."
 		"chi"		"你的喷漆已被管理员标记为 NSFW，你无法更改。"
+		"it"		"Il tuo spray è stato contrassegnato come NSFW da un admin, non puoi modificarlo."
+		"pl"		"Twój spray został oznaczony jako NSFW przez admina, nie możesz tego zmienić."
+		"tr"		"Spreyin bir admin tarafından NSFW olarak işaretlendi, bunu değiştiremezsin."
+		"ua"		"Твій спрей позначив як NSFW адмін, ти не можеш цього змінити."
+		"zho"		"你的噴漆已被管理員標記為 NSFW，你無法更改。"
+		"cze"		"Tvůj sprej byl označen jako NSFW adminem, nemůžeš to změnit."
 	}
 	"Already Marked SFW"
 	{
@@ -49,6 +73,12 @@
 		"de"		"Dein Spray ist bereits als SFW markiert."
 		"pt"		"Seu spray já está marcado como SFW."
 		"chi"		"你的喷漆已被标记为 SFW。"
+		"it"		"Il tuo spray è già contrassegnato come SFW."
+		"pl"		"Twój spray jest już oznaczony jako SFW."
+		"tr"		"Spreyin zaten SFW olarak işaretli."
+		"ua"		"Твій спрей уже позначено як SFW."
+		"zho"		"你的噴漆已被標記為 SFW。"
+		"cze"		"Tvůj sprej je již označen jako SFW."
 	}
 	"Now Marked SFW"
 	{
@@ -59,6 +89,12 @@
 		"de"		"Dein Spray ist jetzt als SFW markiert."
 		"pt"		"Seu spray agora está marcado como SFW."
 		"chi"		"你的喷漆现已标记为 SFW。"
+		"it"		"Il tuo spray ora è contrassegnato come SFW."
+		"pl"		"Twój spray został teraz oznaczony jako SFW."
+		"tr"		"Spreyin artık SFW olarak işaretlendi."
+		"ua"		"Твій спрей тепер позначено як SFW."
+		"zho"		"你的噴漆現已被標記為 SFW。"
+		"cze"		"Tvůj sprej je nyní označen jako SFW."
 	}
 	"NSFW Sprays Shown"
 	{
@@ -69,6 +105,12 @@
 		"de"		"Du kannst jetzt {purple}NSFW{default}-Sprays sehen."
 		"pt"		"Agora você pode ver sprays {purple}NSFW{default}."
 		"chi"		"你现在可以看到 {purple}NSFW{default} 喷漆了。"
+		"it"		"Ora puoi vedere gli spray {purple}NSFW{default}."
+		"pl"		"Teraz możesz widzieć spraye {purple}NSFW{default}."
+		"tr"		"Artık {purple}NSFW{default} spreyleri görebilirsin."
+		"ua"		"Тепер ти бачиш {purple}NSFW{default} спреї."
+		"zho"		"你現在可以看到 {purple}NSFW{default} 噴漆。"
+		"cze"		"Nyní vidíš {purple}NSFW{default} spreje."
 	}
 	"NSFW Sprays Hidden"
 	{
@@ -79,6 +121,12 @@
 		"de"		"Du kannst keine {purple}NSFW{default}-Sprays mehr sehen."
 		"pt"		"Você não pode mais ver sprays {purple}NSFW{default}."
 		"chi"		"你将不再看到 {purple}NSFW{default} 喷漆。"
+		"it"		"Non puoi più vedere gli spray {purple}NSFW{default}."
+		"pl"		"Nie możesz już widzieć sprayów {purple}NSFW{default}."
+		"tr"		"Artık {purple}NSFW{default} spreyleri göremezsin."
+		"ua"		"Ти більше не бачиш {purple}NSFW{default} спреї."
+		"zho"		"你現在無法再看到 {purple}NSFW{default} 噴漆。"
+		"cze"		"Již nevidíš {purple}NSFW{default} spreje."
 	}
 	"Spray Hidden"
 	{
@@ -90,6 +138,12 @@
 		"de"		"Du hast das Spray von {green}{1}{default} ausgeblendet."
 		"pt"		"Você ocultou o spray de {green}{1}{default}."
 		"chi"		"你已隐藏 {green}{1}{default} 的喷漆。"
+		"it"		"Hai nascosto lo spray di {green}{1}{default}."
+		"pl"		"Ukryłeś spray gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun spreyini gizledin."
+		"ua"		"Ти сховав спрей гравця {green}{1}{default}."
+		"zho"		"你已隱藏 {green}{1}{default} 的噴漆。"
+		"cze"		"Skryl jsi sprej hráče {green}{1}{default}."
 	}
 	"Spray Unhidden"
 	{
@@ -101,6 +155,12 @@
 		"de"		"Du hast das Spray von {green}{1}{default} wieder eingeblendet."
 		"pt"		"Você voltou a exibir o spray de {green}{1}{default}."
 		"chi"		"你已取消隐藏 {green}{1}{default} 的喷漆。"
+		"it"		"Hai mostrato di nuovo lo spray di {green}{1}{default}."
+		"pl"		"Odkryłeś spray gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun spreyini tekrar gösterdin."
+		"ua"		"Ти знову показав спрей гравця {green}{1}{default}."
+		"zho"		"你已取消隱藏 {green}{1}{default} 的噴漆。"
+		"cze"		"Znovu jsi zobrazil sprej hráče {green}{1}{default}."
 	}
 	"No Spray Found"
 	{
@@ -111,6 +171,12 @@
 		"de"		"Es wurde kein Spray gefunden."
 		"pt"		"Nenhum spray foi encontrado."
 		"chi"		"未找到喷漆。"
+		"it"		"Nessuno spray trovato."
+		"pl"		"Nie znaleziono żadnego sprayu."
+		"tr"		"Hiçbir sprey bulunamadı."
+		"ua"		"Спрей не знайдено."
+		"zho"		"找不到任何噴漆。"
+		"cze"		"Nebyl nalezen žádný sprej."
 	}
 	"Sprayed Target Sprays"
 	{
@@ -122,6 +188,12 @@
 		"de"		"Spray(s) von {green}{1}{default} gesprüht."
 		"pt"		"Spray(s) de {green}{1}{default} aplicado(s)."
 		"chi"		"已喷出 {green}{1}{default} 的喷漆。"
+		"it"		"Hai spruzzato lo/gli spray di {green}{1}{default}."
+		"pl"		"Użyto spray(e) gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun sprey(ler)i sıkıldı."
+		"ua"		"Використано спрей(і) гравця {green}{1}{default}."
+		"zho"		"已噴出 {green}{1}{default} 的噴漆。"
+		"cze"		"Vystříkl jsi sprej(e) hráče {green}{1}{default}."
 	}
 	"Sprayed Client Spray"
 	{
@@ -133,6 +205,12 @@
 		"de"		"Spray von {green}{1}{default} gesprüht."
 		"pt"		"Spray de {green}{1}{default} aplicado."
 		"chi"		"已喷出 {green}{1}{default} 的喷漆。"
+		"it"		"Hai spruzzato lo spray di {green}{1}{default}."
+		"pl"		"Użyto spray gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun spreyi sıkıldı."
+		"ua"		"Використано спрей гравця {green}{1}{default}."
+		"zho"		"已噴出 {green}{1}{default} 的噴漆。"
+		"cze"		"Vystříkl jsi sprej hráče {green}{1}{default}."
 	}
 	"Sprayed Own Spray"
 	{
@@ -143,6 +221,12 @@
 		"de"		"Du hast dein eigenes Spray gesprüht."
 		"pt"		"Você aplicou seu próprio spray."
 		"chi"		"已喷出你自己的喷漆。"
+		"it"		"Hai spruzzato il tuo spray."
+		"pl"		"Użyto twój własny spray."
+		"tr"		"Kendi spreyini sıktın."
+		"ua"		"Ти використав власний спрей."
+		"zho"		"已噴出你自己的噴漆。"
+		"cze"		"Vystříkl jsi svůj vlastní sprej."
 	}
 	"SprayBan Usage"
 	{
@@ -153,6 +237,12 @@
 		"de"		"Verwendung: sm_sprayban <target> <time> <reason:optional>"
 		"pt"		"Uso: sm_sprayban <target> <time> <reason:optional>"
 		"chi"		"用法：sm_sprayban <target> <time> <reason:optional>"
+		"it"		"Uso: sm_sprayban <target> <time> <reason:optional>"
+		"pl"		"Użycie: sm_sprayban <target> <time> <reason:optional>"
+		"tr"		"Kullanım: sm_sprayban <target> <time> <reason:optional>"
+		"ua"		"Використання: sm_sprayban <target> <time> <reason:optional>"
+		"zho"		"用法：sm_sprayban <target> <time> <reason:optional>"
+		"cze"		"Použití: sm_sprayban <target> <time> <reason:optional>"
 	}
 	"SprayUnban Usage"
 	{
@@ -163,6 +253,12 @@
 		"de"		"Verwendung: sm_sprayunban <target>"
 		"pt"		"Uso: sm_sprayunban <target>"
 		"chi"		"用法：sm_sprayunban <target>"
+		"it"		"Uso: sm_sprayunban <target>"
+		"pl"		"Użycie: sm_sprayunban <target>"
+		"tr"		"Kullanım: sm_sprayunban <target>"
+		"ua"		"Використання: sm_sprayunban <target>"
+		"zho"		"用法：sm_sprayunban <target>"
+		"cze"		"Použití: sm_sprayunban <target>"
 	}
 	"BanSpray Usage"
 	{
@@ -173,6 +269,12 @@
 		"de"		"Verwendung: sm_banspray <target>"
 		"pt"		"Uso: sm_banspray <target>"
 		"chi"		"用法：sm_banspray <target>"
+		"it"		"Uso: sm_banspray <target>"
+		"pl"		"Użycie: sm_banspray <target>"
+		"tr"		"Kullanım: sm_banspray <target>"
+		"ua"		"Використання: sm_banspray <target>"
+		"zho"		"用法：sm_banspray <target>"
+		"cze"		"Použití: sm_banspray <target>"
 	}
 	"UnbanSpray Usage"
 	{
@@ -183,6 +285,12 @@
 		"de"		"Verwendung: sm_unbanspray <target>"
 		"pt"		"Uso: sm_unbanspray <target>"
 		"chi"		"用法：sm_unbanspray <target>"
+		"it"		"Uso: sm_unbanspray <target>"
+		"pl"		"Użycie: sm_unbanspray <target>"
+		"tr"		"Kullanım: sm_unbanspray <target>"
+		"ua"		"Використання: sm_unbanspray <target>"
+		"zho"		"用法：sm_unbanspray <target>"
+		"cze"		"Použití: sm_unbanspray <target>"
 	}
 	"Activity Spray Banned"
 	{
@@ -194,6 +302,12 @@
 		"de"		"{default}Spray-Bann für {olive}{1}{default}."
 		"pt"		"{default}Baniu {olive}{1}{default} de usar sprays."
 		"chi"		"{default}已禁止 {olive}{1}{default} 使用喷漆。"
+		"it"		"{default}Ban spray applicato a {olive}{1}{default}."
+		"pl"		"{default}Zablokowano spraye gracza {olive}{1}{default}."
+		"tr"		"{default}{olive}{1}{default} sprey yasağı aldı."
+		"ua"		"{default}Заборонено спреї гравцю {olive}{1}{default}."
+		"zho"		"{default}已禁止 {olive}{1}{default} 使用噴漆。"
+		"cze"		"{default}Zakázány spreje hráči {olive}{1}{default}."
 	}
 	"Activity Spray Unbanned"
 	{
@@ -205,6 +319,12 @@
 		"de"		"{default}Spray-Bann für {olive}{1}{default} aufgehoben."
 		"pt"		"{default}Liberou {olive}{1}{default} para usar sprays."
 		"chi"		"{default}已解除 {olive}{1}{default} 的喷漆禁令。"
+		"it"		"{default}Ban spray rimosso a {olive}{1}{default}."
+		"pl"		"{default}Odblokowano spraye gracza {olive}{1}{default}."
+		"tr"		"{default}{olive}{1}{default} oyuncusunun sprey yasağı kaldırıldı."
+		"ua"		"{default}Дозволено спреї гравцю {olive}{1}{default}."
+		"zho"		"{default}已解除 {olive}{1}{default} 的噴漆禁令。"
+		"cze"		"{default}Spreje hráči {olive}{1}{default} opět povoleny."
 	}
 	"Activity Spray Hash Banned"
 	{
@@ -216,6 +336,12 @@
 		"de"		"{default}Spray von {olive}{1}{default} gebannt."
 		"pt"		"{default}Baniu o spray de {olive}{1}{default}."
 		"chi"		"{default}已封禁 {olive}{1}{default} 的喷漆。"
+		"it"		"{default}Hai bannato lo spray di {olive}{1}{default}."
+		"pl"		"{default}Zablokowano spray gracza {olive}{1}{default}."
+		"tr"		"{default}{olive}{1}{default} oyuncusunun spreyi yasaklandı."
+		"ua"		"{default}Заборонено спрей гравця {olive}{1}{default}."
+		"zho"		"{default}已封禁 {olive}{1}{default} 的噴漆。"
+		"cze"		"{default}Zakázán sprej hráče {olive}{1}{default}."
 	}
 	"Activity Spray Hash Unbanned"
 	{
@@ -227,6 +353,12 @@
 		"de"		"{default}Spray von {olive}{1}{default} entbannt."
 		"pt"		"{default}Desbaniu o spray de {olive}{1}{default}."
 		"chi"		"{default}已解封 {olive}{1}{default} 的喷漆。"
+		"it"		"{default}Hai sbannato lo spray di {olive}{1}{default}."
+		"pl"		"{default}Odblokowano spray gracza {olive}{1}{default}."
+		"tr"		"{default}{olive}{1}{default} oyuncusunun sprey yasağı kaldırıldı."
+		"ua"		"{default}Дозволено спрей гравця {olive}{1}{default}."
+		"zho"		"{default}已解除 {olive}{1}{default} 的噴漆封禁。"
+		"cze"		"{default}Sprej hráče {olive}{1}{default} opět povolen."
 	}
 	"Activity Kicked For Spray"
 	{
@@ -238,6 +370,12 @@
 		"de"		"{default}Hat {olive}{1}{default} wegen seines Sprays gekickt."
 		"pt"		"{default}Expulsou {olive}{1}{default} pelo spray."
 		"chi"		"{default}因喷漆踢出了 {olive}{1}{default}。"
+		"it"		"{default}Hai espulso {olive}{1}{default} per il suo spray."
+		"pl"		"{default}Wyrzucono {olive}{1}{default} za jego spray."
+		"tr"		"{default}{olive}{1}{default} spreyi yüzünden atıldı."
+		"ua"		"{default}Гравця {olive}{1}{default} кікнуто за його спрей."
+		"zho"		"{default}已因噴漆踢出 {olive}{1}{default}。"
+		"cze"		"{default}Hráč {olive}{1}{default} byl vyhozen za svůj sprej."
 	}
 	"Trace No Spray"
 	{
@@ -248,6 +386,12 @@
 		"de"		"Unter deinem Fadenkreuz ist kein Spray."
 		"pt"		"Nenhum spray na sua mira."
 		"chi"		"准星下没有喷漆。"
+		"it"		"La traccia non ha colpito nessuno spray."
+		"pl"		"Trasa nie trafiła w żaden spray."
+		"tr"		"İz hiçbir spreye isabet etmedi."
+		"ua"		"Трасування не влучило в жоден спрей."
+		"zho"		"追蹤沒有命中任何噴漆。"
+		"cze"		"Trasování nezasáhlo žádný sprej."
 	}
 	"Removed Target Sprays"
 	{
@@ -259,6 +403,12 @@
 		"de"		"Spray(s) von {green}{1}{default} entfernt."
 		"pt"		"Spray(s) de {green}{1}{default} removido(s)."
 		"chi"		"已移除 {green}{1}{default} 的喷漆。"
+		"it"		"Hai rimosso lo/gli spray di {green}{1}{default}."
+		"pl"		"Usunięto spray(e) gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun sprey(ler)i kaldırıldı."
+		"ua"		"Видалено спрей(і) гравця {green}{1}{default}."
+		"zho"		"已移除 {green}{1}{default} 的噴漆。"
+		"cze"		"Odstranil jsi sprej(e) hráče {green}{1}{default}."
 	}
 	"Removed Spray"
 	{
@@ -270,6 +420,12 @@
 		"de"		"Spray von {green}{1}{default} entfernt."
 		"pt"		"Spray de {green}{1}{default} removido."
 		"chi"		"已移除 {green}{1}{default} 的喷漆。"
+		"it"		"Hai rimosso lo spray di {green}{1}{default}."
+		"pl"		"Usunięto spray gracza {green}{1}{default}."
+		"tr"		"{green}{1}{default} oyuncusunun spreyi kaldırıldı."
+		"ua"		"Видалено спрей гравця {green}{1}{default}."
+		"zho"		"已移除 {green}{1}{default} 的噴漆。"
+		"cze"		"Odstranil jsi sprej hráče {green}{1}{default}."
 	}
 	"Marked Spray SFW"
 	{
@@ -281,6 +437,12 @@
 		"de"		"Spray von {green}{1}{default} als SFW markiert."
 		"pt"		"Spray de {green}{1}{default} marcado como SFW."
 		"chi"		"已将 {green}{1}{default} 的喷漆标记为 SFW。"
+		"it"		"Hai contrassegnato lo spray di {green}{1}{default} come SFW."
+		"pl"		"Oznaczono spray gracza {green}{1}{default} jako SFW."
+		"tr"		"{green}{1}{default} oyuncusunun spreyi SFW olarak işaretlendi."
+		"ua"		"Спрей гравця {green}{1}{default} позначено як SFW."
+		"zho"		"已將 {green}{1}{default} 的噴漆標記為 SFW。"
+		"cze"		"Sprej hráče {green}{1}{default} byl označen jako SFW."
 	}
 	"Marked Spray NSFW"
 	{
@@ -292,6 +454,12 @@
 		"de"		"Spray von {green}{1}{default} als NSFW markiert."
 		"pt"		"Spray de {green}{1}{default} marcado como NSFW."
 		"chi"		"已将 {green}{1}{default} 的喷漆标记为 NSFW。"
+		"it"		"Hai contrassegnato lo spray di {green}{1}{default} come NSFW."
+		"pl"		"Oznaczono spray gracza {green}{1}{default} jako NSFW."
+		"tr"		"{green}{1}{default} oyuncusunun spreyi NSFW olarak işaretlendi."
+		"ua"		"Спрей гравця {green}{1}{default} позначено як NSFW."
+		"zho"		"已將 {green}{1}{default} 的噴漆標記為 NSFW。"
+		"cze"		"Sprej hráče {green}{1}{default} byl označen jako NSFW."
 	}
 	"Notify Marked SFW"
 	{
@@ -303,6 +471,12 @@
 		"de"		"Das Spray von {olive}{1}{default} wurde von {olive}{2}{default} als {green}SFW {default}markiert."
 		"pt"		"O spray de {olive}{1}{default} foi marcado como {green}SFW {default}por {olive}{2}{default}."
 		"chi"		"{olive}{1}{default} 的喷漆已被 {olive}{2}{default} 标记为 {green}SFW{default}。"
+		"it"		"Lo spray di {olive}{1}{default} è stato contrassegnato come {green}SFW {default}da {olive}{2}{default}."
+		"pl"		"Spray gracza {olive}{1}{default} został oznaczony jako {green}SFW {default}przez {olive}{2}{default}."
+		"tr"		"{olive}{1}{default} oyuncusunun spreyi {olive}{2}{default} tarafından {green}SFW {default}olarak işaretlendi."
+		"ua"		"Спрей гравця {olive}{1}{default} позначено як {green}SFW {default}адміном {olive}{2}{default}."
+		"zho"		"{olive}{1}{default} 的噴漆已被 {olive}{2}{default} 標記為 {green}SFW{default}。"
+		"cze"		"Sprej hráče {olive}{1}{default} byl označen jako {green}SFW {default}hráčem {olive}{2}{default}."
 	}
 	"Notify Marked NSFW"
 	{
@@ -314,6 +488,12 @@
 		"de"		"Das Spray von {olive}{1}{default} wurde von {olive}{2}{default} als {green}NSFW {default}markiert."
 		"pt"		"O spray de {olive}{1}{default} foi marcado como {green}NSFW {default}por {olive}{2}{default}."
 		"chi"		"{olive}{1}{default} 的喷漆已被 {olive}{2}{default} 标记为 {green}NSFW{default}。"
+		"it"		"Lo spray di {olive}{1}{default} è stato contrassegnato come {green}NSFW {default}da {olive}{2}{default}."
+		"pl"		"Spray gracza {olive}{1}{default} został oznaczony jako {green}NSFW {default}przez {olive}{2}{default}."
+		"tr"		"{olive}{1}{default} oyuncusunun spreyi {olive}{2}{default} tarafından {green}NSFW {default}olarak işaretlendi."
+		"ua"		"Спрей гравця {olive}{1}{default} позначено як {green}NSFW {default}адміном {olive}{2}{default}."
+		"zho"		"{olive}{1}{default} 的噴漆已被 {olive}{2}{default} 標記為 {green}NSFW{default}。"
+		"cze"		"Sprej hráče {olive}{1}{default} byl označen jako {green}NSFW {default}hráčem {olive}{2}{default}."
 	}
 	"Notify Warned"
 	{
@@ -325,6 +505,12 @@
 		"de"		"{olive}{1} {default}wurde von {olive}{2} {default}wegen seines Sprays {green}verwarnt{default}."
 		"pt"		"{olive}{1} {default}foi {green}advertido {default}pelo spray por {olive}{2}{default}."
 		"chi"		"{olive}{1} {default}因喷漆被 {olive}{2} {green}警告{default}。"
+		"it"		"{olive}{1} {default}è stato {green}ammonito {default}per il suo spray da {olive}{2}{default}."
+		"pl"		"{olive}{1} {default}został {green}ostrzeżony {default}za swój spray przez {olive}{2}{default}."
+		"tr"		"{olive}{1} {default}spreyi nedeniyle {olive}{2}{default} tarafından {green}uyarıldı{default}."
+		"ua"		"{olive}{1} {default}отримав {green}попередження {default}за свій спрей від {olive}{2}{default}."
+		"zho"		"{olive}{1} {default}因噴漆被 {olive}{2}{default} {green}警告{default}。"
+		"cze"		"{olive}{1} {default}byl {green}varován {default}za svůj sprej hráčem {olive}{2}{default}."
 	}
 	"Database Refreshed"
 	{
@@ -335,6 +521,12 @@
 		"de"		"Datenbank aktualisiert."
 		"pt"		"Banco de dados atualizado."
 		"chi"		"数据库已刷新。"
+		"it"		"Database aggiornato."
+		"pl"		"Odświeżono bazę danych."
+		"tr"		"Veritabanı yenilendi."
+		"ua"		"Базу даних оновлено."
+		"zho"		"資料庫已重新整理。"
+		"cze"		"Databáze byla obnovena."
 	}
 	"Sprays Disabled"
 	{
@@ -345,6 +537,12 @@
 		"de"		"{white}Sorry, alle Sprays sind auf dem Server derzeit deaktiviert."
 		"pt"		"{white}Desculpe, todos os sprays estão desativados no servidor no momento."
 		"chi"		"{white}抱歉，服务器当前已禁用所有喷漆。"
+		"it"		"{white}Spiacenti, tutti gli spray sono attualmente disabilitati sul server."
+		"pl"		"{white}Przepraszamy, wszystkie spraye są obecnie wyłączone na serwerze."
+		"tr"		"{white}Üzgünüz, sunucuda tüm spreyler şu anda devre dışı."
+		"ua"		"{white}Вибач, усі спреї зараз вимкнено на сервері."
+		"zho"		"{white}抱歉，伺服器目前已停用所有噴漆。"
+		"cze"		"{white}Promiň, všechny spreje jsou na serveru momentálně vypnuté."
 	}
 	"Spray Check Error"
 	{
@@ -355,6 +553,12 @@
 		"de"		"Beim Überprüfen deines Sprays ist ein Fehler aufgetreten. Bitte warte auf die nächste Map."
 		"pt"		"Ocorreu um erro ao verificar seu spray. Aguarde o próximo mapa."
 		"chi"		"检查你的喷漆时出错，请等待下一张地图。"
+		"it"		"Si è verificato un errore durante il controllo del tuo spray. Attendi la prossima mappa."
+		"pl"		"Wystąpił błąd podczas sprawdzania twojego sprayu. Poczekaj na następną mapę."
+		"tr"		"Spreyin kontrol edilirken bir hata oluştu. Lütfen sonraki haritayı bekle."
+		"ua"		"Під час перевірки твого спрея сталася помилка. Зачекай наступну мапу."
+		"zho"		"檢查你的噴漆時發生錯誤，請等待下一張地圖。"
+		"cze"		"Při kontrole tvého spreje došlo k chybě. Počkej prosím na další mapu."
 	}
 	"Spray Being Checked"
 	{
@@ -365,6 +569,12 @@
 		"de"		"Dein Spray wird gerade überprüft, bitte warte ein paar Sekunden."
 		"pt"		"Seu spray está sendo verificado, aguarde alguns segundos."
 		"chi"		"正在检查你的喷漆，请稍等几秒。"
+		"it"		"Il tuo spray è in fase di controllo, attendi qualche secondo."
+		"pl"		"Twój spray jest właśnie sprawdzany, poczekaj kilka sekund."
+		"tr"		"Spreyin şu anda kontrol ediliyor, lütfen birkaç saniye bekle."
+		"ua"		"Твій спрей зараз перевіряється, зачекай кілька секунд."
+		"zho"		"你的噴漆正在檢查中，請稍候幾秒。"
+		"cze"		"Tvůj sprej se právě kontroluje, počkej prosím pár sekund."
 	}
 	"Spray Blacklisted"
 	{
@@ -375,6 +585,12 @@
 		"de"		"Dein Spray steht auf der Blacklist, ändere es."
 		"pt"		"Seu spray está na lista negra, troque-o."
 		"chi"		"你的喷漆已被列入黑名单，请更换。"
+		"it"		"Il tuo spray è nella lista nera, cambialo."
+		"pl"		"Twój spray jest na czarnej liście, zmień go."
+		"tr"		"Spreyin kara listede, değiştir."
+		"ua"		"Твій спрей у чорному списку, зміни його."
+		"zho"		"你的噴漆在黑名單中，請更換。"
+		"cze"		"Tvůj sprej je na černé listině, změň ho."
 	}
 	"Currently Spray Banned"
 	{
@@ -386,6 +602,12 @@
 		"de"		"Du bist derzeit für Sprays gebannt. ({green}{1}{default})"
 		"pt"		"Você está banido de usar sprays no momento. ({green}{1}{default})"
 		"chi"		"你当前被禁止使用喷漆。（{green}{1}{default}）"
+		"it"		"Al momento hai il ban spray. ({green}{1}{default})"
+		"pl"		"Masz obecnie zakaz używania sprayów. ({green}{1}{default})"
+		"tr"		"Şu anda sprey yasağın var. ({green}{1}{default})"
+		"ua"		"Ти зараз маєш заборону на спреї. ({green}{1}{default})"
+		"zho"		"你目前被禁止使用噴漆。({green}{1}{default})"
+		"cze"		"Momentálně máš zákaz sprejů. ({green}{1}{default})"
 	}
 	"Spray Too Close"
 	{
@@ -397,6 +619,12 @@
 		"de"		"Dein Spray ist zu nah am Spray von {green}{1}{default}."
 		"pt"		"Seu spray está perto demais do spray de {green}{1}{default}."
 		"chi"		"你的喷漆离 {green}{1}{default} 的喷漆太近了。"
+		"it"		"Il tuo spray è troppo vicino allo spray di {green}{1}{default}."
+		"pl"		"Twój spray jest zbyt blisko sprayu gracza {green}{1}{default}."
+		"tr"		"Spreyin {green}{1}{default} oyuncusunun spreyine çok yakın."
+		"ua"		"Твій спрей надто близько до спрея гравця {green}{1}{default}."
+		"zho"		"你的噴漆離 {green}{1}{default} 的噴漆太近。"
+		"cze"		"Tvůj sprej je příliš blízko spreje hráče {green}{1}{default}."
 	}
 	"Hint Sprayed By"
 	{
@@ -408,6 +636,12 @@
 		"de"		"Gesprüht von: {1} ({2}) [{3}]"
 		"pt"		"Spray de: {1} ({2}) [{3}]"
 		"chi"		"喷漆者：{1}（{2}）[{3}]"
+		"it"		"Spruzzato da: {1} ({2}) [{3}]"
+		"pl"		"Sprayowane przez: {1} ({2}) [{3}]"
+		"tr"		"Sıkan: {1} ({2}) [{3}]"
+		"ua"		"Спрей від: {1} ({2}) [{3}]"
+		"zho"		"噴漆者：{1} ({2}) [{3}]"
+		"cze"		"Nastříkal: {1} ({2}) [{3}]"
 	}
 	"Database Not Connected"
 	{
@@ -418,6 +652,12 @@
 		"de"		"Die Datenbank ist nicht verbunden."
 		"pt"		"O banco de dados não está conectado."
 		"chi"		"数据库未连接。"
+		"it"		"Il database non è connesso."
+		"pl"		"Baza danych nie jest połączona."
+		"tr"		"Veritabanı bağlı değil."
+		"ua"		"Базу даних не підключено."
+		"zho"		"資料庫未連線。"
+		"cze"		"Databáze není připojena."
 	}
 	"Already Spray Banned"
 	{
@@ -429,6 +669,12 @@
 		"de"		"{olive}{1} {default}ist bereits für Sprays gebannt."
 		"pt"		"{olive}{1} {default}já está banido de usar sprays."
 		"chi"		"{olive}{1} {default}已被禁止使用喷漆。"
+		"it"		"{olive}{1} {default}ha già il ban spray."
+		"pl"		"{olive}{1} {default}ma już zakaz sprayów."
+		"tr"		"{olive}{1} {default}zaten sprey yasaklı."
+		"ua"		"{olive}{1} {default}уже має заборону на спреї."
+		"zho"		"{olive}{1} {default}已被禁止使用噴漆。"
+		"cze"		"{olive}{1} {default}již má zákaz sprejů."
 	}
 	"Not Spray Banned"
 	{
@@ -440,6 +686,12 @@
 		"de"		"{olive}{1} {default}ist nicht für Sprays gebannt."
 		"pt"		"{olive}{1} {default}não está banido de usar sprays."
 		"chi"		"{olive}{1} {default}未被禁止使用喷漆。"
+		"it"		"{olive}{1} {default}non ha il ban spray."
+		"pl"		"{olive}{1} {default}nie ma zakazu sprayów."
+		"tr"		"{olive}{1} {default}sprey yasaklı değil."
+		"ua"		"{olive}{1} {default}не має заборони на спреї."
+		"zho"		"{olive}{1} {default}未被禁止使用噴漆。"
+		"cze"		"{olive}{1} {default}nemá zákaz sprejů."
 	}
 	"No Valid Spray Hash"
 	{
@@ -451,6 +703,12 @@
 		"de"		"{olive}{1} {default}hat keinen gültigen Spray-Hash."
 		"pt"		"{olive}{1} {default}não tem um hash de spray válido."
 		"chi"		"{olive}{1} {default}没有有效的喷漆哈希。"
+		"it"		"{olive}{1} {default}non ha un hash spray valido."
+		"pl"		"{olive}{1} {default}nie ma prawidłowego hasha sprayu."
+		"tr"		"{olive}{1} {default}geçerli bir sprey hash'ine sahip değil."
+		"ua"		"{olive}{1} {default}не має дійсного хешу спрея."
+		"zho"		"{olive}{1} {default}沒有有效的噴漆雜湊值。"
+		"cze"		"{olive}{1} {default}nemá platný hash spreje."
 	}
 	"Already Hash Banned"
 	{
@@ -462,6 +720,12 @@
 		"de"		"{olive}{1} {default}ist bereits per Hash gebannt."
 		"pt"		"{olive}{1} {default}já está banido por hash."
 		"chi"		"{olive}{1} {default}的喷漆哈希已被封禁。"
+		"it"		"{olive}{1} {default}ha già il ban sull'hash."
+		"pl"		"{olive}{1} {default}ma już zablokowany hash."
+		"tr"		"{olive}{1} {default}zaten hash yasaklı."
+		"ua"		"{olive}{1} {default}уже має заборону за хешем."
+		"zho"		"{olive}{1} {default}的雜湊值已被封禁。"
+		"cze"		"{olive}{1} {default}již má zakázaný hash."
 	}
 	"Not Hash Banned"
 	{
@@ -473,6 +737,12 @@
 		"de"		"{olive}{1} {default}ist nicht per Hash gebannt."
 		"pt"		"{olive}{1} {default}não está banido por hash."
 		"chi"		"{olive}{1} {default}的喷漆哈希未被封禁。"
+		"it"		"{olive}{1} {default}non ha il ban sull'hash."
+		"pl"		"{olive}{1} {default}nie ma zablokowanego hasha."
+		"tr"		"{olive}{1} {default}hash yasaklı değil."
+		"ua"		"{olive}{1} {default}не має заборони за хешем."
+		"zho"		"{olive}{1} {default}的雜湊值未被封禁。"
+		"cze"		"{olive}{1} {default}nemá zakázaný hash."
 	}
 	"Default Game Spray"
 	{
@@ -484,6 +754,12 @@
 		"de"		"{olive}{1} {default}hat ein Standard-Spray des Spiels."
 		"pt"		"{olive}{1} {default}tem um spray padrão do jogo."
 		"chi"		"{olive}{1} {default}使用的是游戏默认喷漆。"
+		"it"		"{olive}{1} {default}ha uno spray predefinito del gioco."
+		"pl"		"{olive}{1} {default}ma domyślny spray gry."
+		"tr"		"{olive}{1} {default}oyunun varsayılan spreyini kullanıyor."
+		"ua"		"{olive}{1} {default}має стандартний спрей гри."
+		"zho"		"{olive}{1} {default}使用的是遊戲預設噴漆。"
+		"cze"		"{olive}{1} {default}má výchozí sprej hry."
 	}
 	"Cannot Spray Here"
 	{
@@ -494,6 +770,12 @@
 		"de"		"Hier kann nicht gesprüht werden, versuche es woanders."
 		"pt"		"Não foi possível aplicar o spray aqui, tente outro lugar."
 		"chi"		"无法在此处喷漆，请换个地方。"
+		"it"		"Impossibile spruzzare qui, prova in un altro posto."
+		"pl"		"Nie można tu użyć sprayu, spróbuj w innym miejscu."
+		"tr"		"Burada sprey sıkılamadı, başka bir yer dene."
+		"ua"		"Тут не можна використати спрей, спробуй в іншому місці."
+		"zho"		"無法在此處噴漆，請換個地方。"
+		"cze"		"Tady nelze stříkat, zkus jiné místo."
 	}
 	"Spray Not Allowed"
 	{
@@ -504,6 +786,12 @@
 		"de"		"Dein Spray ist nicht erlaubt, ändere es."
 		"pt"		"Seu spray não é permitido, troque-o."
 		"chi"		"你的喷漆不被允许，请更换。"
+		"it"		"Il tuo spray non è consentito, cambialo."
+		"pl"		"Twój spray jest niedozwolony, zmień go."
+		"tr"		"Spreyine izin verilmiyor, değiştir."
+		"ua"		"Твій спрей заборонений, зміни його."
+		"zho"		"你的噴漆不被允許，請更換。"
+		"cze"		"Tvůj sprej není povolen, změň ho."
 	}
 	"Menu Category"
 	{
@@ -514,6 +802,12 @@
 		"de"		"SprayManager-Befehle"
 		"pt"		"Comandos do SprayManager"
 		"chi"		"SprayManager 命令"
+		"it"		"Comandi SprayManager"
+		"pl"		"Polecenia SprayManager"
+		"tr"		"SprayManager Komutları"
+		"ua"		"Команди SprayManager"
+		"zho"		"SprayManager 指令"
+		"cze"		"Příkazy SprayManager"
 	}
 	"Menu Category Title"
 	{
@@ -524,6 +818,12 @@
 		"de"		"SprayManager-Befehle:"
 		"pt"		"Comandos do SprayManager:"
 		"chi"		"SprayManager 命令："
+		"it"		"Comandi SprayManager:"
+		"pl"		"Polecenia SprayManager:"
+		"tr"		"SprayManager Komutları:"
+		"ua"		"Команди SprayManager:"
+		"zho"		"SprayManager 指令："
+		"cze"		"Příkazy SprayManager:"
 	}
 	"Menu List Bans"
 	{
@@ -534,6 +834,12 @@
 		"de"		"Spieler mit Spray-Bann auflisten"
 		"pt"		"Listar jogadores banidos de sprays"
 		"chi"		"列出被禁止喷漆的玩家"
+		"it"		"Elenco client con ban spray"
+		"pl"		"Lista graczy z zakazem sprayów"
+		"tr"		"Sprey Yasaklı Oyuncuları Listele"
+		"ua"		"Список гравців із забороною спреїв"
+		"zho"		"列出被禁用噴漆的玩家"
+		"cze"		"Seznam hráčů se zákazem sprejů"
 	}
 	"Menu Trace Spray"
 	{
@@ -544,6 +850,12 @@
 		"de"		"Spray zurückverfolgen"
 		"pt"		"Rastrear um spray"
 		"chi"		"追踪喷漆"
+		"it"		"Traccia uno spray"
+		"pl"		"Namierz spray"
+		"tr"		"Bir Spreyi İzle"
+		"ua"		"Відстежити спрей"
+		"zho"		"追蹤噴漆"
+		"cze"		"Vysledovat sprej"
 	}
 	"Menu Force Spray"
 	{
@@ -554,6 +866,12 @@
 		"de"		"Spray eines Spielers sprühen"
 		"pt"		"Aplicar o spray de um jogador"
 		"chi"		"喷出玩家的喷漆"
+		"it"		"Spruzza lo spray di un client"
+		"pl"		"Użyj sprayu gracza"
+		"tr"		"Bir Oyuncunun Spreyini Sık"
+		"ua"		"Використати спрей гравця"
+		"zho"		"噴出玩家的噴漆"
+		"cze"		"Vystříkat sprej hráče"
 	}
 	"Menu Spray Ban"
 	{
@@ -564,6 +882,12 @@
 		"de"		"Spieler für Sprays bannen"
 		"pt"		"Banir um jogador de sprays"
 		"chi"		"禁止玩家使用喷漆"
+		"it"		"Ban spray a un client"
+		"pl"		"Zablokuj spraye graczowi"
+		"tr"		"Bir Oyuncuya Sprey Yasağı Ver"
+		"ua"		"Заборонити гравцю спреї"
+		"zho"		"禁止玩家使用噴漆"
+		"cze"		"Zakázat hráči spreje"
 	}
 	"Menu Ban Spray"
 	{
@@ -574,6 +898,12 @@
 		"de"		"Spray-Hash eines Spielers bannen"
 		"pt"		"Banir o hash do spray de um jogador"
 		"chi"		"封禁玩家的喷漆哈希"
+		"it"		"Banna l'hash dello spray di un client"
+		"pl"		"Zablokuj hash sprayu gracza"
+		"tr"		"Bir Oyuncunun Sprey Hash'ini Yasakla"
+		"ua"		"Заборонити хеш спрея гравця"
+		"zho"		"封禁玩家的噴漆雜湊值"
+		"cze"		"Zakázat hash spreje hráče"
 	}
 	"Menu Unban"
 	{
@@ -584,6 +914,12 @@
 		"de"		"Spieler entbannen"
 		"pt"		"Desbanir um jogador"
 		"chi"		"解封玩家"
+		"it"		"Sbanna un client"
+		"pl"		"Odbanuj gracza"
+		"tr"		"Bir Oyuncunun Yasağını Kaldır"
+		"ua"		"Розбанити гравця"
+		"zho"		"解除玩家封禁"
+		"cze"		"Odbanovat hráče"
 	}
 	"Menu Banned Clients Title"
 	{
@@ -594,6 +930,12 @@
 		"de"		"Gebannte Spieler:"
 		"pt"		"Jogadores banidos:"
 		"chi"		"被封禁的玩家："
+		"it"		"Client bannati:"
+		"pl"		"Zbanowani gracze:"
+		"tr"		"Yasaklı Oyuncular:"
+		"ua"		"Забанені гравці:"
+		"zho"		"被封禁的玩家："
+		"cze"		"Zabanovaní hráči:"
 	}
 	"Menu No Banned Clients"
 	{
@@ -604,6 +946,12 @@
 		"de"		"Keine gebannten Spieler."
 		"pt"		"Nenhum jogador banido."
 		"chi"		"没有被封禁的玩家。"
+		"it"		"Nessun client bannato."
+		"pl"		"Brak zbanowanych graczy."
+		"tr"		"Yasaklı Oyuncu Yok."
+		"ua"		"Немає забанених гравців."
+		"zho"		"沒有被封禁的玩家。"
+		"cze"		"Žádní zabanovaní hráči."
 	}
 	"Menu Sprayed By Title"
 	{
@@ -615,6 +963,12 @@
 		"de"		"Gesprüht von: {1} ({2})"
 		"pt"		"Spray de: {1} ({2})"
 		"chi"		"喷漆者：{1}（{2}）"
+		"it"		"Spruzzato da: {1} ({2})"
+		"pl"		"Sprayowane przez: {1} ({2})"
+		"tr"		"Sıkan: {1} ({2})"
+		"ua"		"Спрей від: {1} ({2})"
+		"zho"		"噴漆者：{1} ({2})"
+		"cze"		"Nastříkal: {1} ({2})"
 	}
 	"Menu Warn Client"
 	{
@@ -625,6 +979,12 @@
 		"de"		"Spieler verwarnen"
 		"pt"		"Advertir o jogador"
 		"chi"		"警告玩家"
+		"it"		"Ammonisci il client"
+		"pl"		"Ostrzeż gracza"
+		"tr"		"Oyuncuyu Uyar"
+		"ua"		"Попередити гравця"
+		"zho"		"警告玩家"
+		"cze"		"Varovat hráče"
 	}
 	"Menu Mark SFW"
 	{
@@ -635,6 +995,12 @@
 		"de"		"Als SFW markieren"
 		"pt"		"Marcar como SFW"
 		"chi"		"标记为 SFW"
+		"it"		"Segna come SFW"
+		"pl"		"Oznacz jako SFW"
+		"tr"		"SFW Olarak İşaretle"
+		"ua"		"Позначити як SFW"
+		"zho"		"標記為 SFW"
+		"cze"		"Označit jako SFW"
 	}
 	"Menu Mark NSFW"
 	{
@@ -645,6 +1011,12 @@
 		"de"		"Als NSFW markieren"
 		"pt"		"Marcar como NSFW"
 		"chi"		"标记为 NSFW"
+		"it"		"Segna come NSFW"
+		"pl"		"Oznacz jako NSFW"
+		"tr"		"NSFW Olarak İşaretle"
+		"ua"		"Позначити як NSFW"
+		"zho"		"標記為 NSFW"
+		"cze"		"Označit jako NSFW"
 	}
 	"Menu Kick Client"
 	{
@@ -655,6 +1027,12 @@
 		"de"		"Spieler kicken"
 		"pt"		"Expulsar o jogador"
 		"chi"		"踢出玩家"
+		"it"		"Espelli il client"
+		"pl"		"Wyrzuć gracza"
+		"tr"		"Oyuncuyu At"
+		"ua"		"Кікнути гравця"
+		"zho"		"踢出玩家"
+		"cze"		"Vyhodit hráče"
 	}
 	"Menu Spray Ban Client"
 	{
@@ -665,6 +1043,12 @@
 		"de"		"Spieler für Sprays bannen"
 		"pt"		"Banir o jogador de sprays"
 		"chi"		"禁止该玩家使用喷漆"
+		"it"		"Ban spray al client"
+		"pl"		"Zablokuj spraye graczowi"
+		"tr"		"Oyuncuya Sprey Yasağı Ver"
+		"ua"		"Заборонити гравцю спреї"
+		"zho"		"禁止玩家使用噴漆"
+		"cze"		"Zakázat hráči spreje"
 	}
 	"Menu Ban Spray Hash"
 	{
@@ -675,6 +1059,12 @@
 		"de"		"Spray-Hash bannen"
 		"pt"		"Banir o hash do spray"
 		"chi"		"封禁喷漆哈希"
+		"it"		"Banna l'hash dello spray del client"
+		"pl"		"Zablokuj hash sprayu gracza"
+		"tr"		"Oyuncunun Sprey Hash'ini Yasakla"
+		"ua"		"Заборонити хеш спрея гравця"
+		"zho"		"封禁玩家的噴漆雜湊值"
+		"cze"		"Zakázat hash spreje hráče"
 	}
 	"Menu Ban Client"
 	{
@@ -685,6 +1075,12 @@
 		"de"		"Spieler bannen"
 		"pt"		"Banir o jogador"
 		"chi"		"封禁玩家"
+		"it"		"Banna il client"
+		"pl"		"Zbanuj gracza"
+		"tr"		"Oyuncuyu Yasakla"
+		"ua"		"Забанити гравця"
+		"zho"		"封禁玩家"
+		"cze"		"Zabanovat hráče"
 	}
 	"Menu Spray Ban Length Title"
 	{
@@ -696,6 +1092,12 @@
 		"de"		"Wähle die Dauer des Spray-Banns für {1} (#{2})"
 		"pt"		"Escolha a duração do banimento de sprays para {1} (#{2})"
 		"chi"		"选择 {1} (#{2}) 的喷漆禁令时长"
+		"it"		"Seleziona la durata del ban spray per {1} (#{2})"
+		"pl"		"Wybierz czas zakazu sprayów dla {1} (#{2})"
+		"tr"		"{1} için Sprey Yasağı Süresini Seç (#{2})"
+		"ua"		"Вибери тривалість заборони спреїв для {1} (#{2})"
+		"zho"		"選擇對 {1} (#{2}) 的噴漆禁令時長"
+		"cze"		"Vyber délku zákazu sprejů pro {1} (#{2})"
 	}
 	"Menu Ban Length Title"
 	{
@@ -707,6 +1109,12 @@
 		"de"		"Wähle die Bann-Dauer für {1} (#{2})"
 		"pt"		"Escolha a duração do banimento para {1} (#{2})"
 		"chi"		"选择 {1} (#{2}) 的封禁时长"
+		"it"		"Seleziona la durata del ban per {1} (#{2})"
+		"pl"		"Wybierz czas bana dla {1} (#{2})"
+		"tr"		"{1} için Yasak Süresini Seç (#{2})"
+		"ua"		"Вибери тривалість бану для {1} (#{2})"
+		"zho"		"選擇對 {1} (#{2}) 的封禁時長"
+		"cze"		"Vyber délku banu pro {1} (#{2})"
 	}
 	"Length 10 Minutes"
 	{
@@ -717,6 +1125,12 @@
 		"de"		"10 Minuten"
 		"pt"		"10 minutos"
 		"chi"		"10 分钟"
+		"it"		"10 minuti"
+		"pl"		"10 minut"
+		"tr"		"10 Dakika"
+		"ua"		"10 хвилин"
+		"zho"		"10 分鐘"
+		"cze"		"10 minut"
 	}
 	"Length 30 Minutes"
 	{
@@ -727,6 +1141,12 @@
 		"de"		"30 Minuten"
 		"pt"		"30 minutos"
 		"chi"		"30 分钟"
+		"it"		"30 minuti"
+		"pl"		"30 minut"
+		"tr"		"30 Dakika"
+		"ua"		"30 хвилин"
+		"zho"		"30 分鐘"
+		"cze"		"30 minut"
 	}
 	"Length 1 Hour"
 	{
@@ -737,6 +1157,12 @@
 		"de"		"1 Stunde"
 		"pt"		"1 hora"
 		"chi"		"1 小时"
+		"it"		"1 ora"
+		"pl"		"1 godzina"
+		"tr"		"1 Saat"
+		"ua"		"1 година"
+		"zho"		"1 小時"
+		"cze"		"1 hodina"
 	}
 	"Length 4 Hours"
 	{
@@ -747,6 +1173,12 @@
 		"de"		"4 Stunden"
 		"pt"		"4 horas"
 		"chi"		"4 小时"
+		"it"		"4 ore"
+		"pl"		"4 godziny"
+		"tr"		"4 Saat"
+		"ua"		"4 години"
+		"zho"		"4 小時"
+		"cze"		"4 hodiny"
 	}
 	"Length 8 Hours"
 	{
@@ -757,6 +1189,12 @@
 		"de"		"8 Stunden"
 		"pt"		"8 horas"
 		"chi"		"8 小时"
+		"it"		"8 ore"
+		"pl"		"8 godzin"
+		"tr"		"8 Saat"
+		"ua"		"8 годин"
+		"zho"		"8 小時"
+		"cze"		"8 hodin"
 	}
 	"Length 12 Hours"
 	{
@@ -767,6 +1205,12 @@
 		"de"		"12 Stunden"
 		"pt"		"12 horas"
 		"chi"		"12 小时"
+		"it"		"12 ore"
+		"pl"		"12 godzin"
+		"tr"		"12 Saat"
+		"ua"		"12 годин"
+		"zho"		"12 小時"
+		"cze"		"12 hodin"
 	}
 	"Length 1 Day"
 	{
@@ -777,6 +1221,12 @@
 		"de"		"1 Tag"
 		"pt"		"1 dia"
 		"chi"		"1 天"
+		"it"		"1 giorno"
+		"pl"		"1 dzień"
+		"tr"		"1 Gün"
+		"ua"		"1 день"
+		"zho"		"1 天"
+		"cze"		"1 den"
 	}
 	"Length 2 Days"
 	{
@@ -787,6 +1237,12 @@
 		"de"		"2 Tage"
 		"pt"		"2 dias"
 		"chi"		"2 天"
+		"it"		"2 giorni"
+		"pl"		"2 dni"
+		"tr"		"2 Gün"
+		"ua"		"2 дні"
+		"zho"		"2 天"
+		"cze"		"2 dny"
 	}
 	"Length 3 Days"
 	{
@@ -797,6 +1253,12 @@
 		"de"		"3 Tage"
 		"pt"		"3 dias"
 		"chi"		"3 天"
+		"it"		"3 giorni"
+		"pl"		"3 dni"
+		"tr"		"3 Gün"
+		"ua"		"3 дні"
+		"zho"		"3 天"
+		"cze"		"3 dny"
 	}
 	"Length 1 Week"
 	{
@@ -807,6 +1269,12 @@
 		"de"		"1 Woche"
 		"pt"		"1 semana"
 		"chi"		"1 周"
+		"it"		"1 settimana"
+		"pl"		"1 tydzień"
+		"tr"		"1 Hafta"
+		"ua"		"1 тиждень"
+		"zho"		"1 週"
+		"cze"		"1 týden"
 	}
 	"Length 2 Weeks"
 	{
@@ -817,6 +1285,12 @@
 		"de"		"2 Wochen"
 		"pt"		"2 semanas"
 		"chi"		"2 周"
+		"it"		"2 settimane"
+		"pl"		"2 tygodnie"
+		"tr"		"2 Hafta"
+		"ua"		"2 тижні"
+		"zho"		"2 週"
+		"cze"		"2 týdny"
 	}
 	"Length 1 Month"
 	{
@@ -827,6 +1301,12 @@
 		"de"		"1 Monat"
 		"pt"		"1 mês"
 		"chi"		"1 个月"
+		"it"		"1 mese"
+		"pl"		"1 miesiąc"
+		"tr"		"1 Ay"
+		"ua"		"1 місяць"
+		"zho"		"1 個月"
+		"cze"		"1 měsíc"
 	}
 	"Length Permanent"
 	{
@@ -837,6 +1317,12 @@
 		"de"		"Permanent"
 		"pt"		"Permanente"
 		"chi"		"永久"
+		"it"		"Permanente"
+		"pl"		"Permanentny"
+		"tr"		"Kalıcı"
+		"ua"		"Назавжди"
+		"zho"		"永久"
+		"cze"		"Trvalý"
 	}
 	"Length Temporary"
 	{
@@ -847,6 +1333,12 @@
 		"de"		"Vorübergehend"
 		"pt"		"Temporário"
 		"chi"		"临时"
+		"it"		"Temporaneo"
+		"pl"		"Tymczasowy"
+		"tr"		"Geçici"
+		"ua"		"Тимчасовий"
+		"zho"		"暫時"
+		"cze"		"Dočasný"
 	}
 	"Menu Force Spray Title"
 	{
@@ -857,6 +1349,12 @@
 		"de"		"Wähle einen Spieler, dessen Spray gesprüht werden soll:"
 		"pt"		"Escolha um jogador para aplicar o spray:"
 		"chi"		"选择要强制喷漆的玩家："
+		"it"		"Seleziona un client a cui far spruzzare lo spray:"
+		"pl"		"Wybierz gracza, którego spray chcesz użyć:"
+		"tr"		"Sprey Sıkılacak Oyuncuyu Seç:"
+		"ua"		"Вибери гравця, чий спрей використати:"
+		"zho"		"選擇要強制噴漆的玩家："
+		"cze"		"Vyber hráče, jehož sprej se má vystříkat:"
 	}
 	"Menu Spray And Hash Banned"
 	{
@@ -867,6 +1365,12 @@
 		"de"		"Spray & Hash gebannt"
 		"pt"		"Spray e hash banidos"
 		"chi"		"喷漆和哈希均被封禁"
+		"it"		"Spray e hash bannati"
+		"pl"		"Spray i hash zablokowane"
+		"tr"		"Sprey ve Hash Yasaklı"
+		"ua"		"Спрей і хеш заборонено"
+		"zho"		"噴漆與雜湊值皆被封禁"
+		"cze"		"Sprej i hash zakázány"
 	}
 	"Menu Spray Banned"
 	{
@@ -877,6 +1381,12 @@
 		"de"		"Spray-Bann"
 		"pt"		"Banido de sprays"
 		"chi"		"禁止喷漆"
+		"it"		"Spray bannato"
+		"pl"		"Spray zablokowany"
+		"tr"		"Sprey Yasaklı"
+		"ua"		"Спрей заборонено"
+		"zho"		"噴漆被封禁"
+		"cze"		"Sprej zakázán"
 	}
 	"Menu Hash Banned"
 	{
@@ -887,6 +1397,12 @@
 		"de"		"Hash gebannt"
 		"pt"		"Hash banido"
 		"chi"		"哈希已封禁"
+		"it"		"Hash bannato"
+		"pl"		"Hash zablokowany"
+		"tr"		"Hash Yasaklı"
+		"ua"		"Хеш заборонено"
+		"zho"		"雜湊值被封禁"
+		"cze"		"Hash zakázán"
 	}
 	"Menu Spray Ban Title"
 	{
@@ -897,6 +1413,12 @@
 		"de"		"Wähle einen Spieler für einen Spray-Bann:"
 		"pt"		"Escolha um jogador para banir de sprays:"
 		"chi"		"选择要禁止喷漆的玩家："
+		"it"		"Seleziona un client a cui dare il ban spray:"
+		"pl"		"Wybierz gracza, któremu zablokować spraye:"
+		"tr"		"Sprey Yasağı Verilecek Oyuncuyu Seç:"
+		"ua"		"Вибери гравця для заборони спреїв:"
+		"zho"		"選擇要禁用噴漆的玩家："
+		"cze"		"Vyber hráče, kterému zakázat spreje:"
 	}
 	"Menu No Eligible Clients"
 	{
@@ -907,6 +1429,12 @@
 		"de"		"Keine passenden Spieler gefunden."
 		"pt"		"Nenhum jogador elegível encontrado."
 		"chi"		"未找到符合条件的玩家。"
+		"it"		"Nessun client idoneo trovato."
+		"pl"		"Nie znaleziono odpowiednich graczy."
+		"tr"		"Uygun oyuncu bulunamadı."
+		"ua"		"Підходящих гравців не знайдено."
+		"zho"		"找不到符合條件的玩家。"
+		"cze"		"Nebyli nalezeni žádní vhodní hráči."
 	}
 	"Menu Ban Spray Title"
 	{
@@ -917,6 +1445,12 @@
 		"de"		"Wähle einen Spieler, dessen Spray gebannt werden soll:"
 		"pt"		"Escolha um jogador para banir o spray:"
 		"chi"		"选择要封禁其喷漆的玩家："
+		"it"		"Seleziona un client di cui bannare lo spray:"
+		"pl"		"Wybierz gracza, którego spray zablokować:"
+		"tr"		"Spreyi Yasaklanacak Oyuncuyu Seç:"
+		"ua"		"Вибери гравця, чий спрей заборонити:"
+		"zho"		"選擇要封禁其噴漆的玩家："
+		"cze"		"Vyber hráče, jehož sprej zakázat:"
 	}
 	"Menu Unban Select Title"
 	{
@@ -927,6 +1461,12 @@
 		"de"		"Wähle einen Spieler für weitere Informationen:"
 		"pt"		"Escolha um jogador para mais informações:"
 		"chi"		"选择玩家以查看更多信息："
+		"it"		"Seleziona un client per maggiori informazioni:"
+		"pl"		"Wybierz gracza, aby zobaczyć więcej informacji:"
+		"tr"		"Daha Fazla Bilgi İçin Bir Oyuncu Seç:"
+		"ua"		"Вибери гравця, щоб дізнатися більше:"
+		"zho"		"選擇玩家以查看更多資訊："
+		"cze"		"Vyber hráče pro více informací:"
 	}
 	"Menu Banned Client Title"
 	{
@@ -938,6 +1478,12 @@
 		"de"		"Gebannter Spieler: {1} (#{2})"
 		"pt"		"Jogador banido: {1} (#{2})"
 		"chi"		"被封禁的玩家：{1} (#{2})"
+		"it"		"Client bannato: {1} (#{2})"
+		"pl"		"Zbanowany gracz: {1} (#{2})"
+		"tr"		"Yasaklı Oyuncu: {1} (#{2})"
+		"ua"		"Забанений гравець: {1} (#{2})"
+		"zho"		"被封禁的玩家：{1} (#{2})"
+		"cze"		"Zabanovaný hráč: {1} (#{2})"
 	}
 	"Ban Type Hash"
 	{
@@ -948,6 +1494,12 @@
 		"de"		"Typ: Hash"
 		"pt"		"Tipo: hash"
 		"chi"		"类型：哈希"
+		"it"		"Tipo: Hash"
+		"pl"		"Typ: Hash"
+		"tr"		"Tür: Hash"
+		"ua"		"Тип: Хеш"
+		"zho"		"類型：雜湊值"
+		"cze"		"Typ: Hash"
 	}
 	"Ban Type Spray And Hash"
 	{
@@ -958,6 +1510,12 @@
 		"de"		"Typ: Spray & Hash"
 		"pt"		"Tipo: spray e hash"
 		"chi"		"类型：喷漆和哈希"
+		"it"		"Tipo: Spray e hash"
+		"pl"		"Typ: Spray i hash"
+		"tr"		"Tür: Sprey ve Hash"
+		"ua"		"Тип: Спрей і хеш"
+		"zho"		"類型：噴漆與雜湊值"
+		"cze"		"Typ: Sprej a hash"
 	}
 	"Ban Type Spray"
 	{
@@ -968,6 +1526,12 @@
 		"de"		"Typ: Spray"
 		"pt"		"Tipo: spray"
 		"chi"		"类型：喷漆"
+		"it"		"Tipo: Spray"
+		"pl"		"Typ: Spray"
+		"tr"		"Tür: Sprey"
+		"ua"		"Тип: Спрей"
+		"zho"		"類型：噴漆"
+		"cze"		"Typ: Sprej"
 	}
 	"Menu Unban Client"
 	{
@@ -978,6 +1542,12 @@
 		"de"		"Spieler entbannen?"
 		"pt"		"Desbanir o jogador?"
 		"chi"		"解封该玩家？"
+		"it"		"Sbannare il client?"
+		"pl"		"Odbanować gracza?"
+		"tr"		"Oyuncunun Yasağı Kaldırılsın mı?"
+		"ua"		"Розбанити гравця?"
+		"zho"		"解除玩家封禁？"
+		"cze"		"Odbanovat hráče?"
 	}
 	"Ban Never Expires"
 	{
@@ -988,6 +1558,12 @@
 		"de"		"Nie"
 		"pt"		"Nunca"
 		"chi"		"永不"
+		"it"		"Mai"
+		"pl"		"Nigdy"
+		"tr"		"Asla"
+		"ua"		"Ніколи"
+		"zho"		"永不"
+		"cze"		"Nikdy"
 	}
 	"Ban Info Banned By"
 	{
@@ -999,6 +1575,12 @@
 		"de"		"Gebannt von: {1} ({2})"
 		"pt"		"Banido por: {1} ({2})"
 		"chi"		"封禁者：{1}（{2}）"
+		"it"		"Bannato da: {1} ({2})"
+		"pl"		"Zbanowany przez: {1} ({2})"
+		"tr"		"Yasaklayan: {1} ({2})"
+		"ua"		"Забанив: {1} ({2})"
+		"zho"		"封禁者：{1} ({2})"
+		"cze"		"Zabanoval: {1} ({2})"
 	}
 	"Ban Info Duration"
 	{
@@ -1010,6 +1592,12 @@
 		"de"		"Dauer: {1}"
 		"pt"		"Duração: {1}"
 		"chi"		"时长：{1}"
+		"it"		"Durata: {1}"
+		"pl"		"Czas trwania: {1}"
+		"tr"		"Süre: {1}"
+		"ua"		"Тривалість: {1}"
+		"zho"		"時長：{1}"
+		"cze"		"Doba trvání: {1}"
 	}
 	"Ban Info Expires"
 	{
@@ -1021,6 +1609,12 @@
 		"de"		"Läuft ab: {1}"
 		"pt"		"Expira: {1}"
 		"chi"		"到期：{1}"
+		"it"		"Scade il: {1}"
+		"pl"		"Wygasa: {1}"
+		"tr"		"Bitiş: {1}"
+		"ua"		"Спливає: {1}"
+		"zho"		"到期時間：{1}"
+		"cze"		"Vyprší: {1}"
 	}
 	"Ban Info Issued"
 	{
@@ -1032,6 +1626,12 @@
 		"de"		"Erteilt am: {1}"
 		"pt"		"Emitido em: {1}"
 		"chi"		"发布时间：{1}"
+		"it"		"Emesso il: {1}"
+		"pl"		"Wydano: {1}"
+		"tr"		"Veriliş: {1}"
+		"ua"		"Видано: {1}"
+		"zho"		"發布時間：{1}"
+		"cze"		"Uděleno: {1}"
 	}
 	"Ban Info Reason"
 	{
@@ -1043,6 +1643,12 @@
 		"de"		"Grund: {1}"
 		"pt"		"Motivo: {1}"
 		"chi"		"原因：{1}"
+		"it"		"Motivo: {1}"
+		"pl"		"Powód: {1}"
+		"tr"		"Sebep: {1}"
+		"ua"		"Причина: {1}"
+		"zho"		"原因：{1}"
+		"cze"		"Důvod: {1}"
 	}
 	"Menu Unban Confirm Title"
 	{
@@ -1054,6 +1660,12 @@
 		"de"		"{1} entbannen?"
 		"pt"		"Desbanir {1}?"
 		"chi"		"解封 {1}？"
+		"it"		"Sbannare {1}?"
+		"pl"		"Odbanować {1}?"
+		"tr"		"{1} oyuncusunun yasağı kaldırılsın mı?"
+		"ua"		"Розбанити {1}?"
+		"zho"		"解除 {1} 的封禁？"
+		"cze"		"Odbanovat {1}?"
 	}
 	"Menu Remove Hash Ban"
 	{
@@ -1064,6 +1676,12 @@
 		"de"		"Hash-Bann aufheben."
 		"pt"		"Remover o banimento do hash."
 		"chi"		"解除哈希封禁。"
+		"it"		"Rimuovi ban hash."
+		"pl"		"Usuń blokadę hasha."
+		"tr"		"Hash Yasağını Kaldır."
+		"ua"		"Зняти заборону за хешем."
+		"zho"		"移除雜湊值封禁。"
+		"cze"		"Odstranit zákaz hashe."
 	}
 	"Menu Remove Spray Ban"
 	{
@@ -1074,6 +1692,12 @@
 		"de"		"Spray-Bann aufheben."
 		"pt"		"Remover o banimento de sprays."
 		"chi"		"解除喷漆禁令。"
+		"it"		"Rimuovi ban spray."
+		"pl"		"Usuń zakaz sprayów."
+		"tr"		"Sprey Yasağını Kaldır."
+		"ua"		"Зняти заборону спреїв."
+		"zho"		"移除噴漆禁令。"
+		"cze"		"Odstranit zákaz sprejů."
 	}
 	"Menu Remove Both"
 	{
@@ -1084,6 +1708,12 @@
 		"de"		"Beides aufheben."
 		"pt"		"Remover ambos."
 		"chi"		"全部解除。"
+		"it"		"Rimuovi entrambi."
+		"pl"		"Usuń oba."
+		"tr"		"İkisini de Kaldır."
+		"ua"		"Зняти обидві."
+		"zho"		"兩者皆移除。"
+		"cze"		"Odstranit obojí."
 	}
 	"Time Day"
 	{
@@ -1095,6 +1725,12 @@
 		"de"		"{1} Tag"
 		"pt"		"{1} dia"
 		"chi"		"{1} 天"
+		"it"		"{1} giorno"
+		"pl"		"{1} dzień"
+		"tr"		"{1} Gün"
+		"ua"		"{1} день"
+		"zho"		"{1} 天"
+		"cze"		"{1} den"
 	}
 	"Time Days"
 	{
@@ -1106,6 +1742,12 @@
 		"de"		"{1} Tage"
 		"pt"		"{1} dias"
 		"chi"		"{1} 天"
+		"it"		"{1} giorni"
+		"pl"		"{1} dni"
+		"tr"		"{1} Gün"
+		"ua"		"{1} днів"
+		"zho"		"{1} 天"
+		"cze"		"{1} dní"
 	}
 	"Time Hour"
 	{
@@ -1117,6 +1759,12 @@
 		"de"		"{1} Stunde"
 		"pt"		"{1} hora"
 		"chi"		"{1} 小时"
+		"it"		"{1} ora"
+		"pl"		"{1} godzina"
+		"tr"		"{1} Saat"
+		"ua"		"{1} година"
+		"zho"		"{1} 小時"
+		"cze"		"{1} hodina"
 	}
 	"Time Hours"
 	{
@@ -1128,6 +1776,12 @@
 		"de"		"{1} Stunden"
 		"pt"		"{1} horas"
 		"chi"		"{1} 小时"
+		"it"		"{1} ore"
+		"pl"		"{1} godzin"
+		"tr"		"{1} Saat"
+		"ua"		"{1} годин"
+		"zho"		"{1} 小時"
+		"cze"		"{1} hodin"
 	}
 	"Time Minute"
 	{
@@ -1139,6 +1793,12 @@
 		"de"		"{1} Minute"
 		"pt"		"{1} minuto"
 		"chi"		"{1} 分钟"
+		"it"		"{1} minuto"
+		"pl"		"{1} minuta"
+		"tr"		"{1} Dakika"
+		"ua"		"{1} хвилина"
+		"zho"		"{1} 分鐘"
+		"cze"		"{1} minuta"
 	}
 	"Time Minutes"
 	{
@@ -1150,6 +1810,12 @@
 		"de"		"{1} Minuten"
 		"pt"		"{1} minutos"
 		"chi"		"{1} 分钟"
+		"it"		"{1} minuti"
+		"pl"		"{1} minut"
+		"tr"		"{1} Dakika"
+		"ua"		"{1} хвилин"
+		"zho"		"{1} 分鐘"
+		"cze"		"{1} minut"
 	}
 	"Time Second"
 	{
@@ -1161,6 +1827,12 @@
 		"de"		"{1} Sekunde"
 		"pt"		"{1} segundo"
 		"chi"		"{1} 秒"
+		"it"		"{1} secondo"
+		"pl"		"{1} sekunda"
+		"tr"		"{1} Saniye"
+		"ua"		"{1} секунда"
+		"zho"		"{1} 秒"
+		"cze"		"{1} sekunda"
 	}
 	"Time Seconds"
 	{
@@ -1172,5 +1844,11 @@
 		"de"		"{1} Sekunden"
 		"pt"		"{1} segundos"
 		"chi"		"{1} 秒"
+		"it"		"{1} secondi"
+		"pl"		"{1} sekund"
+		"tr"		"{1} Saniye"
+		"ua"		"{1} секунд"
+		"zho"		"{1} 秒"
+		"cze"		"{1} sekund"
 	}
 }
